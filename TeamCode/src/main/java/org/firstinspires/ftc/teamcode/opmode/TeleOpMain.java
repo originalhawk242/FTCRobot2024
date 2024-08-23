@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.modules.*;
 
-@TeleOp(name="TeleOpMain")
+@TeleOp
 public class TeleOpMain extends OpMode {
 
     private DriveTrain driveTrain;
