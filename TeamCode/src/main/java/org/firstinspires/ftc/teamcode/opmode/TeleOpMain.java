@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.modules.*;
 
@@ -16,6 +18,8 @@ public class TeleOpMain extends OpMode {
     private ConditionalHardwareDevice<DcMotor> slideMotor;
     private PIDFController slidePID;
 
+    private ConditionalHardwareDevice<Servo> slideServo;
+
     @Override
     public void init() {
         driveTrain = new DriveTrain(this);
@@ -26,6 +30,8 @@ public class TeleOpMain extends OpMode {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         });
         slidePID = new PIDFController(0,0,0,0);
+
+        slideServo = ConditionalHardwareDevice.tryGetHardwareDevice(hardwareMap, Servo.class, "Slide Servo");
     }
 
     @Override
@@ -35,6 +41,10 @@ public class TeleOpMain extends OpMode {
         slideMotor.runIfAvailable(motor -> {
             slidePID.setSetPoint(-gamepad2.left_stick_y);
             motor.setPower(slidePID.calculate(motor.getCurrentPosition()));
+        });
+
+        slideServo.runIfAvailable(servo -> {
+            servo.setPosition(gamepad2.left_trigger);
         });
     }
 
