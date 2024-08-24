@@ -39,12 +39,12 @@ public class TeleOpMain extends OpMode {
         driveTrain.setVelocity(-gamepad1.left_stick_x * 0.5, gamepad1.left_stick_y * 0.5, gamepad1.right_stick_x * 0.5);
 
         slideMotor.runIfAvailable(motor -> {
-            slidePID.setSetPoint(-gamepad2.left_stick_y);
+            slidePID.setSetPoint(gamepad1.left_trigger);
             motor.setPower(slidePID.calculate(motor.getCurrentPosition()));
         });
 
         slideServo.runIfAvailable(servo -> {
-            servo.setPosition(gamepad2.left_trigger);
+            servo.setPosition(gamepad2.right_trigger);
         });
     }
 
