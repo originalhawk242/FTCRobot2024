@@ -43,9 +43,12 @@ public class TeleOpMain extends OpMode {
             motor.setPower(slidePID.calculate(motor.getCurrentPosition()));
         });
 
+        //0.35 seems to be closed claw position
         slideServo.runIfAvailable(servo -> {
-            servo.setPosition(gamepad1.right_trigger);
+            servo.setPosition(0.35 - (gamepad1.right_trigger / 2.857));
         });
+
+        telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
     }
 
 }
