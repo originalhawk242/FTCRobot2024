@@ -44,7 +44,7 @@ public class TeleOpMain extends OpMode {
         });
 
         slideServo.runIfAvailable(servo -> {
-            servo.setPosition(gamepad2.right_trigger);
+            servo.setPosition(gamepad1.right_trigger);
         });
     }
 
