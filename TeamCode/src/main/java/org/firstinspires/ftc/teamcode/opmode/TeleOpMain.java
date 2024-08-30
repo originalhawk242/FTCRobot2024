@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
@@ -20,16 +24,30 @@ public class TeleOpMain extends OpMode {
 
     private ConditionalHardwareDevice<Servo> slideServo;
 
+    @Config
+    public static class SlideConfig {
+        public static double P_COEF = 0.1;
+        public static double I_COEF = 0;
+        public static double D_COEF = 0;
+        public static double F_COEF = 0;
+    }
+
     @Override
     public void init() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         driveTrain = new DriveTrain(this);
 
         slideMotor = ConditionalHardwareDevice.tryGetHardwareDevice(hardwareMap, DcMotor.class, "Slide Motor");
         slideMotor.runIfAvailable(motor -> {
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            telemetry.addData("Current slide position", 0);
+            telemetry.addData("Target slide position", 0);
         });
-        slidePID = new PIDFController(0,0,0,0);
+        slidePID = new PIDFController(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
 
         slideServo = ConditionalHardwareDevice.tryGetHardwareDevice(hardwareMap, Servo.class, "Slide Servo");
     }
@@ -39,8 +57,12 @@ public class TeleOpMain extends OpMode {
         driveTrain.setVelocity(-gamepad1.left_stick_x * 0.5, gamepad1.left_stick_y * 0.5, gamepad1.right_stick_x * 0.5);
 
         slideMotor.runIfAvailable(motor -> {
-            slidePID.setSetPoint(gamepad1.left_trigger);
-            motor.setPower(slidePID.calculate(motor.getCurrentPosition()));
+            double target = gamepad1.left_trigger * 100;
+            double current = motor.getCurrentPosition();
+            telemetry.addData("Current slide position", current);
+            telemetry.addData("Target slide position", target);
+            slidePID.setSetPoint(target);
+            motor.setPower(slidePID.calculate(current));
         });
 
         //0.35 seems to be closed claw position
