@@ -57,6 +57,11 @@ public class TeleOpMain extends OpMode {
         driveTrain.setVelocity(-gamepad1.left_stick_x * 0.5, gamepad1.left_stick_y * 0.5, gamepad1.right_stick_x * 0.5);
 
         slideMotor.runIfAvailable(motor -> {
+            slidePID.setP(SlideConfig.P_COEF);
+            slidePID.setI(SlideConfig.I_COEF);
+            slidePID.setD(SlideConfig.D_COEF);
+            slidePID.setF(SlideConfig.F_COEF);
+
             double target = gamepad1.left_trigger * 100;
             double current = motor.getCurrentPosition();
             telemetry.addData("Current slide position", current);
