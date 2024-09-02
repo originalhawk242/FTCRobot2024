@@ -62,7 +62,7 @@ public class TeleOpMain extends OpMode {
             slidePID.setD(SlideConfig.D_COEF);
             slidePID.setF(SlideConfig.F_COEF);
 
-            double target = gamepad1.left_trigger * 100;
+            double target = gamepad1.left_trigger * 1800;
             double current = motor.getCurrentPosition();
             telemetry.addData("Current slide position", current);
             telemetry.addData("Target slide position", target);
