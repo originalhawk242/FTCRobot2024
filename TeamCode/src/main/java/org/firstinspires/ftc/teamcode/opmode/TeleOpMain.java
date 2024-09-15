@@ -19,8 +19,7 @@ public class TeleOpMain extends OpMode {
 
     private DriveTrain driveTrain;
 
-    private ConditionalHardwareDevice<DcMotor> slideMotor;
-    private PIDFController slidePID;
+    private LinearSlide slide;
 
     private ConditionalHardwareDevice<Servo> slideServo;
 
@@ -30,6 +29,7 @@ public class TeleOpMain extends OpMode {
         public static double I_COEF = 0;
         public static double D_COEF = 0;
         public static double F_COEF = 0;
+        public static double TOLERANCE = 2;
     }
 
     @Override
@@ -38,43 +38,36 @@ public class TeleOpMain extends OpMode {
 
         driveTrain = new DriveTrain(this);
 
-        slideMotor = ConditionalHardwareDevice.tryGetHardwareDevice(hardwareMap, DcMotor.class, "Slide Motor");
-        slideMotor.runIfAvailable(motor -> {
-            motor.setDirection(DcMotorSimple.Direction.REVERSE);
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            telemetry.addData("Current slide position", 0);
-            telemetry.addData("Target slide position", 0);
-        });
-        slidePID = new PIDFController(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
+        slide = new LinearSlide(this);
 
         slideServo = ConditionalHardwareDevice.tryGetHardwareDevice(hardwareMap, Servo.class, "Slide Servo");
     }
 
     @Override
+    public void init_loop() {
+        slide.setPIDCoefficients(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
+        slide.setPIDTolerance(SlideConfig.TOLERANCE);
+        driveTrain.log();
+        slide.log();
+    }
+
+    @Override
     public void loop() {
+        slide.setPIDCoefficients(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
+        slide.setPIDTolerance(SlideConfig.TOLERANCE);
+
         driveTrain.setVelocity(-gamepad1.left_stick_x * 0.5, gamepad1.left_stick_y * 0.5, gamepad1.right_stick_x * 0.5);
 
-        slideMotor.runIfAvailable(motor -> {
-            slidePID.setP(SlideConfig.P_COEF);
-            slidePID.setI(SlideConfig.I_COEF);
-            slidePID.setD(SlideConfig.D_COEF);
-            slidePID.setF(SlideConfig.F_COEF);
-
-            double target = gamepad1.left_trigger * 1800;
-            double current = motor.getCurrentPosition();
-            telemetry.addData("Current slide position", current);
-            telemetry.addData("Target slide position", target);
-            slidePID.setSetPoint(target);
-            motor.setPower(slidePID.calculate(current));
-        });
+        slide.setTargetPosition((int)(gamepad1.left_trigger * 1800));
+        slide.updateMotorPower();
 
         //0.35 seems to be closed claw position
         slideServo.runIfAvailable(servo -> {
             servo.setPosition(0.35 - (gamepad1.right_trigger / 2.857));
         });
 
+        driveTrain.log();
+        slide.log();
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
     }
 
