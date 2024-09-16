@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -41,7 +42,14 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
      */
     public static <U extends HardwareDevice> ConditionalHardwareDevice<U> tryGetHardwareDevice(HardwareMap hardwareMap, Class<? extends U> deviceClass, String deviceName) {
         try {
-            return new ConditionalHardwareDevice<>(hardwareMap.get(deviceClass, deviceName));
+            U device = hardwareMap.get(deviceClass, deviceName);
+            // If no name is registered, the hardware map call will fail.
+            // However, the hardware map doesn't care about whether or not the device is actually
+            // plugged in, so it will happily return a hardware device that can't actually do
+            // anything.  We have to do something that fails if no device is connected to ensure
+            // that the hardware map isn't lying to us.
+            device.getConnectionInfo(); // hopefully this fails and doesn't just produce garbage data
+            return new ConditionalHardwareDevice<>(device);
         }
         catch (Throwable th) {
             if (th.getClass() != IllegalArgumentException.class) {
