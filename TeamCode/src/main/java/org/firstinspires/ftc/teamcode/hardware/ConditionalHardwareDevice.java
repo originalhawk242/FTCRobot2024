@@ -25,9 +25,10 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
 
     /**
      * [internal] Constructs this class with the specified state
+     * (package-private b/c it's used in PIDFDcMotor)
      * @param device The hardware device
      */
-    private ConditionalHardwareDevice(T device) {
+    /* package-private */ ConditionalHardwareDevice(T device) {
         this.device = device;
         available = device != null;
     }
