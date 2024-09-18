@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmode.test;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.teamcode.modules.DriveTrain;
 
 @Autonomous(group = "Tests")
@@ -17,6 +19,11 @@ public class DriverMotorTest extends LinearOpMode {
                         DriveTrain.BACK_LEFT_MECANUM_DRIVER_DEFAULT_NAME),
                 backRightMotor = hardwareMap.get(DcMotor.class,
                         DriveTrain.BACK_RIGHT_MECANUM_DRIVER_DEFAULT_NAME);
+
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.setAutoClear(false);
 
