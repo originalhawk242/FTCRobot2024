@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,48 +8,56 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
+import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
+import org.firstinspires.ftc.teamcode.hardware.PIDFMotorController;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 import org.firstinspires.ftc.teamcode.opmode.TeleOpMain;
 
 public class LinearSlide extends Module {
-    private final ConditionalHardwareDevice<DcMotor> slideMotor;
+    private final ConditionalHardwareDevice<PIDFDcMotor> motor;
     public static final String SLIDE_MOTOR_NAME = "Slide Motor";
 
-    private final PIDFController slidePID;
+    @Config
+    public static class SlideConfig {
+        public static double P_COEF = 0.01;
+        public static double I_COEF = 0;
+        public static double D_COEF = 0;
+        public static double F_COEF = 0;
+        public static double TOLERANCE = 2;
+    }
 
     public LinearSlide(OpMode registrar) {
         super(registrar);
-        slideMotor = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, DcMotor.class, SLIDE_MOTOR_NAME);
-        slideMotor.runIfAvailable(motor -> {
-            motor.setDirection(DcMotorSimple.Direction.REVERSE);
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor = PIDFDcMotor.tryGet(registrar.hardwareMap, SLIDE_MOTOR_NAME, SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
 
+        motor.runIfAvailable(m -> {
+            m.setDirection(DcMotorSimple.Direction.REVERSE);
+            m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            m.setTolerance(SlideConfig.TOLERANCE);
         });
-        slidePID = new PIDFController(0, 0, 0, 0);
-    }
-
-    public void setPIDCoefficients(double kP, double kI, double kD, double kF) {
-        slidePID.setPIDF(kP, kI, kD, kF);
-    }
-    public void setPIDTolerance(double tolerance) {
-        slidePID.setTolerance(tolerance);
     }
 
     public void setTargetPosition(int targetPosition) {
-        slidePID.setSetPoint(targetPosition);
+        motor.runIfAvailable(m -> { m.setSetPoint(targetPosition); });
     }
     public void updateMotorPower() {
-        slideMotor.runIfAvailable(slide -> slide.setPower(slidePID.calculate()));
+        motor.runIfAvailable(slide -> {
+            slide.setPIDF(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
+            slide.setTolerance(SlideConfig.TOLERANCE);
+
+            slide.setPower(slide.calculate());
+        });
     }
 
     @Override
     public void log() {
         Telemetry telemetry = getTelemetry();
-        if (!slideMotor.isAvailable()) { return; }
-        DcMotor slide = slideMotor.requireDevice();
+        if (!motor.isAvailable()) { return; }
+        PIDFDcMotor slide = motor.requireDevice();
 
         telemetry.addData("Current slide position", slide.getCurrentPosition());
-        telemetry.addData("Target slide position", slidePID.getSetPoint());
+        telemetry.addData("Target slide position", slide.getSetPoint());
     }
 }

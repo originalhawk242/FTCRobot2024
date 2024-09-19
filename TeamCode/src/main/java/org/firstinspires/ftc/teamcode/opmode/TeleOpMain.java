@@ -19,15 +19,6 @@ public class TeleOpMain extends OpMode {
 
     private ConditionalHardwareDevice<Servo> slideServo;
 
-    @Config
-    public static class SlideConfig {
-        public static double P_COEF = 0.01;
-        public static double I_COEF = 0;
-        public static double D_COEF = 0;
-        public static double F_COEF = 0;
-        public static double TOLERANCE = 2;
-    }
-
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -41,16 +32,12 @@ public class TeleOpMain extends OpMode {
 
     @Override
     public void init_loop() {
-        slide.setPIDCoefficients(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
-        slide.setPIDTolerance(SlideConfig.TOLERANCE);
         driveTrain.log();
         slide.log();
     }
 
     @Override
     public void loop() {
-        slide.setPIDCoefficients(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
-        slide.setPIDTolerance(SlideConfig.TOLERANCE);
 
         if (gamepad1.back) {
             driveTrain.resetRotation();
