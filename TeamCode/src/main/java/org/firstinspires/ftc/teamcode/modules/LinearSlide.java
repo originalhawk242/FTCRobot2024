@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,9 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
-import org.firstinspires.ftc.teamcode.hardware.PIDFMotorController;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
-import org.firstinspires.ftc.teamcode.opmode.TeleOpMain;
 
 public class LinearSlide extends Module {
     private final ConditionalHardwareDevice<PIDFDcMotor> motor;
