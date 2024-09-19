@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.modules.*;
 @TeleOp
 public class TeleOpMain extends OpMode {
 
-    private DriveTrain driveTrain;
+    private FieldCentricDriveTrain driveTrain;
 
     private LinearSlide slide;
 
@@ -32,7 +32,7 @@ public class TeleOpMain extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        driveTrain = new DriveTrain(this);
+        driveTrain = new FieldCentricDriveTrain(this);
 
         slide = new LinearSlide(this);
 
@@ -51,6 +51,10 @@ public class TeleOpMain extends OpMode {
     public void loop() {
         slide.setPIDCoefficients(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
         slide.setPIDTolerance(SlideConfig.TOLERANCE);
+
+        if (gamepad1.back) {
+            driveTrain.resetRotation();
+        }
 
         driveTrain.setVelocity(gamepad1.left_stick_x * 0.5, -gamepad1.left_stick_y * 0.5, -gamepad1.right_stick_x * 0.5);
 
