@@ -76,12 +76,17 @@ public final class ConditionalHardwareDeviceGroup {
      * @param deviceName The name of the device
      * @return The device if it is available, loaded into this group, and has the expected type; otherwise null
      * @param <T> The expected type of the hardware device
+     * @throws IllegalArgumentException No device with the specified name belongs to this group
      * @throws NullPointerException The hardware device is inaccessible
      * @throws ClassCastException The retrieved device is not of the expected type, and no cast can be made to convert it to said class
      */
-    public <T extends HardwareDevice> T getLoadedDevice(Class<? extends T> expectedClass,String deviceName) {
+    public <T extends HardwareDevice> T requireLoadedDevice(Class<? extends T> expectedClass, String deviceName) {
         final ConditionalHardwareDevice<?> maybeDevice = devices.get(deviceName);
-        return expectedClass.cast(maybeDevice.requireDevice());
+        if (maybeDevice == null) {
+            throw new IllegalArgumentException("No device was found with the specified name");
+        }
+        final HardwareDevice device = maybeDevice.requireDevice();
+        return expectedClass.cast(device);
     }
 
     /**

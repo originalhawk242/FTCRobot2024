@@ -15,7 +15,7 @@ public class DriveTrain extends Module {
      * {@link ConditionalHardwareDeviceGroup#executeIfAllAreAvailable(Runnable)} of {@link #hardwareDevices}
      */
     protected final DcMotorEx getFrontRightMecanumDriver() {
-        return hardwareDevices.getLoadedDevice(DcMotorEx.class, FRONT_RIGHT_MECANUM_DRIVER_DEFAULT_NAME);
+        return hardwareDevices.requireLoadedDevice(DcMotorEx.class, FRONT_RIGHT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
     /**
@@ -30,7 +30,7 @@ public class DriveTrain extends Module {
      * {@link ConditionalHardwareDeviceGroup#executeIfAllAreAvailable(Runnable)} of {@link #hardwareDevices}
      */
     protected final DcMotorEx getFrontLeftMecanumDriver() {
-        return hardwareDevices.getLoadedDevice(DcMotorEx.class, FRONT_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
+        return hardwareDevices.requireLoadedDevice(DcMotorEx.class, FRONT_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
 
@@ -46,7 +46,7 @@ public class DriveTrain extends Module {
      * {@link ConditionalHardwareDeviceGroup#executeIfAllAreAvailable(Runnable)} of {@link #hardwareDevices}
      */
     protected final DcMotorEx getBackRightMecanumDriver() {
-        return hardwareDevices.getLoadedDevice(DcMotorEx.class, BACK_RIGHT_MECANUM_DRIVER_DEFAULT_NAME);
+        return hardwareDevices.requireLoadedDevice(DcMotorEx.class, BACK_RIGHT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
 
@@ -61,7 +61,7 @@ public class DriveTrain extends Module {
      * {@link ConditionalHardwareDeviceGroup#executeIfAllAreAvailable(Runnable)} of {@link #hardwareDevices}
      */
     protected final DcMotorEx getBackLeftMecanumDriver() {
-        return hardwareDevices.getLoadedDevice(DcMotorEx.class, BACK_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
+        return hardwareDevices.requireLoadedDevice(DcMotorEx.class, BACK_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
 

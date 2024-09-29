@@ -16,7 +16,7 @@ public class FieldCentricDriveTrain extends DriveTrain {
      * {@link ConditionalHardwareDeviceGroup#executeIfAllAreAvailable(Runnable)} of {@link #hardwareDevices}
      */
     protected final IMU getIMU() {
-        return hardwareDevices.getLoadedDevice(IMU.class, IMU_NAME);
+        return hardwareDevices.requireLoadedDevice(IMU.class, IMU_NAME);
     }
 
     private static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(new RevHubOrientationOnRobot(
