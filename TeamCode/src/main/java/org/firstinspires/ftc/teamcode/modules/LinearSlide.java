@@ -25,13 +25,14 @@ public class LinearSlide extends Module {
 
     public LinearSlide(OpMode registrar) {
         super(registrar);
-        motor = PIDFDcMotor.tryGet(registrar.hardwareMap, SLIDE_MOTOR_NAME, SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
+        motor = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, PIDFDcMotor.class, SLIDE_MOTOR_NAME);
 
         motor.runIfAvailable(m -> {
             m.setDirection(DcMotorSimple.Direction.REVERSE);
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+            m.setPIDF(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
             m.setTolerance(SlideConfig.TOLERANCE);
         });
     }

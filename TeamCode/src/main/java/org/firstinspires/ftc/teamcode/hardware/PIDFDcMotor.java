@@ -18,23 +18,15 @@ public class PIDFDcMotor extends PIDFController implements DcMotorEx {
         super(kp, ki, kd, kf);
         internalMotor = motor;
     }
+    public PIDFDcMotor(DcMotorEx motor) {
+        this(motor, 0, 0, 0, 0);
+    }
 
     public static PIDFDcMotor get(HardwareMap hardwareMap, String deviceName, double kp, double ki, double kd, double kf) {
         return new PIDFDcMotor(hardwareMap.get(DcMotorEx.class, deviceName), kp, ki, kd, kf);
     }
-    public static ConditionalHardwareDevice<PIDFDcMotor> tryGet(HardwareMap hardwareMap, String deviceName, double kp, double ki, double kd, double kf) {
-        try {
-            PIDFDcMotor motor = get(hardwareMap, deviceName, kp, ki, kd, kf);
-            final int TEST = 32;
-            motor.setTargetPosition(TEST);
-            if (motor.getTargetPosition() != TEST) {
-                return new ConditionalHardwareDevice<>(null);
-            }
-            return new ConditionalHardwareDevice<>(motor);
-        }
-        catch (Throwable th) {
-            return new ConditionalHardwareDevice<>(null);
-        }
+    public static PIDFDcMotor get(HardwareMap hardwareMap, String deviceName) {
+        return new PIDFDcMotor(hardwareMap.get(DcMotorEx.class, deviceName));
     }
 
     public void applyMotorPIDF() {
