@@ -4,10 +4,10 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
-import org.firstinspires.ftc.teamcode.modules.*;
+import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
+import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 
 @TeleOp
 public class TeleOpMain extends OpMode {
@@ -16,7 +16,7 @@ public class TeleOpMain extends OpMode {
 
     private LinearSlide slide;
 
-    private ConditionalHardwareDevice<Servo> slideServo;
+    private Intake intake;
 
     @Override
     public void init() {
@@ -26,13 +26,14 @@ public class TeleOpMain extends OpMode {
 
         slide = new LinearSlide(this);
 
-        slideServo = ConditionalHardwareDevice.tryGetHardwareDevice(hardwareMap, Servo.class, "Slide Servo");
+        intake = new Intake(this);
     }
 
     @Override
     public void init_loop() {
         driveTrain.log();
         slide.log();
+        intake.log();
     }
 
     @Override
@@ -47,13 +48,15 @@ public class TeleOpMain extends OpMode {
         slide.setTargetPosition((int)(gamepad1.left_trigger * 1800));
         slide.updateMotorPower();
 
-        //0.35 seems to be closed claw position
-        slideServo.runIfAvailable(servo -> {
-            servo.setPosition(0.35 - (gamepad1.right_trigger / 2.857));
-        });
+        if (gamepad2.a) {
+            intake.closeIntake();
+        } else if (gamepad2.b) {
+            intake.openIntake();
+        }
 
         driveTrain.log();
         slide.log();
+        intake.log();
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
     }
 
