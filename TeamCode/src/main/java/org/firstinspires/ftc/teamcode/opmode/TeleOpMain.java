@@ -6,8 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
-import org.firstinspires.ftc.teamcode.modules.Intake;
-import org.firstinspires.ftc.teamcode.modules.LinearSlide;
+import org.firstinspires.ftc.teamcode.modules.*;
 
 @TeleOp
 public class TeleOpMain extends OpMode {
@@ -15,6 +14,8 @@ public class TeleOpMain extends OpMode {
     private FieldCentricDriveTrain driveTrain;
 
     private LinearSlide slide;
+
+    private Arm arm;
 
     private Intake intake;
 
@@ -25,6 +26,8 @@ public class TeleOpMain extends OpMode {
         driveTrain = new FieldCentricDriveTrain(this);
 
         slide = new LinearSlide(this);
+
+        arm = new Arm(this);
 
         intake = new Intake(this);
     }
@@ -45,8 +48,11 @@ public class TeleOpMain extends OpMode {
 
         driveTrain.setVelocity(gamepad1.left_stick_x * 0.5, -gamepad1.left_stick_y * 0.5, -gamepad1.right_stick_x * 0.5);
 
-        slide.setTargetPosition((int)(gamepad1.left_trigger * 1800));
+        slide.setTargetHeight((gamepad2.left_stick_y + 1) / 2);
         slide.updateMotorPower();
+
+        arm.setTargetRotation(gamepad2.right_stick_y * 180);
+        arm.updateMotorPowers();
 
         if (gamepad2.a) {
             intake.closeIntake();

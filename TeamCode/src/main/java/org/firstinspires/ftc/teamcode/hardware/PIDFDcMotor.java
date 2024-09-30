@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import androidx.annotation.NonNull;
+
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -22,10 +23,12 @@ public class PIDFDcMotor extends PIDFController implements DcMotorEx {
         this(motor, 0, 0, 0, 0);
     }
 
-    public static PIDFDcMotor get(HardwareMap hardwareMap, String deviceName, double kp, double ki, double kd, double kf) {
+    @NonNull
+    public static PIDFDcMotor get(@NonNull HardwareMap hardwareMap, String deviceName, double kp, double ki, double kd, double kf) {
         return new PIDFDcMotor(hardwareMap.get(DcMotorEx.class, deviceName), kp, ki, kd, kf);
     }
-    public static PIDFDcMotor get(HardwareMap hardwareMap, String deviceName) {
+    @NonNull
+    public static PIDFDcMotor get(@NonNull HardwareMap hardwareMap, String deviceName) {
         return new PIDFDcMotor(hardwareMap.get(DcMotorEx.class, deviceName));
     }
 

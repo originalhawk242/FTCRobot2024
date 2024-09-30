@@ -15,6 +15,10 @@ public class Arm extends Module {
     private final ConditionalHardwareDeviceGroup motors;
     public static final String LEFT_ARM_MOTOR_NAME = "Left Arm Motor";
     public static final String RIGHT_ARM_MOTOR_NAME = "Right Arm Motor";
+    /**
+     * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
+     */
+    private static final double ARM_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/17))) * (1+(46.0/17)) * 28);
 
     @Config
     public static class ArmConfig {
@@ -53,7 +57,7 @@ public class Arm extends Module {
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
     }
 
-    public void setTargetPosition(int targetPosition) {
+    private void setTargetPosition(int targetPosition) {
         motors.executeIfAllAreAvailable(() -> {
             final PIDFDcMotor leftMotor = motors.requireLoadedDevice(PIDFDcMotor.class, LEFT_ARM_MOTOR_NAME);
             leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -64,6 +68,17 @@ public class Arm extends Module {
             rightMotor.setSetPoint(targetPosition);
         });
     }
+
+    /**
+     * Sets the target rotation for the arm
+     * @param rotation The desired rotation in degrees
+     */
+    public void setTargetRotation(double rotation) {
+        setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION / 360));
+    }
+    /**
+     * Updates the motor powers using the provided PIDF coefficients
+     */
     private static void updateMotorPower(PIDFDcMotor motor) {
         motor.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
         motor.setTolerance(ArmConfig.TOLERANCE);

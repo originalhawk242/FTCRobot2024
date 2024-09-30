@@ -13,6 +13,10 @@ import org.firstinspires.ftc.teamcode.modules.core.Module;
 public class LinearSlide extends Module {
     private final ConditionalHardwareDevice<PIDFDcMotor> motor;
     public static final String SLIDE_MOTOR_NAME = "Slide Motor";
+    /**
+     * Encoder resolution for the 5203 312 RPM DC Motors used by the arm
+     */
+    private static final double SLIDE_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/11))) * 28);
 
     @Config
     public static class SlideConfig {
@@ -37,9 +41,21 @@ public class LinearSlide extends Module {
         });
     }
 
-    public void setTargetPosition(int targetPosition) {
+    private void setTargetPosition(int targetPosition) {
         motor.runIfAvailable(m -> { m.setSetPoint(targetPosition); });
     }
+
+    /**
+     * Sets the target height of the robot
+     * @param height The desired height; values range from 0 for fully retracted to 1 for fully extended
+     */
+    public void setTargetHeight(double height) {
+        setTargetPosition((int)(height * SLIDE_ENCODER_RESOLUTION));
+    }
+
+    /**
+     * Updates the motor power using the provided PIDF coefficients
+     */
     public void updateMotorPower() {
         motor.runIfAvailable(slide -> {
             slide.setPIDF(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
