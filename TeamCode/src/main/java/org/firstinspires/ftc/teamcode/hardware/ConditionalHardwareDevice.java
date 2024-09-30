@@ -14,11 +14,6 @@ import java.util.function.Consumer;
  */
 public final class ConditionalHardwareDevice<T extends HardwareDevice> {
     /**
-     * The name used to get the hardware device
-     */
-    private final String name;
-
-    /**
      * The hardware device
      */
     private final T device;
@@ -31,10 +26,8 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
     /**
      * Constructs this class with the specified state
      * @param device The hardware device
-     * @param name The name used to retrieve the device from the hardware map
      */
-    private ConditionalHardwareDevice(T device, String name) {
-        this.name = name;
+    private ConditionalHardwareDevice(T device) {
         this.device = device;
         available = device != null;
     }
@@ -50,10 +43,15 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
     public static <U extends HardwareDevice> ConditionalHardwareDevice<U> tryGetHardwareDevice(HardwareMap hardwareMap, Class<? extends U> deviceClass, String deviceName) {
         try {
             final U device;
-            if (deviceClass.equals(PIDFDcMotor.class)) {
+            if (PIDFDcMotor.class.isAssignableFrom(deviceClass)) {
                 // Since deviceClass is the same as U.class, we know that U is of type PIDFDcMotor,
                 // so a cast from PIDFDcMotor to U will be guaranteed to succeed
-                device = (U) PIDFDcMotor.get(hardwareMap, deviceName);
+                device = deviceClass.cast(PIDFDcMotor.get(hardwareMap, deviceName));
+
+                // since PIDFDcMotor.get uses HardwareMap.get, which never returns null,
+                // and Class.cast only returns null if its input is null, device is guaranteed
+                // non-null at this point in the method
+                assert device != null;
             }
             else {
                 device = hardwareMap.get(deviceClass, deviceName);
@@ -64,24 +62,16 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
             // anything.  We have to do something that fails if no device is connected to ensure
             // that the hardware map isn't lying to us.
             device.getConnectionInfo(); // hopefully this fails and doesn't just produce garbage data
-            return new ConditionalHardwareDevice<>(device, deviceName);
+            return new ConditionalHardwareDevice<>(device);
         }
         catch (Throwable th) {
             if (th.getClass() != IllegalArgumentException.class) {
                 throw th;
             }
             else {
-                return new ConditionalHardwareDevice<>(null, deviceName);
+                return new ConditionalHardwareDevice<>(null);
             }
         }
-    }
-
-    /**
-     * Gets the name used to retrieve this device from the hardware map
-     * @return The device name
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -135,11 +125,8 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
             return false;
         }
         ConditionalHardwareDevice<?> otherDevice = ((ConditionalHardwareDevice<?>) obj);
-        if (!otherDevice.name.equals(name)) {
-            return false;
-        }
-        if (!isAvailable()) {
-            return !otherDevice.isAvailable();
+        if (!isAvailable() || !otherDevice.isAvailable()) {
+            return false; // if we can't get the actual device, we can't compare them for equality
         }
         return requireDevice().equals(otherDevice.requireDevice());
     }
@@ -147,7 +134,7 @@ public final class ConditionalHardwareDevice<T extends HardwareDevice> {
     @Override
     public int hashCode() {
         if (!isAvailable()) {
-            return name.hashCode();
+            return super.hashCode(); // so we still have something unique
         }
         return requireDevice().hashCode();
     }
