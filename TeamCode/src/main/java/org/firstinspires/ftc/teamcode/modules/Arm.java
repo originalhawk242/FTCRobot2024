@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
@@ -52,7 +51,7 @@ public class Arm extends Module {
             leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             configureMotorPID(leftMotor);
             final PIDFDcMotor rightMotor = motors.requireLoadedDevice(PIDFDcMotor.class, RIGHT_ARM_MOTOR_NAME);
-            rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             configureMotorPID(rightMotor);
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
     }

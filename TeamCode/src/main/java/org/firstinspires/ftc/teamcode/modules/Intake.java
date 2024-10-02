@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -10,14 +12,22 @@ import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 
 public class Intake extends Module {
 
-    private ConditionalHardwareDevice<Servo> intakeServo;
+    private ConditionalHardwareDevice<CRServo> intakeServoLeft;
+    private ConditionalHardwareDevice<CRServo> intakeServoRight;
+
+    private ConditionalHardwareDevice<Servo> wristServo;
 
     // Name of the servo on the robot configuration
-    private final String INTAKE_SERVO_NAME = "Intake Servo";
+    private final String INTAKE_LEFT_SERVO_NAME = "Left Intake Servo";
+    private final String INTAKE_RIGHT_SERVO_NAME = "Right Intake Servo";
+
+    private final String WRIST_SERVO_NAME = "Wrist Servo";
 
     // The value to set the servo to in order to "open" and "close" it
     private final double OPEN_INTAKE_SERVO_VALUE = 0;
     private final double CLOSED_INTAKE_SERVO_VALUE = 0.5;
+
+    private final double SERVO_SPEED = 0.5;
 
     /**
      * Initializes the module and registers it with the specified OpMode.  This is where references to any hardware
@@ -31,27 +41,60 @@ public class Intake extends Module {
     public Intake(OpMode registrar) {
         super(registrar);
 
-        intakeServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, Servo.class, INTAKE_SERVO_NAME);
-    }
-
-    public void openIntake() {
-        intakeServo.runIfAvailable(i -> {
-            i.setPosition(OPEN_INTAKE_SERVO_VALUE);
+        intakeServoLeft = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_LEFT_SERVO_NAME);
+        intakeServoRight = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_RIGHT_SERVO_NAME);
+        wristServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, Servo.class, WRIST_SERVO_NAME);
+        intakeServoRight.runIfAvailable(i -> {
+            i.setDirection(DcMotorSimple.Direction.REVERSE);
         });
     }
 
-    public void closeIntake() {
-        intakeServo.runIfAvailable(i -> {
-            i.setPosition(CLOSED_INTAKE_SERVO_VALUE);
+    public void eject() {
+        intakeServoLeft.runIfAvailable(i -> {
+            i.setPower(-SERVO_SPEED);
+        });
+        intakeServoRight.runIfAvailable(i -> {
+            i.setPower(-SERVO_SPEED);
+        });
+    }
+
+    public void grab() {
+        intakeServoLeft.runIfAvailable(i -> {
+            i.setPower(SERVO_SPEED);
+        });
+        intakeServoRight.runIfAvailable(i -> {
+            i.setPower(SERVO_SPEED);
+        });
+    }
+
+    public void settle() {
+        intakeServoLeft.runIfAvailable(i -> {
+            i.setPower(0);
+        });
+        intakeServoRight.runIfAvailable(i -> {
+            i.setPower(0);
+        });
+    }
+
+    public void turn() {
+        wristServo.runIfAvailable(w -> {
+            if (w.getPosition() == 0.0) {
+                w.setPosition(0.5);
+            } else if (w.getPosition() == 0.5) {
+                w.setPosition(0.0);
+            }
         });
     }
 
     @Override
     public void log() {
         Telemetry telemetry = getTelemetry();
-        if(!intakeServo.isAvailable()) {return;}
-        Servo intake = intakeServo.requireDevice();
+        if(!intakeServoLeft.isAvailable()) {return;}
+        if(!intakeServoRight.isAvailable()) {return;}
+        CRServo intakeLeft = intakeServoLeft.requireDevice();
+        CRServo intakeRight = intakeServoRight.requireDevice();
 
-        telemetry.addData("Current servo target: ", intake.getPosition());
+        telemetry.addData("Current Left Intake Servo Power: ", intakeLeft.getPower());
+        telemetry.addData("Current Right Intake Servo Power: ", intakeRight.getPower());
     }
 }
