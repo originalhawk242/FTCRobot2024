@@ -31,7 +31,7 @@ public class Arm extends Module {
         public static double TOLERANCE = 2;
     }
 
-    public static double ARM_ROTATION_INTAKE = -26;
+    public static double ARM_ROTATION_INTAKE = -25.5;
     public static double ARM_ROTATION_MOVING = -35;
     public static double ARM_ROTATION_SCORING = -105;
 
