@@ -71,19 +71,15 @@ public class Arm extends Module {
     public void setTargetRotation(double rotation) {
         setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION / 360));
     }
-    /**
-     * Updates the motor powers using the provided PIDF coefficients
-     */
-    private void updateMotorPower(DcMotor motor) {
-        controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
-        controller.setTolerance(ArmConfig.TOLERANCE);
-
-        motor.setPower(controller.calculate());
-    }
     public void updateMotorPowers() {
         motors.executeIfAllAreAvailable(() -> {
-            updateMotorPower(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME));
-            updateMotorPower(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME));
+            controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+            controller.setTolerance(ArmConfig.TOLERANCE);
+            DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+            double power = controller.calculate(leftMotor.getCurrentPosition()); // use one encoder for safety and apply the same power to both motors
+            leftMotor.setPower(power);
+            rightMotor.setPower(power);
         });
     }
 
