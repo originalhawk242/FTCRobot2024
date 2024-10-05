@@ -55,9 +55,15 @@ public class TeleOpMain extends OpMode {
         arm.updateMotorPowers();
 
         if (gamepad2.a) {
-            intake.closeIntake();
+            intake.grab();
         } else if (gamepad2.b) {
-            intake.openIntake();
+            intake.eject();
+        } else if (gamepad2.x) {
+            intake.settle();
+        }
+
+        if (gamepad2.y) {
+            intake.turn();
         }
 
         driveTrain.log();

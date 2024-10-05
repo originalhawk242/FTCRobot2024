@@ -50,7 +50,7 @@ public class Arm extends Module {
             leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             configureMotor(leftMotor);
             final PIDFDcMotor rightMotor = motors.requireLoadedDevice(PIDFDcMotor.class, RIGHT_ARM_MOTOR_NAME);
-            rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             configureMotor(rightMotor);
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
 
