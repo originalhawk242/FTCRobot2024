@@ -45,6 +45,8 @@ public class TeleOpMain extends OpMode {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         intake.holdWristRotation();
+
+        driveTrain.resetRotation();
     }
 
     @Override
