@@ -61,7 +61,7 @@ public class LinearSlide extends Module {
             slide.setPIDF(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
             slide.setTolerance(SlideConfig.TOLERANCE);
 
-            slide.setPower(slide.calculate());
+            slide.applyMotorPIDF();
         });
     }
 
