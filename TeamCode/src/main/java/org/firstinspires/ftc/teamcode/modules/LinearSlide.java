@@ -17,12 +17,13 @@ public class LinearSlide extends Module {
      * Encoder resolution for the 5203 312 RPM DC Motors used by the arm
      */
     private static final double SLIDE_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/11))) * 28);
+    private static final int SLIDE_MAX_EXTENSION_TICKS = 2400;
 
     @Config
     public static class SlideConfig {
-        public static double P_COEF = 0.01;
+        public static double P_COEF = 0.0033;
         public static double I_COEF = 0;
-        public static double D_COEF = 0;
+        public static double D_COEF = 0.0001;
         public static double F_COEF = 0;
         public static double TOLERANCE = 2;
     }
@@ -50,7 +51,10 @@ public class LinearSlide extends Module {
      * @param height The desired height; values range from 0 for fully retracted to 1 for fully extended
      */
     public void setTargetHeight(double height) {
-        setTargetPosition((int)(height * SLIDE_ENCODER_RESOLUTION));
+        if (height < 0 || height > 1) {
+            return;
+        }
+        setTargetPosition((int)(height * SLIDE_MAX_EXTENSION_TICKS));
     }
 
     /**
