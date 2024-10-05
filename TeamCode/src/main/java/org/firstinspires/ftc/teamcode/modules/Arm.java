@@ -23,7 +23,7 @@ public class Arm extends Module {
 
     @Config
     public static class ArmConfig {
-        public static double P_COEF = 0.01;
+        public static double P_COEF = 0.003;
         public static double I_COEF = 0;
         public static double D_COEF = 0;
         public static double F_COEF = 0;
@@ -69,7 +69,8 @@ public class Arm extends Module {
      * @param rotation The desired rotation in degrees
      */
     public void setTargetRotation(double rotation) {
-        setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION / 360));
+        // 360 degrees maps to 1 rotation, with a 5:1 gear ratio
+        setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION * 5 / 360));
     }
     public void updateMotorPowers() {
         motors.executeIfAllAreAvailable(() -> {
@@ -91,8 +92,7 @@ public class Arm extends Module {
         final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
 
         telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
-        telemetry.addData("Target left motor position", controller.getSetPoint());
         telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
-        telemetry.addData("Target right motor position", controller.getSetPoint());
+        telemetry.addData("Target motor position", controller.getSetPoint());
     }
 }
