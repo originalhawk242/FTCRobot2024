@@ -5,6 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.LinearSlide;
@@ -18,6 +20,8 @@ import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 public class PIDMotorTuner extends OpMode {
     // the name of the motor to test
     public static String MOTOR_NAME = LinearSlide.SLIDE_MOTOR_NAME;
+    // the direction the motor will spin
+    public static DcMotorSimple.Direction MOTOR_DIRECTION = DcMotorSimple.Direction.REVERSE;
 
     // the PID coefficients to use
     public static double kP = LinearSlide.SlideConfig.P_COEF;
@@ -39,6 +43,9 @@ public class PIDMotorTuner extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         motor = PIDFDcMotor.get(hardwareMap, MOTOR_NAME);
+        motor.setDirection(MOTOR_DIRECTION);
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
