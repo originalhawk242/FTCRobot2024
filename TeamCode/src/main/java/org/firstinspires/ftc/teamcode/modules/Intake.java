@@ -12,20 +12,16 @@ import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 
 public class Intake extends Module {
 
-    private ConditionalHardwareDevice<CRServo> intakeServoLeft;
-    private ConditionalHardwareDevice<CRServo> intakeServoRight;
+    private final ConditionalHardwareDevice<CRServo> intakeServoLeft;
+    private final ConditionalHardwareDevice<CRServo> intakeServoRight;
 
-    private ConditionalHardwareDevice<Servo> wristServo;
+    private final ConditionalHardwareDevice<Servo> wristServo;
 
     // Name of the servo on the robot configuration
-    private final String INTAKE_LEFT_SERVO_NAME = "Left Intake Servo";
-    private final String INTAKE_RIGHT_SERVO_NAME = "Right Intake Servo";
+    public static final String INTAKE_LEFT_SERVO_NAME = "Left Intake Servo";
+    public static final String INTAKE_RIGHT_SERVO_NAME = "Right Intake Servo";
 
-    private final String WRIST_SERVO_NAME = "Wrist Servo";
-
-    // The value to set the servo to in order to "open" and "close" it
-    private final double OPEN_INTAKE_SERVO_VALUE = 0;
-    private final double CLOSED_INTAKE_SERVO_VALUE = 0.5;
+    public static final String WRIST_SERVO_NAME = "Wrist Servo";
 
     private final double SERVO_SPEED = 0.5;
 
@@ -84,6 +80,10 @@ public class Intake extends Module {
                 w.setPosition(0.0);
             }
         });
+    }
+
+    public void setupWristRotation() {
+        wristServo.runIfAvailable(w -> w.setPosition(0.5));
     }
 
     @Override
