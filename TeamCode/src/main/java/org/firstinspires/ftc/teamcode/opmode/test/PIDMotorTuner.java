@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmode.test;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -28,9 +30,20 @@ public class PIDMotorTuner extends OpMode {
 
     private PIDFDcMotor motor;
 
+    private void logMotorStats() {
+        telemetry.addData("Current Position", motor.getCurrentPosition());
+        telemetry.addData("Target Position", motor.getSetPoint());
+    }
+
     @Override
     public void init() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         motor = PIDFDcMotor.get(hardwareMap, MOTOR_NAME);
+    }
+
+    @Override
+    public void init_loop() {
+        logMotorStats();
     }
 
     @Override
@@ -38,5 +51,6 @@ public class PIDMotorTuner extends OpMode {
         motor.setPIDF(kP, kI, kD, kF);
         motor.setSetPoint(TARGET_POSITION);
         motor.applyMotorPIDF();
+        logMotorStats();
     }
 }
