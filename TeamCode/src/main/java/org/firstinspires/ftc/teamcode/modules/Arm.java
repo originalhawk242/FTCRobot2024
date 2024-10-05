@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,6 +19,7 @@ public class Arm extends Module {
      * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
      */
     private static final double ARM_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/17))) * (1+(46.0/17)) * 28);
+    private final PIDFController controller;
 
     @Config
     public static class ArmConfig {
@@ -32,12 +34,9 @@ public class Arm extends Module {
      * Configures a motor to be used to control the arm
      * @param m either the left or right arm motor
      */
-    private static void configureMotorPID(PIDFDcMotor m) {
+    private static void configureMotor(DcMotor m) {
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        m.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
-        m.setTolerance(ArmConfig.TOLERANCE);
     }
     public Arm(OpMode registrar) {
         super(registrar);
@@ -49,23 +48,20 @@ public class Arm extends Module {
         motors.executeIfAllAreAvailable(() -> {
             final PIDFDcMotor leftMotor = motors.requireLoadedDevice(PIDFDcMotor.class, LEFT_ARM_MOTOR_NAME);
             leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            configureMotorPID(leftMotor);
+            configureMotor(leftMotor);
             final PIDFDcMotor rightMotor = motors.requireLoadedDevice(PIDFDcMotor.class, RIGHT_ARM_MOTOR_NAME);
             rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            configureMotorPID(rightMotor);
+            configureMotor(rightMotor);
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
+
+        controller = new PIDFController(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+
+        controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+        controller.setTolerance(ArmConfig.TOLERANCE);
     }
 
     private void setTargetPosition(int targetPosition) {
-        motors.executeIfAllAreAvailable(() -> {
-            final PIDFDcMotor leftMotor = motors.requireLoadedDevice(PIDFDcMotor.class, LEFT_ARM_MOTOR_NAME);
-            leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            final PIDFDcMotor rightMotor = motors.requireLoadedDevice(PIDFDcMotor.class, RIGHT_ARM_MOTOR_NAME);
-            leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-            leftMotor.setSetPoint(targetPosition);
-            rightMotor.setSetPoint(targetPosition);
-        });
+        controller.setSetPoint(targetPosition);
     }
 
     /**
@@ -78,15 +74,16 @@ public class Arm extends Module {
     /**
      * Updates the motor powers using the provided PIDF coefficients
      */
-    private static void updateMotorPower(PIDFDcMotor motor) {
-        motor.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
-        motor.setTolerance(ArmConfig.TOLERANCE);
+    private void updateMotorPower(DcMotor motor) {
+        controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+        controller.setTolerance(ArmConfig.TOLERANCE);
 
-        motor.setPower(motor.calculate());
+        motor.setPower(controller.calculate());
     }
     public void updateMotorPowers() {
         motors.executeIfAllAreAvailable(() -> {
-            updateMotorPower(motors.requireLoadedDevice(PIDFDcMotor.class, LEFT_ARM_MOTOR_NAME));
+            updateMotorPower(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME));
+            updateMotorPower(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME));
         });
     }
 
@@ -94,12 +91,12 @@ public class Arm extends Module {
     public void log() {
         Telemetry telemetry = getTelemetry();
         if (!motors.areAllDevicesAvailable()) { return; }
-        final PIDFDcMotor leftMotor = motors.requireLoadedDevice(PIDFDcMotor.class, LEFT_ARM_MOTOR_NAME);
-        final PIDFDcMotor rightMotor = motors.requireLoadedDevice(PIDFDcMotor.class, RIGHT_ARM_MOTOR_NAME);
+        final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+        final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
 
         telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
-        telemetry.addData("Target left motor position", leftMotor.getSetPoint());
+        telemetry.addData("Target left motor position", controller.getSetPoint());
         telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
-        telemetry.addData("Target right motor position", rightMotor.getSetPoint());
+        telemetry.addData("Target right motor position", controller.getSetPoint());
     }
 }
