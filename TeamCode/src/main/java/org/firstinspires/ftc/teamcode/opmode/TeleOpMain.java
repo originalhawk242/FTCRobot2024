@@ -41,6 +41,12 @@ public class TeleOpMain extends OpMode {
     }
 
     @Override
+    public void start() {
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+    }
+
+    @Override
     public void loop() {
 
         if (gamepad1.back) {
@@ -49,18 +55,28 @@ public class TeleOpMain extends OpMode {
 
         driveTrain.setVelocity(gamepad1.left_stick_x * 0.5, -gamepad1.left_stick_y * 0.5, -gamepad1.right_stick_x * 0.5);
 
-        slide.setTargetHeight((gamepad2.left_stick_y + 1) / 2);
         slide.updateMotorPower();
-
-        arm.setTargetRotation(gamepad2.right_stick_y * 180);
         arm.updateMotorPowers();
 
-        if (gamepad2.a) {
+        if (gamepad1.a) {
             intake.grab();
-        } else if (gamepad2.b) {
+        } else if (gamepad1.b) {
             intake.eject();
-        } else if (gamepad2.x) {
+        } else if (gamepad1.x) {
             intake.settle();
+        }
+
+        if (gamepad2.a) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+            arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        }
+        else if (gamepad2.x) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
+            arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
+        }
+        else if (gamepad2.b) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
+            arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         }
 
         if (gamepad2.y) {

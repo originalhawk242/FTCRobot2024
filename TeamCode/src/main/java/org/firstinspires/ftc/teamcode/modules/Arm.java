@@ -30,6 +30,10 @@ public class Arm extends Module {
         public static double TOLERANCE = 2;
     }
 
+    public static final double ARM_ROTATION_INTAKE = -18;
+    public static final double ARM_ROTATION_MOVING = -21;
+    public static final double ARM_ROTATION_SCORING = -101;
+
     /**
      * Configures a motor to be used to control the arm
      * @param m either the left or right arm motor

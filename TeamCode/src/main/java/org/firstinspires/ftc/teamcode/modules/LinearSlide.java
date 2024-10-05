@@ -28,6 +28,10 @@ public class LinearSlide extends Module {
         public static double TOLERANCE = 2;
     }
 
+    public static final double SLIDE_HEIGHT_INTAKE = 0.9545;
+    public static final double SLIDE_HEIGHT_MOVING = 0.0125;
+    public static final double SLIDE_HEIGHT_SCORING = 0.9583;
+
     public LinearSlide(OpMode registrar) {
         super(registrar);
         motor = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, PIDFDcMotor.class, SLIDE_MOTOR_NAME);
