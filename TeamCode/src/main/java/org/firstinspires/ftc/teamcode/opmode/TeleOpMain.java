@@ -36,6 +36,7 @@ public class TeleOpMain extends OpMode {
     public void init_loop() {
         driveTrain.log();
         slide.log();
+        arm.log();
         intake.log();
     }
 
@@ -68,6 +69,7 @@ public class TeleOpMain extends OpMode {
 
         driveTrain.log();
         slide.log();
+        arm.log();
         intake.log();
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
     }
