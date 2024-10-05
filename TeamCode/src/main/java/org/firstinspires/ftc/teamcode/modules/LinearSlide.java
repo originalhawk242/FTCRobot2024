@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
+@Config
 public class LinearSlide extends Module {
     private final ConditionalHardwareDevice<PIDFDcMotor> motor;
     public static final String SLIDE_MOTOR_NAME = "Slide Motor";
@@ -28,9 +29,9 @@ public class LinearSlide extends Module {
         public static double TOLERANCE = 2;
     }
 
-    public static final double SLIDE_HEIGHT_INTAKE = 0.9545;
-    public static final double SLIDE_HEIGHT_MOVING = 0.0125;
-    public static final double SLIDE_HEIGHT_SCORING = 0.9583;
+    public static double SLIDE_HEIGHT_INTAKE = 0.9545;
+    public static double SLIDE_HEIGHT_MOVING = 0.0125;
+    public static double SLIDE_HEIGHT_SCORING = 0.9583;
 
     public LinearSlide(OpMode registrar) {
         super(registrar);

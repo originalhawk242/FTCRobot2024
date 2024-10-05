@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
+@Config
 public class Arm extends Module {
     private final ConditionalHardwareDeviceGroup motors;
     public static final String LEFT_ARM_MOTOR_NAME = "Left Arm Motor";
@@ -30,9 +31,9 @@ public class Arm extends Module {
         public static double TOLERANCE = 2;
     }
 
-    public static final double ARM_ROTATION_INTAKE = -18;
-    public static final double ARM_ROTATION_MOVING = -21;
-    public static final double ARM_ROTATION_SCORING = -101;
+    public static double ARM_ROTATION_INTAKE = -26;
+    public static double ARM_ROTATION_MOVING = -35;
+    public static double ARM_ROTATION_SCORING = -105;
 
     /**
      * Configures a motor to be used to control the arm
