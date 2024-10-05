@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmode.test;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -17,6 +19,7 @@ public class ArmTuner extends OpMode {
 
     @Override
     public void init() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         arm = new Arm(this);
         slide = new LinearSlide(this);
     }
@@ -24,7 +27,6 @@ public class ArmTuner extends OpMode {
     @Override
     public void init_loop() {
         arm.log();
-        slide.log();
     }
 
     @Override
@@ -35,5 +37,7 @@ public class ArmTuner extends OpMode {
     @Override
     public void loop() {
         arm.setTargetRotation(TARGET_ROTATION);
+        arm.updateMotorPowers();
+        arm.log();
     }
 }
