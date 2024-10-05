@@ -82,7 +82,7 @@ public class Intake extends Module {
         });
     }
 
-    public void setupWristRotation() {
+    public void holdWristRotation() {
         wristServo.runIfAvailable(w -> w.setPosition(0.55));
     }
 

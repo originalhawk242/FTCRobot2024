@@ -44,7 +44,7 @@ public class TeleOpMain extends OpMode {
     public void start() {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        intake.setupWristRotation();
+        intake.holdWristRotation();
     }
 
     @Override
@@ -59,6 +59,7 @@ public class TeleOpMain extends OpMode {
         slide.updateMotorPower();
         arm.updateMotorPowers();
 
+        intake.holdWristRotation();
         if (gamepad1.a) {
             intake.grab();
         } else if (gamepad1.b) {
