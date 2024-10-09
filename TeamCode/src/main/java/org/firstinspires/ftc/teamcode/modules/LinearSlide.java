@@ -10,6 +10,11 @@ import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
+/**
+ * This module controls the linear slide, which moves the intake closer and farther
+ * away from the robot.
+ */
+
 @Config
 public class LinearSlide extends Module {
     private final ConditionalHardwareDevice<PIDFDcMotor> motor;

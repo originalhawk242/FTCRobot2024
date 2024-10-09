@@ -8,6 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
+/**
+ * This module is for the drive train, which moves the robot around.
+ * Note: This module is for the robot-centric drive train, which means
+ *      the robot decides what is forward based on the direction of the robot.
+ *      For a field-centric drive train, use the FieldCentricDriveTrain module.
+ */
+
 public class DriveTrain extends Module {
     /**
      * The motor that drives the front right mecanum wheel

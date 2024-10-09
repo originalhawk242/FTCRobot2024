@@ -6,6 +6,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 
+/**
+ * This module is for the field-centric drive train, which moves the robot.
+ * Note: As this drive train module is field-centric, the robot decides what
+ *      forward is based on a preset forward (commonly the direction the drivers
+ *      are facing).
+ *      For a robot-centric drive train, use the DriveTrain module.
+ */
+
 public class FieldCentricDriveTrain extends DriveTrain {
 
     public static final AngleUnit ANGLE_UNIT = AngleUnit.RADIANS;
