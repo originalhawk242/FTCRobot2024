@@ -95,6 +95,10 @@ public class Arm extends Module {
         // 360 degrees maps to 1 rotation, with a 5:1 gear ratio
         setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION * 5 / 360));
     }
+
+    /**
+     * Sets the motor powers to the current result of the PIDF algorithm
+     */
     public void updateMotorPowers() {
         motors.executeIfAllAreAvailable(() -> {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
@@ -105,6 +109,13 @@ public class Arm extends Module {
             leftMotor.setPower(power);
             rightMotor.setPower(power);
         });
+    }
+
+    public void rotateArmTo(double rotation) {
+        setTargetRotation(rotation);
+        do {
+            updateMotorPowers();
+        } while (!controller.atSetPoint());
     }
 
     @Override

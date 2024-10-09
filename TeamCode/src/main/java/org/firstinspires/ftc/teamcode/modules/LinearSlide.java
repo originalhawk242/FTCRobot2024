@@ -62,6 +62,11 @@ public class LinearSlide extends Module {
         setTargetPosition((int)(height * SLIDE_MAX_EXTENSION_TICKS));
     }
 
+    public void moveSlideTo(double height) {
+        setTargetHeight(height);
+        motor.runIfAvailable(PIDFDcMotor::waitUntilPointReached);
+    }
+
     /**
      * Updates the motor power using the provided PIDF coefficients
      */

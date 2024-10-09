@@ -36,6 +36,12 @@ public class PIDFDcMotor extends PIDFController implements DcMotorEx {
         internalMotor.setPower(calculate(internalMotor.getCurrentPosition()));
     }
 
+    public void waitUntilPointReached() {
+        do {
+            applyMotorPIDF();
+        } while (!super.atSetPoint()); // using super because override calls applyMotorPIDF()
+    }
+
     @Override
     public boolean atSetPoint() {
         applyMotorPIDF();
