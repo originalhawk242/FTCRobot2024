@@ -11,6 +11,9 @@ import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
+/**
+ * This module controls the arm, which rotates the intake mechanism around the robot
+ */
 @Config
 public class Arm extends Module {
     private final ConditionalHardwareDeviceGroup motors;
@@ -22,6 +25,9 @@ public class Arm extends Module {
     private static final double ARM_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/17))) * (1+(46.0/17)) * 28);
     private final PIDFController controller;
 
+    /**
+     * The coefficients for the arm's PIDF controller
+     */
     @Config
     public static class ArmConfig {
         public static double P_COEF = 0.003;
@@ -31,6 +37,9 @@ public class Arm extends Module {
         public static double TOLERANCE = 2;
     }
 
+    /*
+     * Preset arm rotations for certain events during play
+     */
     public static double ARM_ROTATION_INTAKE = -25.5;
     public static double ARM_ROTATION_MOVING = -35;
     public static double ARM_ROTATION_SCORING = -105;
@@ -43,6 +52,11 @@ public class Arm extends Module {
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+    /**
+     * Initializes the arm with the current rotation as '0 degrees'
+     * @param registrar The op mode creating this arm
+     */
     public Arm(OpMode registrar) {
         super(registrar);
         motors = new ConditionalHardwareDeviceGroup(registrar.hardwareMap);
@@ -65,6 +79,10 @@ public class Arm extends Module {
         controller.setTolerance(ArmConfig.TOLERANCE);
     }
 
+    /**
+     * Sets the target position for the PIDF controller
+     * @param targetPosition the target position, in ticks
+     */
     private void setTargetPosition(int targetPosition) {
         controller.setSetPoint(targetPosition);
     }
