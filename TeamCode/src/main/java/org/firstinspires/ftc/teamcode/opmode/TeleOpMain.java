@@ -51,8 +51,11 @@ public class TeleOpMain extends OpMode {
 
     @Override
     public void loop() {
+        if (gamepad1.guide || gamepad2.guide || gamepad1.ps || gamepad2.ps) {
+            terminateOpModeNow();
+        }
 
-        if (gamepad1.back) {
+        if (gamepad1.back && gamepad1.start) {
             driveTrain.resetRotation();
         }
 
@@ -62,11 +65,11 @@ public class TeleOpMain extends OpMode {
         arm.updateMotorPowers();
 
         intake.holdWristRotation();
-        if (gamepad1.a) {
+        if (gamepad1.left_bumper) {
             intake.grab();
-        } else if (gamepad1.b) {
+        } else if (gamepad1.right_bumper) {
             intake.eject();
-        } else if (gamepad1.x) {
+        } else {
             intake.settle();
         }
 
@@ -83,9 +86,9 @@ public class TeleOpMain extends OpMode {
             arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         }
 
-        if (gamepad2.y) {
-            intake.turn();
-        }
+//        if (gamepad2.y) {
+//            intake.turn();
+//        }
 
         driveTrain.log();
         slide.log();
