@@ -10,6 +10,9 @@ import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 
+/**
+ * This module controls the intake, which collects specimens and samples
+ */
 public class Intake extends Module {
 
     private final ConditionalHardwareDevice<CRServo> intakeServoLeft;
@@ -17,7 +20,7 @@ public class Intake extends Module {
 
     private final ConditionalHardwareDevice<Servo> wristServo;
 
-    // Name of the servo on the robot configuration
+    // Names of the servos on the robot configuration
     public static final String INTAKE_LEFT_SERVO_NAME = "Left Intake Servo";
     public static final String INTAKE_RIGHT_SERVO_NAME = "Right Intake Servo";
 
@@ -45,6 +48,10 @@ public class Intake extends Module {
         });
     }
 
+    /**
+     * Sets the intake to eject whatever it is holding.
+     * The intake will stay in this mode until either {@link #grab()} or {@link #settle()} is called.
+     */
     public void eject() {
         intakeServoLeft.runIfAvailable(i -> {
             i.setPower(-SERVO_SPEED);
@@ -54,6 +61,10 @@ public class Intake extends Module {
         });
     }
 
+    /**
+     * Sets the intake to collect whatever is in front of it.
+     * The intake will stay in this mode until either {@link #eject()} or {@link #settle()} is called.
+     */
     public void grab() {
         intakeServoLeft.runIfAvailable(i -> {
             i.setPower(SERVO_SPEED);
@@ -63,6 +74,9 @@ public class Intake extends Module {
         });
     }
 
+    /**
+     * Sets the intake to hold the object it has
+     */
     public void settle() {
         intakeServoLeft.runIfAvailable(i -> {
             i.setPower(0);
@@ -72,6 +86,9 @@ public class Intake extends Module {
         });
     }
 
+    /**
+     * Toggles the rotation of the wrist
+     */
     public void turn() {
         wristServo.runIfAvailable(w -> {
             if (w.getPosition() == 0.0) {
@@ -82,6 +99,9 @@ public class Intake extends Module {
         });
     }
 
+    /**
+     * Sets the wrist to its default rotation
+     */
     public void holdWristRotation() {
         wristServo.runIfAvailable(w -> w.setPosition(0.55));
     }
