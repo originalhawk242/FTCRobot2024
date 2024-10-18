@@ -27,6 +27,7 @@ public class ArmTuner extends OpMode {
     @Override
     public void init_loop() {
         arm.log();
+        slide.log();
     }
 
     @Override
@@ -39,5 +40,6 @@ public class ArmTuner extends OpMode {
         arm.setTargetRotation(TARGET_ROTATION);
         arm.updateMotorPowers();
         arm.log();
+        slide.log();
     }
 }
