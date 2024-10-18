@@ -78,7 +78,11 @@ public final class ModuleManager {
         try {
             return moduleClass.cast(
                     new SwitchStatement<Class<?>, Module>()
-
+                            .addCase(DriveTrain.class, c -> new DriveTrain(opMode))
+                            .addCase(FieldCentricDriveTrain.class, c -> new FieldCentricDriveTrain(opMode))
+                            .addCase(Arm.class, c -> new Arm(opMode))
+                            .addCase(Intake.class, c -> new Intake(opMode))
+                            .addCase(LinearSlide.class, c -> new LinearSlide(opMode))
                             .execute(moduleClass)
             );
         }
