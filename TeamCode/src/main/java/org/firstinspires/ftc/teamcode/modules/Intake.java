@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,14 +16,12 @@ import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
  */
 public class Intake extends Module {
 
-    private final ConditionalHardwareDevice<CRServo> intakeServoLeft;
-    private final ConditionalHardwareDevice<CRServo> intakeServoRight;
+    private final ConditionalHardwareDevice<CRServo> intakeServo;
 
     private final ConditionalHardwareDevice<Servo> wristServo;
 
     // Names of the servos on the robot configuration
-    public static final String INTAKE_LEFT_SERVO_NAME = "Left Intake Servo";
-    public static final String INTAKE_RIGHT_SERVO_NAME = "Right Intake Servo";
+    public static final String INTAKE_SERVO_NAME = "Intake Servo";
 
     public static final String WRIST_SERVO_NAME = "Wrist Servo";
 
@@ -42,12 +39,8 @@ public class Intake extends Module {
     public Intake(OpMode registrar) {
         super(registrar);
 
-        intakeServoLeft = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_LEFT_SERVO_NAME);
-        intakeServoRight = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_RIGHT_SERVO_NAME);
+        intakeServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_SERVO_NAME);
         wristServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, Servo.class, WRIST_SERVO_NAME);
-        intakeServoRight.runIfAvailable(i -> {
-            i.setDirection(DcMotorSimple.Direction.REVERSE);
-        });
     }
 
     /**
@@ -77,11 +70,8 @@ public class Intake extends Module {
      * The intake will stay in this mode until either {@link #grab()} or {@link #settle()} is called.
      */
     public void eject() {
-        intakeServoLeft.runIfAvailable(i -> {
-            i.setPower(-SERVO_SPEED);
-        });
-        intakeServoRight.runIfAvailable(i -> {
-            i.setPower(-SERVO_SPEED);
+        intakeServo.runIfAvailable(i -> {
+            i.setPower(SERVO_SPEED);
         });
     }
 
@@ -90,11 +80,8 @@ public class Intake extends Module {
      * The intake will stay in this mode until either {@link #eject()} or {@link #settle()} is called.
      */
     public void grab() {
-        intakeServoLeft.runIfAvailable(i -> {
-            i.setPower(SERVO_SPEED);
-        });
-        intakeServoRight.runIfAvailable(i -> {
-            i.setPower(SERVO_SPEED);
+        intakeServo.runIfAvailable(i -> {
+            i.setPower(-SERVO_SPEED);
         });
     }
 
@@ -102,10 +89,7 @@ public class Intake extends Module {
      * Sets the intake to hold the object it has
      */
     public void settle() {
-        intakeServoLeft.runIfAvailable(i -> {
-            i.setPower(0);
-        });
-        intakeServoRight.runIfAvailable(i -> {
+        intakeServo.runIfAvailable(i -> {
             i.setPower(0);
         });
     }
@@ -133,12 +117,9 @@ public class Intake extends Module {
     @Override
     public void log() {
         Telemetry telemetry = getTelemetry();
-        if(!intakeServoLeft.isAvailable()) {return;}
-        if(!intakeServoRight.isAvailable()) {return;}
-        CRServo intakeLeft = intakeServoLeft.requireDevice();
-        CRServo intakeRight = intakeServoRight.requireDevice();
+        if(!intakeServo.isAvailable()) {return;}
+        CRServo intake = intakeServo.requireDevice();
 
-        telemetry.addData("Current Left Intake Servo Power: ", intakeLeft.getPower());
-        telemetry.addData("Current Right Intake Servo Power: ", intakeRight.getPower());
+        telemetry.addData("Current Intake Servo Power: ", intake.getPower());
     }
 }
