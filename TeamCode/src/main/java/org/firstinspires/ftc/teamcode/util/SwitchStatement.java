@@ -43,6 +43,8 @@ public final class SwitchStatement<SWITCH_ON, RETURN> {
      * @param caseObj The case
      * @param whatToDo What to run if the case is a match
      * @return The switch statement, after the case has been added
+     * @throws NullPointerException one or both of the arguments are null
+     * @throws IllegalArgumentException the case is already handled
      */
     public SwitchStatement<SWITCH_ON, RETURN> addCase(SWITCH_ON caseObj, Function<SWITCH_ON, RETURN> whatToDo) {
         Objects.requireNonNull(caseObj, "Attempted to add a null case!  Null cases are not permitted; use the " +
@@ -61,11 +63,12 @@ public final class SwitchStatement<SWITCH_ON, RETURN> {
      * @return The result of the matching case, or the result of the default case if no match is found
      */
     public RETURN execute(SWITCH_ON switchOn) {
-        if (Objects.isNull(switchOn)) {
+        if (switchOn == null) {
             return defaultCase.apply(switchOn);
         }
 
         final Function<SWITCH_ON, RETURN> matchingCase = cases.getOrDefault(switchOn, defaultCase);
+        assert matchingCase != null;
         return matchingCase.apply(switchOn);
     }
 }
