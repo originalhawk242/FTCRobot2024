@@ -40,9 +40,14 @@ public class Arm extends Module {
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -25.5;
-    public static double ARM_ROTATION_MOVING = -35;
-    public static double ARM_ROTATION_SCORING = -105;
+    public static double ARM_ROTATION_INTAKE = -9.5;
+    public static double ARM_ROTATION_MOVING = 0;
+    public static double ARM_ROTATION_SCORING = 70;
+
+    /**
+     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to
+     */
+    private static final double ARM_ROTATION_INTERNAL_BASE = 35;
 
     /**
      * Configures a motor to be used to control the arm
@@ -66,10 +71,10 @@ public class Arm extends Module {
 
         motors.executeIfAllAreAvailable(() -> {
             final PIDFDcMotor leftMotor = motors.requireLoadedDevice(PIDFDcMotor.class, LEFT_ARM_MOTOR_NAME);
-            leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             configureMotor(leftMotor);
             final PIDFDcMotor rightMotor = motors.requireLoadedDevice(PIDFDcMotor.class, RIGHT_ARM_MOTOR_NAME);
-            rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             configureMotor(rightMotor);
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
 
@@ -92,6 +97,12 @@ public class Arm extends Module {
      * @param rotation The desired rotation in degrees
      */
     public void setTargetRotation(double rotation) {
+        // convert given rotation (relative to a where the arm is parallel to the ground)
+        // to the actual rotation (relative to the arm's starting position)
+        setTargetRotationAbsolute(rotation + ARM_ROTATION_INTERNAL_BASE);
+    }
+
+    public void setTargetRotationAbsolute(double rotation) {
         // 360 degrees maps to 1 rotation, with a 5:1 gear ratio
         setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION * 5 / 360));
     }
