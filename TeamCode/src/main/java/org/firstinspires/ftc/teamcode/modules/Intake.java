@@ -50,7 +50,7 @@ public class Intake extends Module {
      */
     @Override
     public boolean isConnected() {
-        return intakeServoLeft.isAvailable() || intakeServoRight.isAvailable() || wristServo.isAvailable();
+        return intakeServo.isAvailable() || wristServo.isAvailable();
     }
 
     /**
