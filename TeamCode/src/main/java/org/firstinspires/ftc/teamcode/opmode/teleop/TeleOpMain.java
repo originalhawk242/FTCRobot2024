@@ -64,6 +64,9 @@ public class TeleOpMain extends OpMode {
         slide.updateMotorPower();
         arm.updateMotorPowers();
 
+//        if (gamepad2.y) {
+//            intake.turn();
+//        }
         intake.holdWristRotation();
         if (gamepad1.left_bumper) {
             intake.grab();
@@ -85,10 +88,6 @@ public class TeleOpMain extends OpMode {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
             arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         }
-
-//        if (gamepad2.y) {
-//            intake.turn();
-//        }
 
         driveTrain.log();
         slide.log();
