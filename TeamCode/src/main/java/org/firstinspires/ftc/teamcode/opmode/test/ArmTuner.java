@@ -38,7 +38,6 @@ public class ArmTuner extends OpMode {
     public void loop() {
         arm.setTargetRotation(TARGET_ROTATION);
         arm.updateMotorPowers();
-        slide.updateMotorPower();
         arm.log();
     }
 }
