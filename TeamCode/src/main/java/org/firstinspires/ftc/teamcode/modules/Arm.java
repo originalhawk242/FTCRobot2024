@@ -43,6 +43,9 @@ public class Arm extends Module {
     public static double ARM_ROTATION_INTAKE = -9.5;
     public static double ARM_ROTATION_MOVING = 0;
     public static double ARM_ROTATION_SCORING = 70;
+    public static double ARM_ROTATION_HANG_SETUP = 90;
+    public static double ARM_ROTATION_HANG_GRAB = 130;
+    public static double ARM_ROTATION_HANG_PULL = 0;
 
     /**
      * The internal 'base' rotation (in degrees) which all outside arm angles are relative to
