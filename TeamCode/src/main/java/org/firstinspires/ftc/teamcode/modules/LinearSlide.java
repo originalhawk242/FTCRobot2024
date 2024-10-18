@@ -52,6 +52,27 @@ public class LinearSlide extends Module {
         });
     }
 
+    /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return false if the module cannot change the state of the hardware, true otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return motor.isAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        moveSlideTo(SLIDE_HEIGHT_MOVING);
+    }
+
     private void setTargetPosition(int targetPosition) {
         motor.runIfAvailable(m -> { m.setSetPoint(targetPosition); });
     }

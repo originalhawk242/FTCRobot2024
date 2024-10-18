@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -46,6 +48,28 @@ public class Intake extends Module {
         intakeServoRight.runIfAvailable(i -> {
             i.setDirection(DcMotorSimple.Direction.REVERSE);
         });
+    }
+
+    /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return true if the module is connected, false otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return intakeServoLeft.isAvailable() || intakeServoRight.isAvailable() || wristServo.isAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        settle();
+        holdWristRotation();
     }
 
     /**
