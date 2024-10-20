@@ -29,6 +29,7 @@ public class Arm extends Module {
      * The offset, in ticks, our intended 'zero position' is from the motor's actual 'zero position'
      */
     private int baseOffsetTicks;
+    private static final int DEFAULT_OFFSET_TICKS = 190;
 
     /**
      * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
@@ -70,6 +71,7 @@ public class Arm extends Module {
     private static void configureMotor(DcMotor m) {
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -143,9 +145,20 @@ public class Arm extends Module {
      * Checks sensors to ensure that the arm is in the correct position
      */
     public void monitorPositionSwitch() {
+        if (!motors.areAllDevicesAvailable()) { return; }
         positionSwitch.runIfAvailable(sw -> {
             if (sw.isPressed()) {
-                baseOffsetTicks = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).getCurrentPosition();
+                DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+                DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+                leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                baseOffsetTicks = DEFAULT_OFFSET_TICKS;
             }
         });
     }
