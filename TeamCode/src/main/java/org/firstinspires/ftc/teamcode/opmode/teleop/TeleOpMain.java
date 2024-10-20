@@ -63,6 +63,7 @@ public class TeleOpMain extends OpMode {
 
         slide.updateMotorPower();
         arm.updateMotorPowers();
+        arm.monitorPositionSwitch();
 
 //        if (gamepad2.y) {
 //            intake.turn();

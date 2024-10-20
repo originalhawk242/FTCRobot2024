@@ -5,8 +5,10 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
@@ -19,6 +21,15 @@ public class Arm extends Module {
     private final ConditionalHardwareDeviceGroup motors;
     public static final String LEFT_ARM_MOTOR_NAME = "Left Arm Motor";
     public static final String RIGHT_ARM_MOTOR_NAME = "Right Arm Motor";
+
+    private final ConditionalHardwareDevice<TouchSensor> positionSwitch;
+    public static final String POSITION_SWITCH_NAME = "Position Switch";
+
+    /**
+     * The offset, in ticks, our intended 'zero position' is from the motor's actual 'zero position'
+     */
+    private int baseOffsetTicks;
+
     /**
      * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
      */
@@ -85,6 +96,9 @@ public class Arm extends Module {
 
         controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
         controller.setTolerance(ArmConfig.TOLERANCE);
+
+        positionSwitch = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, TouchSensor.class, POSITION_SWITCH_NAME);
+        baseOffsetTicks = 0;
     }
 
     /**
@@ -107,7 +121,7 @@ public class Arm extends Module {
 
     public void setTargetRotationAbsolute(double rotation) {
         // 360 degrees maps to 1 rotation, with a 5:1 gear ratio
-        setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION * 5 / 360));
+        setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION * 5 / 360) + baseOffsetTicks);
     }
 
     /**
@@ -125,10 +139,22 @@ public class Arm extends Module {
         });
     }
 
+    /**
+     * Checks sensors to ensure that the arm is in the correct position
+     */
+    public void monitorPositionSwitch() {
+        positionSwitch.runIfAvailable(sw -> {
+            if (sw.isPressed()) {
+                baseOffsetTicks = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).getCurrentPosition();
+            }
+        });
+    }
+
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
         do {
             updateMotorPowers();
+            monitorPositionSwitch();
         } while (!controller.atSetPoint());
     }
 
