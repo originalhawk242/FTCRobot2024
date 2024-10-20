@@ -15,6 +15,7 @@ public class ArmTuner extends OpMode {
     private Arm arm;
     private LinearSlide slide;
     public static double TARGET_ROTATION = 0;
+    public static boolean UPDATE_ARM_POWER = true;
 
 
     @Override
@@ -38,7 +39,9 @@ public class ArmTuner extends OpMode {
     @Override
     public void loop() {
         arm.setTargetRotation(TARGET_ROTATION);
-        arm.updateMotorPowers();
+        if (UPDATE_ARM_POWER) {
+            arm.updateMotorPowers();
+        }
         arm.log();
         slide.log();
     }
