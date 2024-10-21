@@ -32,6 +32,11 @@ public class Arm extends Module {
     private static final int DEFAULT_OFFSET_TICKS = 190;
 
     /**
+     * Are the motors active?
+     */
+    private boolean active = false;
+
+    /**
      * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
      */
     private static final double ARM_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/17))) * (1+(46.0/17)) * 28);
@@ -93,6 +98,7 @@ public class Arm extends Module {
             rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             configureMotor(rightMotor);
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
+        active = true;
 
         controller = new PIDFController(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
 
@@ -101,6 +107,31 @@ public class Arm extends Module {
 
         positionSwitch = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, TouchSensor.class, POSITION_SWITCH_NAME);
         baseOffsetTicks = 0;
+    }
+
+    /**
+     * Checks if the motors are powered or in free-fall
+     * @return true if the motors are active, false otherwise
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    public void activate() {
+        if (active || !motors.areAllDevicesAvailable()) { return; }
+//        motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        active = true;
+    }
+    public void deactivate() {
+        if (!active || !motors.areAllDevicesAvailable()) { return; }
+        DcMotor left = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+        DcMotor right = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+//        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        left.setPower(0);
+        right.setPower(0);
+        active = false;
     }
 
     /**
@@ -130,6 +161,7 @@ public class Arm extends Module {
      * Sets the motor powers to the current result of the PIDF algorithm
      */
     public void updateMotorPowers() {
+        if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
             controller.setTolerance(ArmConfig.TOLERANCE);
@@ -145,7 +177,7 @@ public class Arm extends Module {
      * Checks sensors to ensure that the arm is in the correct position
      */
     public void monitorPositionSwitch() {
-        if (!motors.areAllDevicesAvailable()) { return; }
+        assert motors.areAllDevicesAvailable();
         positionSwitch.runIfAvailable(sw -> {
             if (sw.isPressed()) {
                 DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
@@ -178,6 +210,7 @@ public class Arm extends Module {
         final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
         final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
 
+        telemetry.addData("Is Arm Active", isActive());
         telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
         telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
         telemetry.addData("Target motor position", controller.getSetPoint());
