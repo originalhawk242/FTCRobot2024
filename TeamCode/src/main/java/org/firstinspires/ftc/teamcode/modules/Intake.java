@@ -87,7 +87,7 @@ public class Intake extends Module {
      * Sets the wrist to its default rotation
      */
     public void holdWristRotation() {
-        wristServo.runIfAvailable(w -> w.setPosition(0.55));
+        wristServo.runIfAvailable(w -> w.setPosition(0.45));
     }
 
     @Override
