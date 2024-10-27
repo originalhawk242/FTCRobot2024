@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -39,6 +41,28 @@ public class Intake extends Module {
 
         intakeServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_SERVO_NAME);
         wristServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, Servo.class, WRIST_SERVO_NAME);
+    }
+
+    /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return true if the module is connected, false otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return intakeServo.isAvailable() || wristServo.isAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        settle();
+        holdWristRotation();
     }
 
     /**
