@@ -135,6 +135,27 @@ public class Arm extends Module {
     }
 
     /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return false if the module cannot change the state of the hardware, true otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return motors.areAllDevicesAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        this.rotateArmTo(ARM_ROTATION_MOVING);
+    }
+
+    /**
      * Sets the target position for the PIDF controller
      * @param targetPosition the target position, in ticks
      */
