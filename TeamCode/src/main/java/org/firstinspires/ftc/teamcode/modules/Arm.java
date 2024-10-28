@@ -57,17 +57,24 @@ public class Arm extends Module {
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -15;
+    public static double ARM_ROTATION_INTAKE = -17;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 70;
+    public static double ARM_ROTATION_SCORING = 65;
     public static double ARM_ROTATION_HANG_SETUP = 90;
     public static double ARM_ROTATION_HANG_GRAB = 130;
     public static double ARM_ROTATION_HANG_PULL = 0;
 
     /**
-     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to
+     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to,
+     * before the arm encoders are reset mid-match
      */
-    private static final double ARM_ROTATION_INTERNAL_BASE = 35;
+    public static double ARM_ROTATION_INTERNAL_BASE_INITIAL = 35;
+    /**
+     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to,
+     * after the arm encoders are reset mid-match
+     */
+    public static double ARM_ROTATION_INTERNAL_BASE_RESET = 45;
+    private double baseRotation = ARM_ROTATION_INTERNAL_BASE_INITIAL;
 
     /**
      * Configures a motor to be used to control the arm
@@ -170,7 +177,7 @@ public class Arm extends Module {
     public void setTargetRotation(double rotation) {
         // convert given rotation (relative to a where the arm is parallel to the ground)
         // to the actual rotation (relative to the arm's starting position)
-        setTargetRotationAbsolute(rotation + ARM_ROTATION_INTERNAL_BASE);
+        setTargetRotationAbsolute(rotation + baseRotation);
     }
 
     public void setTargetRotationAbsolute(double rotation) {
@@ -211,7 +218,8 @@ public class Arm extends Module {
                 rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                baseOffsetTicks = DEFAULT_OFFSET_TICKS;
+                baseRotation = ARM_ROTATION_INTERNAL_BASE_RESET;
+//                baseOffsetTicks = DEFAULT_OFFSET_TICKS;
             }
         });
     }
