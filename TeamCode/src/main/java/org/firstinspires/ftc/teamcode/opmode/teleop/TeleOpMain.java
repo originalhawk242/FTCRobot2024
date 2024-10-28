@@ -67,9 +67,11 @@ public class TeleOpMain extends OpMode {
         if (gamepad2.y) {
             arm.deactivate();
             arm.monitorPositionSwitch();
+            intake.setWristActive(false);
         }
         else if (!arm.isActive()) {
             arm.activate();
+            intake.setWristActive(true);
         }
 
 //        if (gamepad2.y) {
@@ -87,14 +89,17 @@ public class TeleOpMain extends OpMode {
         if (gamepad2.a) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
             arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
         }
         else if (gamepad2.x) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
             arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
+            intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
         }
         else if (gamepad2.b) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
             arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
+            intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
         }
 
         driveTrain.log();
