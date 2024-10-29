@@ -194,10 +194,11 @@ public class Arm extends Module {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
             controller.setTolerance(ArmConfig.TOLERANCE);
             DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
-            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
             double power = controller.calculate(leftMotor.getCurrentPosition()); // use one encoder for safety and apply the same power to both motors
             leftMotor.setPower(power);
             rightMotor.setPower(power);
+            getTelemetry().addData("Arm power", power);
         });
     }
 
