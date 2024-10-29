@@ -102,6 +102,7 @@ public class RawMotorDriver extends OpMode {
         telemetry.addData("Current position", motor.getCurrentPosition());
         telemetry.addData("Target position", motor.getTargetPosition());
         telemetry.addData("Run mode", motor.getMode().toString());
+        telemetry.addData("Is busy?", motor.isBusy());
         telemetry.addData("Port number", motor.getPortNumber());
         telemetry.addData("Type", motor.getMotorType());
     }
