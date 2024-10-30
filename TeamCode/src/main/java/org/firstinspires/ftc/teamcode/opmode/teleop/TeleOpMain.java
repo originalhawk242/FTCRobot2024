@@ -44,7 +44,7 @@ public class TeleOpMain extends OpMode {
     public void start() {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        intake.holdWristRotation();
+        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
 
         driveTrain.resetRotation();
     }
@@ -65,6 +65,7 @@ public class TeleOpMain extends OpMode {
         arm.updateMotorPowers();
 //        arm.monitorPositionSwitch();
         if (gamepad2.y) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
             arm.deactivate();
             arm.monitorPositionSwitch();
             intake.setWristActive(false);
