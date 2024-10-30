@@ -42,9 +42,10 @@ public class TeleOpMain extends OpMode {
 
     @Override
     public void start() {
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+//        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+//        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+//        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        deactivateArm();
 
         driveTrain.resetRotation();
     }
@@ -61,20 +62,6 @@ public class TeleOpMain extends OpMode {
 
         driveTrain.setVelocity(gamepad1.left_stick_x * 0.5, -gamepad1.left_stick_y * 0.5, -gamepad1.right_stick_x * 0.5);
 
-        slide.updateMotorPower();
-        arm.updateMotorPowers();
-//        arm.monitorPositionSwitch();
-        if (gamepad2.y) {
-            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-            arm.deactivate();
-            arm.monitorPositionSwitch();
-            intake.setWristActive(false);
-        }
-        else if (!arm.isActive()) {
-            arm.activate();
-            intake.setWristActive(true);
-        }
-
 //        if (gamepad2.y) {
 //            intake.turn();
 //        }
@@ -87,6 +74,7 @@ public class TeleOpMain extends OpMode {
             intake.settle();
         }
 
+        boolean activateArm = true;
         if (gamepad2.a) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
             arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
@@ -117,6 +105,18 @@ public class TeleOpMain extends OpMode {
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_PULL);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
         }
+        else {
+            activateArm = false;
+        }
+
+        slide.updateMotorPower();
+        arm.updateMotorPowers();
+        if (gamepad2.y) {
+            deactivateArm();
+        }
+        else if (activateArm || arm.monitorPositionSwitch()) {
+            activateArm();
+        }
 
         driveTrain.log();
         slide.log();
@@ -125,4 +125,21 @@ public class TeleOpMain extends OpMode {
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
     }
 
+    private void activateArm() {
+        if (arm.isActive()) {
+            return;
+        }
+        arm.activate();
+        intake.setWristActive(true);
+    }
+    private void deactivateArm() {
+        if (!arm.isActive()) {
+            return;
+        }
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
+        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        arm.deactivate();
+        intake.setWristActive(false);
+    }
 }

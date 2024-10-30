@@ -205,24 +205,24 @@ public class Arm extends Module {
     /**
      * Checks sensors to ensure that the arm is in the correct position
      */
-    public void monitorPositionSwitch() {
+    public boolean monitorPositionSwitch() {
         assert motors.areAllDevicesAvailable();
-        positionSwitch.runIfAvailable(sw -> {
-            if (sw.isPressed()) {
-                DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
-                DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
-                leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                baseRotation = ARM_ROTATION_INTERNAL_BASE_RESET;
-//                baseOffsetTicks = DEFAULT_OFFSET_TICKS;
-            }
-        });
+        if (!positionSwitch.isAvailable() || !positionSwitch.requireDevice().isPressed()) {
+            return false;
+        }
+        DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+        DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        baseRotation = ARM_ROTATION_INTERNAL_BASE_RESET;
+//      baseOffsetTicks = DEFAULT_OFFSET_TICKS;
+        return true;
     }
 
     public void rotateArmTo(double rotation) {
