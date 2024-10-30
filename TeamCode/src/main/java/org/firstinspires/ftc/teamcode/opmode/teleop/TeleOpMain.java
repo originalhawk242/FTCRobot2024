@@ -74,7 +74,7 @@ public class TeleOpMain extends OpMode {
             driveTrain.resetRotation();
         }
 
-        driveTrain.setVelocity(gamepad1.left_stick_x * 0.5, -gamepad1.left_stick_y * 0.5, -gamepad1.right_stick_x * 0.5);
+        driveTrain.setVelocity(gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
 //        if (gamepad2.y) {
 //            intake.turn();
