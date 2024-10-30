@@ -61,8 +61,8 @@ public class Arm extends Module {
     public static double ARM_ROTATION_MOVING = 0;
     public static double ARM_ROTATION_SCORING = 60;
     public static double ARM_ROTATION_HANG_SETUP = 90;
-    public static double ARM_ROTATION_HANG_GRAB = 120;
-    public static double ARM_ROTATION_HANG_PULL = 0;
+    public static double ARM_ROTATION_HANG_GRAB = 118;
+    public static double ARM_ROTATION_HANG_PULL = -20;
 
     /**
      * The internal 'base' rotation (in degrees) which all outside arm angles are relative to,
