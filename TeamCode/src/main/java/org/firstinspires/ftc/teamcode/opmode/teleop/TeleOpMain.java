@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,8 +9,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.*;
 
+@Config
 @TeleOp
 public class TeleOpMain extends OpMode {
+
+    /**
+     * The time at start where the arm is moving upward at constant speed.
+     * Needs to be nonzero to ensure that the wrist isn't pushing against the ground
+     * when it rotates.
+     */
+    public static int INITIAL_JUMP_TIME_MILLIS = 40;
 
     private FieldCentricDriveTrain driveTrain;
 
@@ -45,6 +54,11 @@ public class TeleOpMain extends OpMode {
 //        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
 //        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
 //        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        arm.setTargetRotationAbsolute(20);
+        arm.updateMotorPowers();
+        try {
+            Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
+        } catch (InterruptedException ignored) {}
         deactivateArm();
 
         driveTrain.resetRotation();
