@@ -57,11 +57,11 @@ public class Arm extends Module {
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -17;
+    public static double ARM_ROTATION_INTAKE = -12;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 65;
+    public static double ARM_ROTATION_SCORING = 60;
     public static double ARM_ROTATION_HANG_SETUP = 90;
-    public static double ARM_ROTATION_HANG_GRAB = 130;
+    public static double ARM_ROTATION_HANG_GRAB = 120;
     public static double ARM_ROTATION_HANG_PULL = 0;
 
     /**
@@ -73,7 +73,7 @@ public class Arm extends Module {
      * The internal 'base' rotation (in degrees) which all outside arm angles are relative to,
      * after the arm encoders are reset mid-match
      */
-    public static double ARM_ROTATION_INTERNAL_BASE_RESET = 45;
+    public static double ARM_ROTATION_INTERNAL_BASE_RESET = 40;
     private double baseRotation = ARM_ROTATION_INTERNAL_BASE_INITIAL;
 
     /**
