@@ -130,6 +130,27 @@ public class DriveTrain extends Module {
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return false if the module cannot change the state of the hardware, true otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return hardwareDevices.areAllDevicesAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        setVelocity(0, 0, 0);
+    }
+
     @Override
     public void cleanupModule() {
         // nothing to clean up

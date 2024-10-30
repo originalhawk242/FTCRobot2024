@@ -23,7 +23,7 @@ public class LinearSlide extends Module {
      * Encoder resolution for the 5203 312 RPM DC Motors used by the arm
      */
     private static final double SLIDE_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/11))) * 28);
-    private static final int SLIDE_MAX_EXTENSION_TICKS = 2400; // TODO new is 2500
+    private static final int SLIDE_MAX_EXTENSION_TICKS = 2500;
 
     @Config
     public static class SlideConfig {
@@ -34,9 +34,9 @@ public class LinearSlide extends Module {
         public static double TOLERANCE = 2;
     }
 
-    public static double SLIDE_HEIGHT_INTAKE = 0.9545;
-    public static double SLIDE_HEIGHT_MOVING = 0.0125;
-    public static double SLIDE_HEIGHT_SCORING = 0.8500;
+    public static double SLIDE_HEIGHT_INTAKE = 0.9163;
+    public static double SLIDE_HEIGHT_MOVING = 0.0120;
+    public static double SLIDE_HEIGHT_SCORING = 1.0000;
 
     public LinearSlide(OpMode registrar) {
         super(registrar);
@@ -50,6 +50,27 @@ public class LinearSlide extends Module {
             m.setPIDF(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
             m.setTolerance(SlideConfig.TOLERANCE);
         });
+    }
+
+    /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return false if the module cannot change the state of the hardware, true otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return motor.isAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        moveSlideTo(SLIDE_HEIGHT_MOVING);
     }
 
     private void setTargetPosition(int targetPosition) {

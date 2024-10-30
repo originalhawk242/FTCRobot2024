@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.modules;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -12,18 +13,29 @@ import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 /**
  * This module controls the intake, which collects specimens and samples
  */
+@Config
 public class Intake extends Module {
 
     private final ConditionalHardwareDevice<CRServo> intakeServo;
 
     private final ConditionalHardwareDevice<Servo> wristServo;
 
+    private double currentWristPosition = WRIST_POSITION_MOVING;
+
     // Names of the servos on the robot configuration
     public static final String INTAKE_SERVO_NAME = "Intake Servo";
 
     public static final String WRIST_SERVO_NAME = "Wrist Servo";
 
-    private final double SERVO_SPEED = 0.5;
+    private static final double SERVO_SPEED = 0.5;
+
+    public static double WRIST_POSITION_INTAKE = 0.51;
+    public static double WRIST_POSITION_MOVING = 0.80;
+    public static double WRIST_POSITION_SCORING = 0.50;
+    public static double WRIST_POSITION_DEACTIVATED = 0.80;
+
+    private double prevWristPosition;
+    private boolean wristActive;
 
     /**
      * Initializes the module and registers it with the specified OpMode.  This is where references to any hardware
@@ -39,6 +51,30 @@ public class Intake extends Module {
 
         intakeServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, CRServo.class, INTAKE_SERVO_NAME);
         wristServo = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, Servo.class, WRIST_SERVO_NAME);
+        wristActive = true;
+    }
+
+    /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return true if the module is connected, false otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return intakeServo.isAvailable() || wristServo.isAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        settle();
+        moveWristTo(WRIST_POSITION_INTAKE);
+        holdWristRotation();
     }
 
     /**
@@ -87,7 +123,37 @@ public class Intake extends Module {
      * Sets the wrist to its default rotation
      */
     public void holdWristRotation() {
-        wristServo.runIfAvailable(w -> w.setPosition(0.55));
+        moveWristTo(currentWristPosition);
+    }
+
+    /**
+     * Moves the wrist to the specified position
+     * @param position the desired position of the servo, within the range [0,1]
+     */
+    public void moveWristTo(double position) {
+        assert position <= 1.0 && position >= 0.0;
+        wristServo.runIfAvailable(w -> {
+            currentWristPosition = position;
+            w.setPosition(position);
+        });
+    }
+
+    public void setWristActive(boolean active) {
+        if (wristActive == active || !wristServo.isAvailable()) { return; }
+        if (wristActive) {
+            deactivateWrist();
+        }
+        else {
+            activateWrist();
+        }
+        wristActive = active;
+    }
+    private void activateWrist() {
+        moveWristTo(prevWristPosition);
+    }
+    private void deactivateWrist() {
+        prevWristPosition = wristServo.requireDevice().getPosition();
+        moveWristTo(WRIST_POSITION_DEACTIVATED);
     }
 
     @Override

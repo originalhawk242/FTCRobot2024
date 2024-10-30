@@ -57,17 +57,24 @@ public class Arm extends Module {
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -9.5;
+    public static double ARM_ROTATION_INTAKE = -15.5;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 70;
+    public static double ARM_ROTATION_SCORING = 60;
     public static double ARM_ROTATION_HANG_SETUP = 90;
-    public static double ARM_ROTATION_HANG_GRAB = 130;
-    public static double ARM_ROTATION_HANG_PULL = 0;
+    public static double ARM_ROTATION_HANG_GRAB = 118;
+    public static double ARM_ROTATION_HANG_PULL = -20;
 
     /**
-     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to
+     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to,
+     * before the arm encoders are reset mid-match
      */
-    private static final double ARM_ROTATION_INTERNAL_BASE = 35;
+    public static double ARM_ROTATION_INTERNAL_BASE_INITIAL = 35;
+    /**
+     * The internal 'base' rotation (in degrees) which all outside arm angles are relative to,
+     * after the arm encoders are reset mid-match
+     */
+    public static double ARM_ROTATION_INTERNAL_BASE_RESET = 40;
+    private double baseRotation = ARM_ROTATION_INTERNAL_BASE_INITIAL;
 
     /**
      * Configures a motor to be used to control the arm
@@ -135,6 +142,27 @@ public class Arm extends Module {
     }
 
     /**
+     * Checks if this module is connected to the hardware it requires
+     *
+     * @return false if the module cannot change the state of the hardware, true otherwise
+     */
+    @Override
+    public boolean isConnected() {
+        return motors.areAllDevicesAvailable();
+    }
+
+    /**
+     * Ensures that the module is in a safe state for other modules to operate.
+     * Between calling this method and calling any other method on this module that modifies
+     * hardware devices, the module is guaranteed to not damage itself or anything else when
+     * other modules modify hardware state
+     */
+    @Override
+    public void ensureSafety() {
+        this.rotateArmTo(ARM_ROTATION_MOVING);
+    }
+
+    /**
      * Sets the target position for the PIDF controller
      * @param targetPosition the target position, in ticks
      */
@@ -149,7 +177,7 @@ public class Arm extends Module {
     public void setTargetRotation(double rotation) {
         // convert given rotation (relative to a where the arm is parallel to the ground)
         // to the actual rotation (relative to the arm's starting position)
-        setTargetRotationAbsolute(rotation + ARM_ROTATION_INTERNAL_BASE);
+        setTargetRotationAbsolute(rotation + baseRotation);
     }
 
     public void setTargetRotationAbsolute(double rotation) {
@@ -166,33 +194,35 @@ public class Arm extends Module {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
             controller.setTolerance(ArmConfig.TOLERANCE);
             DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
-            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
             double power = controller.calculate(leftMotor.getCurrentPosition()); // use one encoder for safety and apply the same power to both motors
             leftMotor.setPower(power);
             rightMotor.setPower(power);
+            getTelemetry().addData("Arm power", power);
         });
     }
 
     /**
      * Checks sensors to ensure that the arm is in the correct position
      */
-    public void monitorPositionSwitch() {
+    public boolean monitorPositionSwitch() {
         assert motors.areAllDevicesAvailable();
-        positionSwitch.runIfAvailable(sw -> {
-            if (sw.isPressed()) {
-                DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
-                DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
-                leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                baseOffsetTicks = DEFAULT_OFFSET_TICKS;
-            }
-        });
+        if (!positionSwitch.isAvailable() || !positionSwitch.requireDevice().isPressed()) {
+            return false;
+        }
+        DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+        DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        baseRotation = ARM_ROTATION_INTERNAL_BASE_RESET;
+//      baseOffsetTicks = DEFAULT_OFFSET_TICKS;
+        return true;
     }
 
     public void rotateArmTo(double rotation) {
