@@ -23,7 +23,7 @@ public class LinearSlide extends Module {
      * Encoder resolution for the 5203 312 RPM DC Motors used by the arm
      */
     private static final double SLIDE_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/11))) * 28);
-    private static final int SLIDE_MAX_EXTENSION_TICKS = 2400; // TODO new is 2500
+    private static final int SLIDE_MAX_EXTENSION_TICKS = 2500;
 
     @Config
     public static class SlideConfig {
@@ -34,8 +34,8 @@ public class LinearSlide extends Module {
         public static double TOLERANCE = 2;
     }
 
-    public static double SLIDE_HEIGHT_INTAKE = 0.9545;
-    public static double SLIDE_HEIGHT_MOVING = 0.0125;
+    public static double SLIDE_HEIGHT_INTAKE = 0.9163;
+    public static double SLIDE_HEIGHT_MOVING = 0.0120;
     public static double SLIDE_HEIGHT_SCORING = 1.0000;
 
     public LinearSlide(OpMode registrar) {
