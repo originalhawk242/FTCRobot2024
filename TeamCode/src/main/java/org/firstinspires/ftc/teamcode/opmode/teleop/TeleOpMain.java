@@ -80,9 +80,9 @@ public class TeleOpMain extends OpMode {
 //            intake.turn();
 //        }
         intake.holdWristRotation();
-        if (gamepad1.left_bumper) {
+        if (gamepad2.left_bumper) {
             intake.grab();
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad2.right_bumper) {
             intake.eject();
         } else {
             intake.settle();
