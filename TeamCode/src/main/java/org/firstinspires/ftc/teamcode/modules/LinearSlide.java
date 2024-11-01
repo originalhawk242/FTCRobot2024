@@ -34,7 +34,7 @@ public class LinearSlide extends Module {
         public static double TOLERANCE = 2;
     }
 
-    public static double SLIDE_HEIGHT_INTAKE = 0.5000;
+    public static double SLIDE_HEIGHT_INTAKE = 0.9163;
     public static double SLIDE_HEIGHT_MOVING = 0.0120;
     public static double SLIDE_HEIGHT_SCORING = 1.0000;
 
