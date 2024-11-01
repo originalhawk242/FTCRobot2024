@@ -105,19 +105,12 @@ public class TeleOpMain extends OpMode {
             intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
         }
         else if (gamepad2.dpad_up) {
-            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_SETUP);
-            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        }
-        else if (gamepad2.dpad_left) {
-            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_GRAB);
-            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1);
+            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         }
         else if (gamepad2.dpad_down) {
-            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_PULL);
-            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+            dropArmForLvl1Hang();
         }
         else {
             activateArm = false;
@@ -146,14 +139,20 @@ public class TeleOpMain extends OpMode {
         arm.activate();
         intake.setWristActive(true);
     }
-    private void deactivateArm() {
+    private void dropArmWithSlideAt(double slideHeight) {
         if (!arm.isActive()) {
             return;
         }
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        slide.setTargetHeight(slideHeight);
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         arm.deactivate();
         intake.setWristActive(false);
+    }
+    private void dropArmForLvl1Hang() {
+        dropArmWithSlideAt(LinearSlide.SLIDE_HEIGHT_SCORING);
+    }
+    private void deactivateArm() {
+        dropArmWithSlideAt(LinearSlide.SLIDE_HEIGHT_MOVING);
     }
 }
