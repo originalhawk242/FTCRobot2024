@@ -21,6 +21,7 @@ public class TeleOpMain extends OpMode {
      * when it rotates.
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 40;
+    public static double SLOWER_TURN_SPEED_MULTIPLIER = 0.25;
 
     private FieldCentricDriveTrain driveTrain;
 
@@ -76,7 +77,15 @@ public class TeleOpMain extends OpMode {
             driveTrain.resetRotation();
         }
 
-        driveTrain.setVelocity(gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
+        final double strafe = gamepad1.left_stick_x;
+        final double forward = -gamepad1.left_stick_y;
+        final double rotate = -gamepad1.right_stick_x;
+        if (gamepad1.left_bumper || gamepad1.right_bumper) {
+            driveTrain.setVelocity(strafe, forward, rotate * SLOWER_TURN_SPEED_MULTIPLIER);
+        }
+        else {
+            driveTrain.setVelocity(strafe, forward, rotate);
+        }
 
 //        if (gamepad2.y) {
 //            intake.turn();
