@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.autonomous;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,10 +15,12 @@ import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 
 import java.util.concurrent.TimeUnit;
 
+@Config
 @Autonomous
 public class ImmediateParkAuto extends LinearOpMode {
     private static final double DRIVE_ENCODER_RESOLUTION = ((((1+(46/17))) * (1+(46/11))) * 28);
 
+    public static double MOVE_TO_PARK_DURATION_SECONDS = 2;
 
     /**
      * Override this method and place your code here.
@@ -53,7 +56,7 @@ public class ImmediateParkAuto extends LinearOpMode {
         driveTrain.setVelocity(0.5, 0, 0);
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        while (timer.time(TimeUnit.SECONDS) < WaitAndParkAuto.MOVE_TO_PARK_DURATION_SECONDS) {
+        while (timer.time(TimeUnit.SECONDS) < MOVE_TO_PARK_DURATION_SECONDS) {
             if (isStopRequested()) {
                 return;
             }
