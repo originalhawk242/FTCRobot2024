@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.modules.*;
 @TeleOp
 public class TeleOpMain extends OpMode {
 
+    public static boolean resetSlidePosition = true;
+
     /**
      * The time at start where the arm is moving upward at constant speed.
      * Needs to be nonzero to ensure that the wrist isn't pushing against the ground
@@ -34,11 +36,13 @@ public class TeleOpMain extends OpMode {
 
         driveTrain = new FieldCentricDriveTrain(this);
 
-        slide = new LinearSlide(this);
+        slide = new LinearSlide(this, resetSlidePosition);
 
         arm = new Arm(this);
 
         intake = new Intake(this);
+
+        resetSlidePosition = true;
     }
 
     @Override

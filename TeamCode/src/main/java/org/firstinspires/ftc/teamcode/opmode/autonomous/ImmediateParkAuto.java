@@ -37,6 +37,7 @@ public class ImmediateParkAuto extends LinearOpMode {
         final Arm arm = moduleManager.getModule(Arm.class);
         final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
         final Intake intake = moduleManager.getModule(Intake.class);
+        TeleOpMain.resetSlidePosition = false;
 
         waitForStart();
         // get arm out of way
