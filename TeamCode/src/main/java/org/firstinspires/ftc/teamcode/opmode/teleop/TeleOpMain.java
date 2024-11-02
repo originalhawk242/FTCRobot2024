@@ -110,7 +110,7 @@ public class TeleOpMain extends OpMode {
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         }
         else if (gamepad2.dpad_down) {
-            dropArmForLvl1Hang();
+            dropArmUnsafe();
         }
         else {
             activateArm = false;
@@ -139,20 +139,17 @@ public class TeleOpMain extends OpMode {
         arm.activate();
         intake.setWristActive(true);
     }
-    private void dropArmWithSlideAt(double slideHeight) {
+    private void dropArmUnsafe() {
         if (!arm.isActive()) {
             return;
         }
-        slide.setTargetHeight(slideHeight);
-        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         arm.deactivate();
         intake.setWristActive(false);
     }
-    private void dropArmForLvl1Hang() {
-        dropArmWithSlideAt(LinearSlide.SLIDE_HEIGHT_SCORING);
-    }
     private void deactivateArm() {
-        dropArmWithSlideAt(LinearSlide.SLIDE_HEIGHT_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
+        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        dropArmUnsafe();
     }
 }

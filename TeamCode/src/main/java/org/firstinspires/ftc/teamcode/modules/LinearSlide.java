@@ -37,7 +37,7 @@ public class LinearSlide extends Module {
     public static double SLIDE_HEIGHT_INTAKE = 0.9163;
     public static double SLIDE_HEIGHT_MOVING = 0.0120;
     public static double SLIDE_HEIGHT_SCORING = 1.0000;
-    public static double SLIDE_HEIGHT_HANG_LVL1 = 1.0000;
+    public static double SLIDE_HEIGHT_HANG_LVL1 = 0.2500;
     public static double SLIDE_HEIGHT_HANG_LVL2 = 0.0100;
 
     public LinearSlide(OpMode registrar) {
