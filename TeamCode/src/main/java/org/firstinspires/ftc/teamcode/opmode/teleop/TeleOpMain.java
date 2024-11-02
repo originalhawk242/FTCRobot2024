@@ -109,9 +109,6 @@ public class TeleOpMain extends OpMode {
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         }
-        else if (gamepad2.dpad_down) {
-            dropArmUnsafe();
-        }
         else {
             activateArm = false;
         }
@@ -120,6 +117,9 @@ public class TeleOpMain extends OpMode {
         arm.updateMotorPowers();
         if (gamepad2.y) {
             deactivateArm();
+        }
+        else if (gamepad2.dpad_down) {
+            dropArmUnsafe();
         }
         else if (activateArm || arm.monitorPositionSwitch()) {
             activateArm();
