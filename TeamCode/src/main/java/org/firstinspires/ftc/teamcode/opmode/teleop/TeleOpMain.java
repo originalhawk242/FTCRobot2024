@@ -41,8 +41,6 @@ public class TeleOpMain extends OpMode {
         arm = new Arm(this);
 
         intake = new Intake(this);
-
-        resetSlidePosition = true;
     }
 
     @Override
@@ -134,6 +132,12 @@ public class TeleOpMain extends OpMode {
         arm.log();
         intake.log();
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
+    }
+
+
+    @Override
+    public void stop() {
+        resetSlidePosition = true;
     }
 
     private void activateArm() {
