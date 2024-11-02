@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmode.autonomous;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
@@ -10,6 +11,8 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
+
+import java.util.concurrent.TimeUnit;
 
 @Autonomous
 public class PracticeAuto extends LinearOpMode {
@@ -47,6 +50,26 @@ public class PracticeAuto extends LinearOpMode {
         intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
 
         driveTrain.setVelocity(0.5, 0, 0);
-        Thread.sleep(2000);
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+        while (timer.time(TimeUnit.SECONDS) < 4) {
+            if (isStopRequested()) {
+                return;
+            }
+            slide.updateMotorPower();
+        }
+
+        driveTrain.setVelocity(0, 0, 0);
+
+        arm.activate();
+        arm.setTargetRotationAbsolute(20);
+        arm.updateMotorPowers();
+        Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
+        arm.deactivate();
+
+        intake.moveWristTo(Intake.WRIST_POSITION_START);
+        while (opModeIsActive()) {
+            slide.updateMotorPower();
+        }
     }
 }
