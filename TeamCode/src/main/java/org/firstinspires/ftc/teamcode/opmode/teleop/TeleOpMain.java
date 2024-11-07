@@ -120,6 +120,11 @@ public class TeleOpMain extends OpMode {
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         }
+        else if (gamepad2.dpad_left) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL2);
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL2_SETUP);
+            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        }
         else {
             activateArm = false;
         }
