@@ -21,7 +21,9 @@ public class TeleOpMain extends OpMode {
      * when it rotates.
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 40;
-    public static double SLOWER_TURN_SPEED_MULTIPLIER = 0.25;
+    public static double SLOWER_SPEED_MULTIPLIER = 0.25;
+
+    private boolean slowMovement = false;
 
     private FieldCentricDriveTrain driveTrain;
 
@@ -80,8 +82,8 @@ public class TeleOpMain extends OpMode {
         final double strafe = gamepad1.left_stick_x;
         final double forward = -gamepad1.left_stick_y;
         final double rotate = -gamepad1.right_stick_x;
-        if (gamepad1.left_bumper || gamepad1.right_bumper) {
-            driveTrain.setVelocity(strafe, forward, rotate * SLOWER_TURN_SPEED_MULTIPLIER);
+        if (slowMovement || gamepad1.left_bumper || gamepad1.right_bumper) {
+            driveTrain.setVelocity(strafe * SLOWER_SPEED_MULTIPLIER, forward * SLOWER_SPEED_MULTIPLIER, rotate * SLOWER_SPEED_MULTIPLIER);
         }
         else {
             driveTrain.setVelocity(strafe, forward, rotate);
@@ -104,26 +106,31 @@ public class TeleOpMain extends OpMode {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
             arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+            slowMovement = false;
         }
         else if (gamepad2.x) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
             arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
             intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
+            slowMovement = true;
         }
         else if (gamepad2.b) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
             arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
             intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
+            slowMovement = true;
         }
         else if (gamepad2.dpad_up) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+            slowMovement = false;
         }
         else if (gamepad2.dpad_left) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL2);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL2_SETUP);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+            slowMovement = false;
         }
         else {
             activateArm = false;
