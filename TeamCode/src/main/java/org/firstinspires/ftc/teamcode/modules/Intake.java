@@ -27,7 +27,8 @@ public class Intake extends Module {
 
     public static final String WRIST_SERVO_NAME = "Wrist Servo";
 
-    private static final double SERVO_SPEED = 0.5;
+    private static final double SERVO_SPEED_GRAB = 0.5;
+    private static final double SERVO_SPEED_EJECT = 0.25;
 
     public static double WRIST_POSITION_INTAKE = 0.51;
     public static double WRIST_POSITION_MOVING = 0.40;
@@ -84,7 +85,7 @@ public class Intake extends Module {
      */
     public void eject() {
         intakeServo.runIfAvailable(i -> {
-            i.setPower(SERVO_SPEED);
+            i.setPower(SERVO_SPEED_EJECT);
         });
     }
 
@@ -94,7 +95,7 @@ public class Intake extends Module {
      */
     public void grab() {
         intakeServo.runIfAvailable(i -> {
-            i.setPower(-SERVO_SPEED);
+            i.setPower(-SERVO_SPEED_GRAB);
         });
     }
 
