@@ -1,10 +1,16 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import android.util.Pair;
+
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
@@ -71,6 +77,10 @@ public class DriveTrain extends Module {
         return hardwareDevices.requireLoadedDevice(DcMotorEx.class, BACK_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
+    Odometry odometry;
+
+    Pose2D robotPose;
+
 
     /**
      * The default name of the back left mecanum driver
@@ -114,6 +124,8 @@ public class DriveTrain extends Module {
 
             getTelemetry().addLine("[Drive Train] Found all drive motors");
         }, () -> getTelemetry().addLine("[Drive Train] Could not find all drive motors!"));
+
+        odometry = new Odometry(hardwareDevices.getHardwareMap());
     }
 
     /**
@@ -207,7 +219,16 @@ public class DriveTrain extends Module {
             rightBackPower = Math.pow(rightBackPower, POWER_SCALE) * SCALE;
             leftBackPower = Math.pow(leftBackPower, POWER_SCALE) * SCALE;
 
+            // adds telemetry for drivetrain motors
             getTelemetry().addData("Setting motor power", "%f, %f, %f, %f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
+
+            //updates and adds telemetry for odometry
+            robotPose = odometry.getPose();
+            getTelemetry().addData("Robot Position", "x: %f, y: %f, h: %f",
+                    robotPose.getX(Odometry.distanceUnit),
+                    robotPose.getY(Odometry.distanceUnit),
+                    robotPose.getHeading(Odometry.angleUnit)
+            );
 
             // Send calculated power to wheels
             getFrontLeftMecanumDriver().setPower(leftFrontPower);
@@ -215,5 +236,9 @@ public class DriveTrain extends Module {
             getBackRightMecanumDriver().setPower(rightBackPower);
             getBackLeftMecanumDriver().setPower(leftBackPower);
         });
+    }
+
+    public Pose2D getRobotPose(){
+        return robotPose;
     }
 }

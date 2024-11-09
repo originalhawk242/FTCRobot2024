@@ -21,7 +21,7 @@ public class TeleOpMain extends OpMode {
      * when it rotates.
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 40;
-    public static double SLOWER_TURN_SPEED_MULTIPLIER = 0.25;
+    public static double SLOWER_TURN_SPEED_MULTIPLIER = 0.35;
 
     private FieldCentricDriveTrain driveTrain;
 
@@ -119,6 +119,14 @@ public class TeleOpMain extends OpMode {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        }
+        else if(gamepad2.dpad_left){
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LV2_SETUP);
+            intake.moveWristTo(Intake.WRIST_POSITION_START);
+        }
+        else if(gamepad2.dpad_right){
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         }
         else {
             activateArm = false;
