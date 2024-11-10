@@ -25,6 +25,14 @@ public class LinearSlide extends Module {
     private static final double SLIDE_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/11))) * 28);
     private static final int SLIDE_MAX_EXTENSION_TICKS = 2500;
 
+    /**
+     * The maximum absolute power the slide can have and still be considered 'idle.'
+     * If the motor is being set to use more than this amount of power, the arm will be
+     * considered to be moving.
+     * @see #isMoving()
+     */
+    public static double IDLE_POWER_THRESHOLD = 0.05;
+
     @Config
     public static class SlideConfig {
         public static double P_COEF = 0.0033;
@@ -98,6 +106,10 @@ public class LinearSlide extends Module {
     public void moveSlideTo(double height) {
         setTargetHeight(height);
         motor.runIfAvailable(PIDFDcMotor::waitUntilPointReached);
+    }
+
+    public boolean isMoving() {
+        return Math.abs(motor.requireDevice().getPower()) > IDLE_POWER_THRESHOLD;
     }
 
     /**

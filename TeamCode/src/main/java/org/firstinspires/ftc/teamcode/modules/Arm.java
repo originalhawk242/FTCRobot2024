@@ -26,6 +26,14 @@ public class Arm extends Module {
     public static final String POSITION_SWITCH_NAME = "Position Switch";
 
     /**
+     * The maximum absolute power the arm can have and still be considered 'idle.'
+     * If the motors are being set to use more than this amount of power, the arm will be
+     * considered to be moving.
+     * @see #isMoving()
+     */
+    public static double IDLE_POWER_THRESHOLD = 0.05;
+
+    /**
      * The offset, in ticks, our intended 'zero position' is from the motor's actual 'zero position'
      */
     private int baseOffsetTicks;
@@ -40,6 +48,7 @@ public class Arm extends Module {
      * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
      */
     private static final double ARM_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/17))) * (1+(46.0/17)) * 28);
+    private static final double TICKS_TO_DEGREES = ARM_ENCODER_RESOLUTION * 5 / 360;
     private final PIDFController controller;
 
     /**
@@ -47,10 +56,10 @@ public class Arm extends Module {
      */
     @Config
     public static class ArmConfig {
-        public static double P_COEF = 0.003;
+        public static double P_COEF = 0.02;
         public static double I_COEF = 0;
-        public static double D_COEF = 0;
-        public static double F_COEF = 0;
+        public static double D_COEF = 0.001;
+        public static double F_COEF = 1;
         public static double TOLERANCE = 2;
     }
 
@@ -183,7 +192,26 @@ public class Arm extends Module {
 
     public void setTargetRotationAbsolute(double rotation) {
         // 360 degrees maps to 1 rotation, with a 5:1 gear ratio
-        setTargetPosition((int)(rotation * ARM_ENCODER_RESOLUTION * 5 / 360) + baseOffsetTicks);
+        setTargetPosition((int)(rotation * TICKS_TO_DEGREES) + baseOffsetTicks);
+    }
+
+    /**
+     * @see #setTargetRotationAbsolute(double)
+     */
+    public double getCurrentRotationAbsolute() {
+        return (motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).getCurrentPosition() - baseOffsetTicks) / TICKS_TO_DEGREES;
+    }
+
+    public double getCurrentRotation() {
+        return getCurrentRotationAbsolute() - baseRotation;
+    }
+
+    public boolean isMoving() {
+        return Math.abs(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).getPower()) > IDLE_POWER_THRESHOLD;
+    }
+
+    private double calculateFeedForward() {
+        return ArmConfig.F_COEF * Math.cos(getCurrentRotation());
     }
 
     /**
@@ -192,11 +220,14 @@ public class Arm extends Module {
     public void updateMotorPowers() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
-            controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+            controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, 0);
             controller.setTolerance(ArmConfig.TOLERANCE);
             DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
             DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
-            double power = controller.calculate(leftMotor.getCurrentPosition()); // use one encoder for safety and apply the same power to both motors
+            double power = calculateFeedForward();
+            if (!controller.atSetPoint()) {
+                power += controller.calculate(leftMotor.getCurrentPosition()); // use one encoder for safety and apply the same power to both motors
+            }
             leftMotor.setPower(power);
             rightMotor.setPower(power);
             getTelemetry().addData("Arm power", power);
