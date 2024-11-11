@@ -216,10 +216,8 @@ public class Arm extends Module {
             controller.setTolerance(ArmConfig.TOLERANCE);
             DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
             DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
-            double power = calculateFeedForward();
-            if (!controller.atSetPoint()) {
-                power += controller.calculate(leftMotor.getCurrentPosition()); // use one encoder for safety and apply the same power to both motors
-            }
+            // use one encoder for safety and apply the same power to both motors
+            final double power = controller.calculate(leftMotor.getCurrentPosition()) + calculateFeedForward();
             leftMotor.setPower(power);
             rightMotor.setPower(power);
             getTelemetry().addData("Arm power", power);
