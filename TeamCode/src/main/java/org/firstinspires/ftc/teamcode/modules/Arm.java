@@ -56,9 +56,9 @@ public class Arm extends Module {
      */
     @Config
     public static class ArmConfig {
-        public static double P_COEF = 0.02;
+        public static double P_COEF = 0.003;
         public static double I_COEF = 0;
-        public static double D_COEF = 0.001;
+        public static double D_COEF = 0;
         public static double F_COEF = 1;
         public static double TOLERANCE = 2;
     }
