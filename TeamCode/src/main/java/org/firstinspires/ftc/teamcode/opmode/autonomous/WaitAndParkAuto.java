@@ -48,7 +48,7 @@ public class WaitAndParkAuto extends LinearOpMode {
         slide.setTargetHeight(0);
         slide.updateMotorPower();
         arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPowers();
+        arm.updateMotorPower();
         Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
 
@@ -78,7 +78,7 @@ public class WaitAndParkAuto extends LinearOpMode {
 
         arm.activate();
         arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPowers();
+        arm.updateMotorPower();
         Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
 

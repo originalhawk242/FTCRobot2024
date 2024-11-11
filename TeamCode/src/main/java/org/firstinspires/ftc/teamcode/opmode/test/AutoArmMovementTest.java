@@ -35,7 +35,7 @@ public class AutoArmMovementTest extends LinearOpMode {
             if (isStopRequested()) {
                 return;
             }
-            arm.updateMotorPowers();
+            arm.updateMotorPower();
             slide.updateMotorPower();
             telemetry.update();
         } while (arm.isMoving() && slide.isMoving());

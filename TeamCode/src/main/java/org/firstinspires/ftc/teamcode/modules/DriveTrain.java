@@ -124,7 +124,8 @@ public class DriveTrain extends Module {
             getTelemetry().addLine("[Drive Train] Found all drive motors");
         }, () -> getTelemetry().addLine("[Drive Train] Could not find all drive motors!"));
 
-        odometry = new Odometry(registrar.hardwareMap);
+        odometry = new Odometry(registrar);
+        robotPose = odometry.getPose();
     }
 
     /**
@@ -191,14 +192,15 @@ public class DriveTrain extends Module {
     public void setVelocity(double strafe, double forward, double rotation) {
         hardwareDevices.executeIfAllAreAvailable(() -> {
             final double actualRotation = -rotation;
+            double scaledStrafe = strafe * Math.sqrt(3);
             getTelemetry().addData("[Drive Train] Moving by vector:", "<%f, %f, %f>", strafe, forward, actualRotation);
 
             // Combine the requests for each axis-motion to determine each wheel's power.
             // (formula was found on gm0)
-            double leftFrontPower = forward + strafe + actualRotation;
-            double leftBackPower = forward - strafe + actualRotation;
-            double rightFrontPower = forward - strafe - actualRotation;
-            double rightBackPower = forward + strafe - actualRotation;
+            double leftFrontPower = forward + scaledStrafe + actualRotation;
+            double leftBackPower = forward - scaledStrafe + actualRotation;
+            double rightFrontPower = forward - scaledStrafe - actualRotation;
+            double rightBackPower = forward + scaledStrafe - actualRotation;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.

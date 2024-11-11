@@ -20,7 +20,7 @@ public class TeleOpMain extends OpMode {
      * Needs to be nonzero to ensure that the wrist isn't pushing against the ground
      * when it rotates.
      */
-    public static int INITIAL_JUMP_TIME_MILLIS = 40;
+    public static int INITIAL_JUMP_TIME_MILLIS = 80;
     public static double SLOWER_SPEED_MULTIPLIER = 0.35;
 
     private boolean slowMovement = false;
@@ -60,7 +60,7 @@ public class TeleOpMain extends OpMode {
 //        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
 //        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPowers();
+        arm.updateMotorPower();
         try {
             Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
         } catch (InterruptedException ignored) {}
@@ -137,7 +137,7 @@ public class TeleOpMain extends OpMode {
         }
 
         slide.updateMotorPower();
-        arm.updateMotorPowers();
+        arm.updateMotorPower();
         if (gamepad2.y) {
             deactivateArm();
         }

@@ -11,13 +11,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
+import org.firstinspires.ftc.teamcode.hardware.UpdateableMotorPower;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
 /**
  * This module controls the arm, which rotates the intake mechanism around the robot
  */
 @Config
-public class Arm extends Module {
+public class Arm extends Module implements UpdateableMotorPower {
     private final ConditionalHardwareDeviceGroup motors;
     public static final String LEFT_ARM_MOTOR_NAME = "Left Arm Motor";
     public static final String RIGHT_ARM_MOTOR_NAME = "Right Arm Motor";
@@ -209,7 +210,7 @@ public class Arm extends Module {
     /**
      * Sets the motor powers to the current result of the PIDF algorithm
      */
-    public void updateMotorPowers() {
+    public void updateMotorPower() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, 0);
@@ -250,7 +251,7 @@ public class Arm extends Module {
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
         do {
-            updateMotorPowers();
+            updateMotorPower();
             monitorPositionSwitch();
         } while (!controller.atSetPoint());
     }
@@ -266,5 +267,9 @@ public class Arm extends Module {
         telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
         telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
         telemetry.addData("Target motor position", controller.getSetPoint());
+    }
+
+    public boolean isAtPosition(){
+        return controller.atSetPoint();
     }
 }

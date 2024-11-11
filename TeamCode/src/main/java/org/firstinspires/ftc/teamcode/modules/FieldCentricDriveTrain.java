@@ -64,7 +64,7 @@ public class FieldCentricDriveTrain extends DriveTrain {
             getTelemetry().addData("[Field Centric Drive Train] current x velocity", rotX);
             getTelemetry().addData("[Field Centric Drive Train] current y velocity", rotY);
             getTelemetry().addData("[Field Centric Drive Train] bot heading value", botHeading);
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
+            rotX = rotX;  // Counteract imperfect strafing
 
             super.setVelocity(rotX, rotY, rotation);
         });
