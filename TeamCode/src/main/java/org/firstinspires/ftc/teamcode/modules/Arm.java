@@ -59,7 +59,7 @@ public class Arm extends Module {
         public static double P_COEF = 0.003;
         public static double I_COEF = 0;
         public static double D_COEF = 0;
-        public static double F_COEF = 1;
+        public static double F_COEF = 0;
         public static double TOLERANCE = 2;
     }
 
