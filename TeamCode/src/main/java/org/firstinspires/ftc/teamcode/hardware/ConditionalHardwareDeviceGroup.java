@@ -110,4 +110,8 @@ public final class ConditionalHardwareDeviceGroup {
     public void executeIfAllAreAvailable(Runnable runnable) {
         executeIfAllAreAvailable(runnable, () -> {});
     }
+
+    public HardwareMap getHardwareMap() {
+        return hardwareMap;
+    }
 }

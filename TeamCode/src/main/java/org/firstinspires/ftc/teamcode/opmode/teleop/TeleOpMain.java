@@ -21,7 +21,7 @@ public class TeleOpMain extends OpMode {
      * when it rotates.
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 40;
-    public static double SLOWER_SPEED_MULTIPLIER = 0.25;
+    public static double SLOWER_SPEED_MULTIPLIER = 0.35;
 
     private boolean slowMovement = false;
 
