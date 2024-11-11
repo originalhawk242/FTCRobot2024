@@ -61,7 +61,7 @@ public class Arm extends Module implements UpdateableMotorPower {
      */
     public static double ARM_ROTATION_INTAKE = -15.5;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 60;
+    public static double ARM_ROTATION_SCORING = 87;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;
     public static double ARM_ROTATION_HANG_LVL2_SETUP = 90;
     public static double ARM_ROTATION_HANG_LVL2_GRAB = 118;
@@ -267,9 +267,5 @@ public class Arm extends Module implements UpdateableMotorPower {
         telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
         telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
         telemetry.addData("Target motor position", controller.getSetPoint());
-    }
-
-    public boolean isAtPosition(){
-        return controller.atSetPoint();
     }
 }

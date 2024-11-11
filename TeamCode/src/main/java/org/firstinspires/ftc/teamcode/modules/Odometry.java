@@ -16,8 +16,8 @@ public class Odometry extends Module {
     public static double LINEAR_SCALAR = 1.0655;
     private final boolean USE_OTOS = true;
 
-    public static final DistanceUnit distanceUnit = DistanceUnit.CM;
-    public static final AngleUnit angleUnit = AngleUnit.RADIANS;
+    public static final DistanceUnit distanceUnit = DistanceUnit.INCH;
+    public static final AngleUnit angleUnit = AngleUnit.DEGREES;
 
     private double x;
     private double y;
@@ -36,7 +36,7 @@ public class Odometry extends Module {
         otos.setAngularUnit(angleUnit);
 
         // offsets the Pose2D that the OTOS provides to account for non-centered positioning on the robot
-        otos.setOffset(new SparkFunOTOS.Pose2D(0,0,0));
+        otos.setOffset(new SparkFunOTOS.Pose2D(4.5,2,0));
 
         // to be edited based on calibration/testing
         otos.setLinearScalar(LINEAR_SCALAR);

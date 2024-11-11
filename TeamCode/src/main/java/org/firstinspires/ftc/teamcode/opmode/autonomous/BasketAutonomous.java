@@ -19,17 +19,17 @@ import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 @Autonomous
 public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
-    public static double X1 = -33;
-    public static double Y1 = 12;
-    public static double H1 = 135;
+    public static double X1 = -27;
+    public static double Y1 = 9;
+    public static double H1 = -45;
 
-    public static double X2 = -4;
-    public static double Y2 = 40;
-    public static double H2 = -90;
+    public static double X2 = -26;
+    public static double Y2 = 10;
+    public static double H2 = 25;
 
-    public static double X3 = 0;
-    public static double Y3 = 40;
-    public static double H3 = -90;
+    public static double X3 = -26;
+    public static double Y3 = 16;
+    public static double H3 = 25;
 
     // position for move 1
     public final Pose2D move1 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X1, Y1, PID_ToPoint.ROTATE_UNIT, H1);
@@ -68,7 +68,7 @@ public class BasketAutonomous extends LinearOpMode {
 
         while(!arm.monitorPositionSwitch()){
             slide.updateMotorPower();
-            Thread.sleep(10);
+            Thread.sleep(5);
         }
         arm.activate();
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
@@ -82,19 +82,32 @@ public class BasketAutonomous extends LinearOpMode {
         while(timer.time() < 0.5){
             slide.updateMotorPower();
             arm.updateMotorPower();
+            Thread.sleep(5);
         }
         intake.settle();
 
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+
+        timer.reset();
+        while(timer.time() < 0.75){
+            arm.updateMotorPower();
+            slide.updateMotorPower();
+        }
+
+        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
+        intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
 
         movementPID.move(move2);
 
-        arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
+        intake.grab();
 
         movementPID.move(move3);
 
-        arm.deactivate();
+        intake.settle();
+
 
         while(!isStopRequested()){
             arm.updateMotorPower();
