@@ -26,14 +26,6 @@ public class Arm extends Module {
     public static final String POSITION_SWITCH_NAME = "Position Switch";
 
     /**
-     * The maximum absolute power the arm can have and still be considered 'idle.'
-     * If the motors are being set to use more than this amount of power, the arm will be
-     * considered to be moving.
-     * @see #isMoving()
-     */
-    public static double IDLE_POWER_THRESHOLD = 0.05;
-
-    /**
      * The offset, in ticks, our intended 'zero position' is from the motor's actual 'zero position'
      */
     private int baseOffsetTicks;
@@ -207,7 +199,7 @@ public class Arm extends Module {
     }
 
     public boolean isMoving() {
-        return Math.abs(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).getPower()) > IDLE_POWER_THRESHOLD;
+        return Math.abs(motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME).getPower()) > calculateFeedForward();
     }
 
     private double calculateFeedForward() {
