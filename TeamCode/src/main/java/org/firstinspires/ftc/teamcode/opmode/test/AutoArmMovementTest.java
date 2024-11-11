@@ -43,8 +43,7 @@ public class AutoArmMovementTest extends LinearOpMode {
         telemetry.addLine("Movement complete");
         telemetry.update();
 
-        arm.setTargetRotationAbsolute(arm.getCurrentRotationAbsolute());
-        arm.updateMotorPowers();
+        arm.deactivate();
 
         while (opModeIsActive()) {
             Thread.yield();
