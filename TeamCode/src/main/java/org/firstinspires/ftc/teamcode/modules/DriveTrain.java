@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.modules.core.Module;
  *      the robot decides what is forward based on the direction of the robot.
  *      For a field-centric drive train, use the FieldCentricDriveTrain module.
  */
-
 public class DriveTrain extends Module {
     /**
      * The motor that drives the front right mecanum wheel
@@ -77,9 +76,9 @@ public class DriveTrain extends Module {
         return hardwareDevices.requireLoadedDevice(DcMotorEx.class, BACK_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
-    Odometry odometry;
+    private final Odometry odometry;
 
-    Pose2D robotPose;
+    private Pose2D robotPose;
 
 
     /**
@@ -125,7 +124,7 @@ public class DriveTrain extends Module {
             getTelemetry().addLine("[Drive Train] Found all drive motors");
         }, () -> getTelemetry().addLine("[Drive Train] Could not find all drive motors!"));
 
-        odometry = new Odometry(hardwareDevices.getHardwareMap());
+        odometry = new Odometry(registrar.hardwareMap);
     }
 
     /**
