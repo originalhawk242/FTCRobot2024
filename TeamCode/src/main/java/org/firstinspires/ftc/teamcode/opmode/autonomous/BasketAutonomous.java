@@ -15,12 +15,14 @@ import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 
+import java.util.concurrent.TimeUnit;
+
 @Config
 @Autonomous
 public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
-    public static double X1 = -20;
-    public static double Y1 = 16;
+    public static double X1 = -25;
+    public static double Y1 = 13;
     public static double H1 = 135;
 
     public static double X2 = -26;
@@ -36,7 +38,7 @@ public class BasketAutonomous extends LinearOpMode {
     //public static double H4 = ;
 
     // position for move 1
-    public final Pose2D preload = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PID_ToPoint.ROTATE_UNIT, H1);
+    public final Pose2D preload = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PIDToPoint.ROTATE_UNIT, H1);
 
     // position for move 2
     public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
@@ -44,13 +46,12 @@ public class BasketAutonomous extends LinearOpMode {
     // positions for move 3
     public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
 
-    //public final Pose2D sample1 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X4, Y4, PID_ToPoint.ROTATE_UNIT, H4);
-
     private static ElapsedTime timer = new ElapsedTime();
+
+    final ModuleManager moduleManager = new ModuleManager(this);
 
     @Override
     public void runOpMode() throws InterruptedException {
-        final ModuleManager moduleManager = new ModuleManager(this);
         final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
         final Arm arm = moduleManager.getModule(Arm.class);
         final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
@@ -74,7 +75,6 @@ public class BasketAutonomous extends LinearOpMode {
 
         while (!arm.monitorPositionSwitch()) {
             slide.updateMotorPower();
-            Thread.sleep(5);
         }
         arm.activate();
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
@@ -84,14 +84,32 @@ public class BasketAutonomous extends LinearOpMode {
         movementPID.move(preload);
 
         intake.eject();
+        waitForTime(500); //milliseconds
         intake.settle();
 
-        while (!isStopRequested()) {
-            arm.updateMotorPower();
+        // we're done with autonomous -- reset the everything for teleop
+        driveTrain.setVelocity(0, 0, 0);
+
+        // we're using setrotation and updatemotorpower here not to
+        // actually move the arm to a point, but to give the arm constant upward
+        // motion so the intake has time to move to its start position
+        arm.activate();
+        if (arm.getCurrentRotationAbsolute() < 20) {
+            arm.setTargetRotationAbsolute(20);
+        }
+        intake.moveWristTo(Intake.WRIST_POSITION_START);
+        arm.updateMotorPower();
+        slide.setTargetHeight(0);
+        slide.updateMotorPower();
+        Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
+        arm.deactivate();
+
+        // keep everything stable until auto ends
+        while (opModeIsActive()) {
             slide.updateMotorPower();
         }
 
-/*
+        /*
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
@@ -115,6 +133,18 @@ public class BasketAutonomous extends LinearOpMode {
         intake.settle();
 
         */
-
+    }
+    protected final void waitForTime (long timeToWait) {
+        final Arm arm = moduleManager.getModule(Arm.class);
+        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+        ElapsedTime run = new ElapsedTime();
+        run.reset();
+        while (run.time(TimeUnit.MILLISECONDS) < timeToWait){
+            if (isStopRequested()){
+                return;
+            }
+            slide.updateMotorPower();
+            arm.updateMotorPower();
+        }
     }
 }
