@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.action.PID_ToPoint;
-import org.firstinspires.ftc.teamcode.hardware.UpdateableMotorPower;
+import org.firstinspires.ftc.teamcode.action.PIDToPoint;
+import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -36,13 +36,13 @@ public class BasketAutonomous extends LinearOpMode {
     //public static double H4 = ;
 
     // position for move 1
-    public final Pose2D preload = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X1, Y1, PID_ToPoint.ROTATE_UNIT, H1);
+    public final Pose2D preload = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PID_ToPoint.ROTATE_UNIT, H1);
 
     // position for move 2
-    public final Pose2D move2 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X2, Y2, PID_ToPoint.ROTATE_UNIT, H2);
+    public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
 
     // positions for move 3
-    public final Pose2D move3 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X3, Y3, PID_ToPoint.ROTATE_UNIT, H3);
+    public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
 
     //public final Pose2D sample1 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X4, Y4, PID_ToPoint.ROTATE_UNIT, H4);
 
@@ -57,8 +57,8 @@ public class BasketAutonomous extends LinearOpMode {
         final Intake intake = moduleManager.getModule(Intake.class);
         TeleOpMain.resetSlidePosition = false;
 
-        PID_ToPoint movementPID = new PID_ToPoint(driveTrain, this);
-        movementPID.setUpdateableMechanisms(new UpdateableMotorPower[]{arm, slide});
+        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+        movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
 
         waitForStart();
 

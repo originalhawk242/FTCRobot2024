@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
-import org.firstinspires.ftc.teamcode.hardware.UpdateableMotorPower;
+import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
 /**
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.modules.core.Module;
  */
 
 @Config
-public class LinearSlide extends Module implements UpdateableMotorPower {
+public class LinearSlide extends Module implements MotorPowerUpdater {
     private final ConditionalHardwareDevice<PIDFDcMotor> motor;
     public static final String SLIDE_MOTOR_NAME = "Slide Motor";
     /**
