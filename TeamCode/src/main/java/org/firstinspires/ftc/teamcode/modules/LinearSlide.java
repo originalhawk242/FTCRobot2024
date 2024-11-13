@@ -45,7 +45,7 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
 
     public static double SLIDE_HEIGHT_INTAKE = 0.9163;
     public static double SLIDE_HEIGHT_MOVING = 0.0120;
-    public static double SLIDE_HEIGHT_SCORING = 0.81;
+    public static double SLIDE_HEIGHT_SCORING = 1;
     public static double SLIDE_HEIGHT_HANG_LVL1 = 0.5000;
     public static double SLIDE_HEIGHT_HANG_LVL2 = 0.0100;
 

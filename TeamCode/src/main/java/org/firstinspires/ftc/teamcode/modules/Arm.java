@@ -72,7 +72,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     /**
      * The PID controller used to move the arm to its target position
      */
-    private final PIDController controller;
+    private final PIDFController controller;
 
     /**
      * The coefficients for the arm's PIDF controller
@@ -109,7 +109,7 @@ public class Arm extends Module implements MotorPowerUpdater {
      */
     public static double ARM_ROTATION_INTAKE = -15.5;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 87;
+    public static double ARM_ROTATION_SCORING = 65;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;
     public static double ARM_ROTATION_HANG_LVL2_SETUP = 90;
     public static double ARM_ROTATION_HANG_LVL2_GRAB = 118;
