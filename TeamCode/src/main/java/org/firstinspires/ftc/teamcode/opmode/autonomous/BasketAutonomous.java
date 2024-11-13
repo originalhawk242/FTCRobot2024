@@ -19,9 +19,9 @@ import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 @Autonomous
 public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
-    public static double X1 = -27;
-    public static double Y1 = 9;
-    public static double H1 = -45;
+    public static double X1 = -20;
+    public static double Y1 = 16;
+    public static double H1 = 135;
 
     public static double X2 = -26;
     public static double Y2 = 10;
@@ -31,14 +31,20 @@ public class BasketAutonomous extends LinearOpMode {
     public static double Y3 = 16;
     public static double H3 = 25;
 
+    //public static double X4 = ;
+    //public static double Y4 = ;
+    //public static double H4 = ;
+
     // position for move 1
-    public final Pose2D move1 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X1, Y1, PID_ToPoint.ROTATE_UNIT, H1);
+    public final Pose2D preload = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X1, Y1, PID_ToPoint.ROTATE_UNIT, H1);
 
     // position for move 2
     public final Pose2D move2 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X2, Y2, PID_ToPoint.ROTATE_UNIT, H2);
 
     // positions for move 3
     public final Pose2D move3 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X3, Y3, PID_ToPoint.ROTATE_UNIT, H3);
+
+    //public final Pose2D sample1 = new Pose2D(PID_ToPoint.TRANSLATE_UNIT, X4, Y4, PID_ToPoint.ROTATE_UNIT, H4);
 
     private static ElapsedTime timer = new ElapsedTime();
 
@@ -66,7 +72,7 @@ public class BasketAutonomous extends LinearOpMode {
 
         intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
 
-        while(!arm.monitorPositionSwitch()){
+        while (!arm.monitorPositionSwitch()) {
             slide.updateMotorPower();
             Thread.sleep(5);
         }
@@ -75,17 +81,17 @@ public class BasketAutonomous extends LinearOpMode {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
 
-        movementPID.move(move1);
+        movementPID.move(preload);
 
         intake.eject();
-        timer.reset();
-        while(timer.time() < 0.5){
-            slide.updateMotorPower();
-            arm.updateMotorPower();
-            Thread.sleep(5);
-        }
         intake.settle();
 
+        while (!isStopRequested()) {
+            arm.updateMotorPower();
+            slide.updateMotorPower();
+        }
+
+/*
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
@@ -108,11 +114,7 @@ public class BasketAutonomous extends LinearOpMode {
 
         intake.settle();
 
-
-        while(!isStopRequested()){
-            arm.updateMotorPower();
-            slide.updateMotorPower();
-        }
+        */
 
     }
 }
