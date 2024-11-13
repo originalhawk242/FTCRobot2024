@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,17 +20,37 @@ import org.firstinspires.ftc.teamcode.modules.core.Module;
  */
 @Config
 public class Arm extends Module implements MotorPowerUpdater {
+    /**
+     * Contains both motors used to move the arm <br>
+     * IMPORTANT: To ensure that the arm doesn't tear itself apart,
+     * make sure to set both motors to the same power value <br>
+     * ALSO IMPORTANT: All of the PID logic uses the left arm position as input, don't use the
+     * right arm motor for comparisons
+     */
     private final ConditionalHardwareDeviceGroup motors;
+    /**
+     * The name of the left arm motor
+     */
     public static final String LEFT_ARM_MOTOR_NAME = "Left Arm Motor";
     public static final String RIGHT_ARM_MOTOR_NAME = "Right Arm Motor";
 
+    /**
+     * The position switch.  This is used to detect where the arm's 'zero position' is whenever the arm resets
+     */
     private final ConditionalHardwareDevice<TouchSensor> positionSwitch;
+
     public static final String POSITION_SWITCH_NAME = "Position Switch";
 
     /**
      * The offset, in ticks, our intended 'zero position' is from the motor's actual 'zero position'
+     * @deprecated this has been abandoned in favor of {@link #baseRotation} for use in resetting the arm
      */
     private int baseOffsetTicks;
+    /**
+     * The initial offset the arm should have when this module is initialized
+     * @see #baseOffsetTicks
+     * @deprecated {@link #baseOffsetTicks} has been abandoned in favor of {@link #baseRotation} for use in resetting the arm
+     */
     private static final int DEFAULT_OFFSET_TICKS = 190;
 
     /**
@@ -38,21 +59,48 @@ public class Arm extends Module implements MotorPowerUpdater {
     private boolean active = false;
 
     /**
-     * Encoder resolution for the 5203 117 RPM DC Motors used by the arm
+     * Encoder resolution for the 5203 117 RPM DC Motors used by the arm <br>
+     * This is the amount of encoder ticks that represent one full revolution of the motor
      */
     private static final double ARM_ENCODER_RESOLUTION = ((((1+(46.0/17))) * (1+(46.0/17))) * (1+(46.0/17)) * 28);
+    /**
+     * The factor used to convert motor ticks to degrees of rotation.
+     * The encoder resolution maps to 360 degrees of rotation, and the arm uses a 5:1 gear ratio.
+     */
     private static final double TICKS_TO_DEGREES = ARM_ENCODER_RESOLUTION * 5 / 360;
-    private final PIDFController controller;
+
+    /**
+     * The PID controller used to move the arm to its target position
+     */
+    private final PIDController controller;
 
     /**
      * The coefficients for the arm's PIDF controller
      */
     @Config
     public static class ArmConfig {
+        /**
+         * The proportional coefficient
+         */
         public static double P_COEF = 0.003;
+        /**
+         * The integral coefficient
+         */
         public static double I_COEF = 0;
+        /**
+         * The derivative coefficient
+         */
         public static double D_COEF = 0;
+        /**
+         * The feedforward coefficient <br>
+         * @implNote Instead of using ftclib's PIDFController, we use their
+         * PIDController and add a custom feedforward
+         */
         public static double F_COEF = 0;
+        /**
+         * How many motor ticks the controller needs to be within the target to be considered
+         * to have arrived
+         */
         public static double TOLERANCE = 2;
     }
 
