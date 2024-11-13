@@ -11,14 +11,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
-import org.firstinspires.ftc.teamcode.hardware.UpdateableMotorPower;
+import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
 /**
  * This module controls the arm, which rotates the intake mechanism around the robot
  */
 @Config
-public class Arm extends Module implements UpdateableMotorPower {
+public class Arm extends Module implements MotorPowerUpdater {
     private final ConditionalHardwareDeviceGroup motors;
     public static final String LEFT_ARM_MOTOR_NAME = "Left Arm Motor";
     public static final String RIGHT_ARM_MOTOR_NAME = "Right Arm Motor";

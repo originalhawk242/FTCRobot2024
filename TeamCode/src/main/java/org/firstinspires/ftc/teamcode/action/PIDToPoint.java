@@ -3,21 +3,19 @@ package org.firstinspires.ftc.teamcode.action;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
-import org.firstinspires.ftc.teamcode.hardware.UpdateableMotorPower;
+import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 
 @Config
-public class PID_ToPoint {
-    private LinearOpMode program;
-    private FieldCentricDriveTrain driveTrain;
-    private UpdateableMotorPower[] updateableMechanisms = new UpdateableMotorPower[0];
+public class PIDToPoint {
+    private final LinearOpMode program;
+    private final FieldCentricDriveTrain driveTrain;
+    private MotorPowerUpdater[] updatableMechanisms = new MotorPowerUpdater[0];
 
     private Pose2D targetPose;
     public static final DistanceUnit TRANSLATE_UNIT = DistanceUnit.INCH;
@@ -45,16 +43,14 @@ public class PID_ToPoint {
     public static double ROTATE_TOLERANCE = 2;
 
     /**
-     * Constructor for a PID_ToPoint object
+     * Creates a PIDToPoint object using the provided drive train and opmode
      * Can be used for the entirety of an OpMode by changing the targetPosition
      * @param inputDriveTrain the FieldCentricDriveTrain that is meant to be moved
      * @param opMode the LinearOpMode the object is being used in (needed for isStopCalled() and telemetry)
      */
-    public PID_ToPoint(FieldCentricDriveTrain inputDriveTrain, LinearOpMode opMode){
-        // assign object to driveTrain
+    public PIDToPoint(FieldCentricDriveTrain inputDriveTrain, LinearOpMode opMode) {
         driveTrain = inputDriveTrain;
 
-        // assign opMode to program
         program = opMode;
 
         // initialize PID controllers
@@ -68,36 +64,38 @@ public class PID_ToPoint {
     }
 
     /**
-     * moves the robot to the targetPosition
+     * moves the robot to the target position
      */
-    public void move(){
-        // used the end of the move to
+    public void move() {
+        // used the end of the move to report the duration of the move
         timer.reset();
 
         // avoids a NullPointerException
-        if(targetPose == null){
+        if(targetPose == null) {
             return;
         }
 
         // loop for driveTrain position PID, etc.
-        while(!xController.atSetPoint() || !yController.atSetPoint() || !hController.atSetPoint()){
-            Pose2D currentRobotPose = driveTrain.getRobotPose();
+        while(!xController.atSetPoint() || !yController.atSetPoint() || !hController.atSetPoint()) {
+
+
+            final Pose2D currentRobotPose = driveTrain.getRobotPose();
 
             // updates PID controllers with current robot position (for the given axis)
-            double xPower = xController.calculate(currentRobotPose.getX(TRANSLATE_UNIT));
-            double yPower = yController.calculate(currentRobotPose.getY(TRANSLATE_UNIT));
-            double hPower = hController.calculate(currentRobotPose.getHeading(ROTATE_UNIT));
+            final double xPower = xController.calculate(currentRobotPose.getX(TRANSLATE_UNIT));
+            final double yPower = yController.calculate(currentRobotPose.getY(TRANSLATE_UNIT));
+            final double hPower = hController.calculate(currentRobotPose.getHeading(ROTATE_UNIT));
 
-            // sets driveTrain velocity based on PID controller output
+            // set driveTrain velocity based on PID controller output
             driveTrain.setVelocity(xPower, yPower, hPower);
 
             // update all updateableMechanisms
-            for(UpdateableMotorPower mechanism : updateableMechanisms){
+            for(MotorPowerUpdater mechanism : updatableMechanisms){
                 mechanism.updateMotorPower();
             }
 
             // if the OpMode wants to stop, stop
-            if(program.isStopRequested()){
+            if(program.isStopRequested()) {
                 return;
             }
 
@@ -138,7 +136,7 @@ public class PID_ToPoint {
      * sets mechanisms that need to be updated during the move()
      * @param updateables an UpdateableMotorPower[] of mechanisms that need to have their control loops run during move()
      */
-    public void setUpdateableMechanisms(UpdateableMotorPower[] updateables){
-        updateableMechanisms = updateables;
+    public void setUpdatableMechanisms(MotorPowerUpdater[] updateables){
+        updatableMechanisms = updateables;
     }
 }
