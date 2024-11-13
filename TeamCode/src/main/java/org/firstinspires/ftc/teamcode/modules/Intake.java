@@ -110,6 +110,7 @@ public class Intake extends Module {
 
     /**
      * Toggles the rotation of the wrist
+     * @deprecated use {@link #moveWristTo(double)} to set the position directly instead
      */
     public void turn() {
         wristServo.runIfAvailable(w -> {
