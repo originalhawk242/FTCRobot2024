@@ -158,9 +158,9 @@ public class Arm extends Module implements MotorPowerUpdater {
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
         active = true;
 
-        controller = new PIDFController(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+        controller = new PIDController(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
 
-        controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+        controller.setPID(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
         controller.setTolerance(ArmConfig.TOLERANCE);
 
         positionSwitch = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, TouchSensor.class, POSITION_SWITCH_NAME);
@@ -296,6 +296,7 @@ public class Arm extends Module implements MotorPowerUpdater {
         return true;
     }
 
+    @Deprecated
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
         do {
