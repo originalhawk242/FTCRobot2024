@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.action.PIDToPoint;
 import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
@@ -86,6 +88,14 @@ public class BasketAutonomous extends LinearOpMode {
         intake.eject();
         waitForTime(500); //milliseconds
         intake.settle();
+
+        movementPID.move(new Pose2D(
+                DistanceUnit.INCH,
+                preload.getX(DistanceUnit.INCH) - 0.5,
+                preload.getY(DistanceUnit.INCH) + 0.5,
+                AngleUnit.DEGREES,
+                preload.getHeading(AngleUnit.DEGREES)
+        ));
 
         // we're done with autonomous -- reset the everything for teleop
         driveTrain.setVelocity(0, 0, 0);
