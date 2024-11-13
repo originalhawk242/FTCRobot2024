@@ -72,7 +72,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     /**
      * The PID controller used to move the arm to its target position
      */
-    private final PIDFController controller;
+    private final PIDController controller;
 
     /**
      * The coefficients for the arm's PIDF controller
