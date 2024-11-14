@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.modules;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 
@@ -17,6 +19,8 @@ import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 public class FieldCentricDriveTrain extends DriveTrain {
 
     public static final AngleUnit ANGLE_UNIT = AngleUnit.RADIANS;
+
+    private double headingOffset = 0;
 
     /**
      * The IMU
@@ -47,16 +51,20 @@ public class FieldCentricDriveTrain extends DriveTrain {
         }, () -> getTelemetry().addLine("[Field Centric Drive Train] Couldn't find IMU!"));
     }
 
-
-
     public void resetRotation() {
-        hardwareDevices.executeIfAllAreAvailable(getIMU()::resetYaw);
+        headingOffset = getRobotPose().getHeading(ANGLE_UNIT);
     }
 
     @Override
     public void setVelocity(double strafe, double forward, double rotation) {
+        if (!odometry.isConnected()) {
+            getTelemetry().addLine("! OTOS DISCONNECTED !");
+            super.setVelocity(strafe, forward, rotation);
+            return;
+        }
+
         hardwareDevices.executeIfAllAreAvailable(() -> {
-            double botHeading = getIMU().getRobotYawPitchRollAngles().getYaw(ANGLE_UNIT);
+            double botHeading = getRobotPose().getHeading(ANGLE_UNIT) - headingOffset;
 
             // Rotate the movement direction counter to the robot's rotation
             double rotX = strafe * Math.cos(-botHeading) - forward * Math.sin(-botHeading);

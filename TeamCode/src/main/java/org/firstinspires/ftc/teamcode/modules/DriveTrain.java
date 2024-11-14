@@ -76,7 +76,7 @@ public class DriveTrain extends Module {
         return hardwareDevices.requireLoadedDevice(DcMotorEx.class, BACK_LEFT_MECANUM_DRIVER_DEFAULT_NAME);
     }
 
-    private final Odometry odometry;
+    protected final Odometry odometry;
 
     private Pose2D robotPose;
 
