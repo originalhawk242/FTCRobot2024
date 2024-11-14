@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 @Autonomous
 public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
+    public static double SAFE_MOVE_DISTANCE_X_AND_Y = 6;
+
     public static double X1 = -25;
     public static double Y1 = 13;
     public static double H1 = 135;
@@ -34,6 +36,12 @@ public class BasketAutonomous extends LinearOpMode {
     public static double X3 = -26;
     public static double Y3 = 16;
     public static double H3 = 25;
+
+    public static double INTAKE1_X = 6;
+    public static double INTAKE1_Y = 12;
+    public static double INTAKE1_HEADING = 45;
+
+    public Pose2D intake1 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING);
 
     //public static double X4 = ;
     //public static double Y4 = ;
@@ -48,7 +56,7 @@ public class BasketAutonomous extends LinearOpMode {
     // positions for move 3
     public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
 
-    private static ElapsedTime timer = new ElapsedTime();
+    private static final ElapsedTime timer = new ElapsedTime();
 
     final ModuleManager moduleManager = new ModuleManager(this);
 
@@ -91,11 +99,28 @@ public class BasketAutonomous extends LinearOpMode {
 
         movementPID.move(new Pose2D(
                 DistanceUnit.INCH,
-                preload.getX(DistanceUnit.INCH) - 0.5,
-                preload.getY(DistanceUnit.INCH) + 0.5,
+                preload.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                preload.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
                 AngleUnit.DEGREES,
                 preload.getHeading(AngleUnit.DEGREES)
         ));
+
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        waitForTime(500);
+        movementPID.move(intake1);
+        intake.grab();
+        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
+        intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
+        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
+        waitForTime(1000);
+        intake.settle();
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        waitForTime(5000);
 
         // we're done with autonomous -- reset the everything for teleop
         driveTrain.setVelocity(0, 0, 0);
@@ -144,14 +169,14 @@ public class BasketAutonomous extends LinearOpMode {
 
         */
     }
-    protected final void waitForTime (long timeToWait) {
+    protected final void waitForTime (long timeToWait) throws InterruptedException {
         final Arm arm = moduleManager.getModule(Arm.class);
         final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
         ElapsedTime run = new ElapsedTime();
         run.reset();
         while (run.time(TimeUnit.MILLISECONDS) < timeToWait){
             if (isStopRequested()){
-                return;
+                throw new InterruptedException();
             }
             slide.updateMotorPower();
             arm.updateMotorPower();
