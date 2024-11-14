@@ -170,7 +170,13 @@ public class DriveTrain extends Module {
 
     @Override
     public void log() {
-        // nothing to log
+        //update and add telemetry for odometry
+        robotPose = odometry.getPose();
+        getTelemetry().addData("Robot Position", "x: %f, y: %f, h: %f",
+                robotPose.getX(Odometry.distanceUnit),
+                robotPose.getY(Odometry.distanceUnit),
+                robotPose.getHeading(Odometry.angleUnit)
+        );
     }
 
     /**
@@ -222,14 +228,6 @@ public class DriveTrain extends Module {
 
             // adds telemetry for drivetrain motors
             getTelemetry().addData("Setting motor power", "%f, %f, %f, %f", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
-
-            //updates and adds telemetry for odometry
-            robotPose = odometry.getPose();
-            getTelemetry().addData("Robot Position", "x: %f, y: %f, h: %f",
-                    robotPose.getX(Odometry.distanceUnit),
-                    robotPose.getY(Odometry.distanceUnit),
-                    robotPose.getHeading(Odometry.angleUnit)
-            );
 
             // Send calculated power to wheels
             getFrontLeftMecanumDriver().setPower(leftFrontPower);
