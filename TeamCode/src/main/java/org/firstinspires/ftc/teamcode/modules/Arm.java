@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -109,7 +108,7 @@ public class Arm extends Module implements MotorPowerUpdater {
      */
     public static double ARM_ROTATION_INTAKE = -15.5;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 60;
+    public static double ARM_ROTATION_SCORING = 65;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;
     public static double ARM_ROTATION_HANG_LVL2_SETUP = 90;
     public static double ARM_ROTATION_HANG_LVL2_GRAB = 118;
@@ -158,9 +157,9 @@ public class Arm extends Module implements MotorPowerUpdater {
         }, () -> getTelemetry().addLine("Failed to load arm motors!"));
         active = true;
 
-        controller = new PIDFController(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+        controller = new PIDController(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
 
-        controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, ArmConfig.F_COEF);
+        controller.setPID(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
         controller.setTolerance(ArmConfig.TOLERANCE);
 
         positionSwitch = ConditionalHardwareDevice.tryGetHardwareDevice(registrar.hardwareMap, TouchSensor.class, POSITION_SWITCH_NAME);
@@ -296,6 +295,7 @@ public class Arm extends Module implements MotorPowerUpdater {
         return true;
     }
 
+    @Deprecated
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
         do {
