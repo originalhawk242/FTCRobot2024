@@ -100,7 +100,7 @@ public class Odometry extends Module {
 
     @Override
     public boolean isConnected() {
-        return false;
+        return true;
     }
 
     @Override
