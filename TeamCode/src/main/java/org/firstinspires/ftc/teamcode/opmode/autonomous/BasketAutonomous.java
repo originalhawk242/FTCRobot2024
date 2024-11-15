@@ -73,6 +73,8 @@ public class BasketAutonomous extends LinearOpMode {
 
         waitForStart();
 
+        /* reset arm position */
+
         // get arm out of way
         slide.setTargetHeight(0);
         slide.updateMotorPower();
@@ -87,6 +89,8 @@ public class BasketAutonomous extends LinearOpMode {
             slide.updateMotorPower();
         }
         arm.activate();
+
+        /* score preload */
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
@@ -97,6 +101,7 @@ public class BasketAutonomous extends LinearOpMode {
         waitForTime(500); //milliseconds
         intake.settle();
 
+        // move a bit back from the basket so that the arm can safely move down
         movementPID.move(new Pose2D(
                 DistanceUnit.INCH,
                 preload.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
@@ -109,19 +114,23 @@ public class BasketAutonomous extends LinearOpMode {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
         waitForTime(500);
+
+        /* Intake the 1st sample */
         movementPID.move(intake1);
         intake.grab();
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
         waitForTime(1000);
+        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        waitForTime(5000);
 
+        waitForTime(1000); // remove when auto is finished
+
+        /* cleanup */
         // we're done with autonomous -- reset the everything for teleop
         driveTrain.setVelocity(0, 0, 0);
 
