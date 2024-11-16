@@ -60,7 +60,7 @@ public class BasketAutonomous extends LinearOpMode {
     //public static double H4 = ;
 
     // position for move 1
-    public final Pose2D preload = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PIDToPoint.ROTATE_UNIT, H1);
+    public final Pose2D scoring = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PIDToPoint.ROTATE_UNIT, H1);
 
     // position for move 2
     public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
@@ -187,7 +187,7 @@ public class BasketAutonomous extends LinearOpMode {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
 
-        movementPID.move(preload);
+        movementPID.move(scoring);
 
         intake.eject();
         waitForTime(500); //milliseconds
@@ -196,10 +196,10 @@ public class BasketAutonomous extends LinearOpMode {
         // move a bit back from the basket so that the arm can safely move down
         movementPID.move(new Pose2D(
                 DistanceUnit.INCH,
-                preload.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
-                preload.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                scoring.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                scoring.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
                 AngleUnit.DEGREES,
-                preload.getHeading(AngleUnit.DEGREES)
+                scoring.getHeading(AngleUnit.DEGREES)
         ));
 
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
