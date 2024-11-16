@@ -130,23 +130,23 @@ public class BasketAutonomous extends LinearOpMode {
         arm.activate();
 
         /* score preload */
-        scoreHighBasket(); //score preload
+        scoreHighBasket(arm, slide, intake, movementPID);
 
         /* Intake & score the 1st sample */
         movementPID.move(intake1);
-        intakeSample();
-        scoreHighBasket();
+        intakeSample(intake, arm, slide, driveTrain);
+        scoreHighBasket(arm, slide, intake, movementPID);
 
         /* Intake & score the 2nd sample */
         movementPID.move(intake2);
-        intakeSample();
-        scoreHighBasket();
+        intakeSample(intake, arm, slide, driveTrain);
+        scoreHighBasket(arm, slide, intake, movementPID);
 
         // TODO make movement not stall when robot hits wall
         /* Intake & score the 3rd sample */
         movementPID.move(intake3);
-        intakeSample();
-        scoreHighBasket();
+        intakeSample(intake, arm, slide, driveTrain);
+        scoreHighBasket(arm, slide, intake, movementPID);
 
         /* hang */
         arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
@@ -155,20 +155,6 @@ public class BasketAutonomous extends LinearOpMode {
         movementPID.move(hangSetup);
         movementPID.move(hangFinal);
         arm.deactivate();
-    }
-
-    @Deprecated
-    private void intakeSample(PIDToPoint movementPID, Intake intake, Arm arm, LinearSlide slide) throws InterruptedException {
-        intake.grab();
-        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
-        intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForTime(1000);
-        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
-        intake.settle();
-        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
     }
 
     protected final void waitForTime (long timeToWait) throws InterruptedException {
@@ -185,12 +171,12 @@ public class BasketAutonomous extends LinearOpMode {
         }
     }
 
-    protected void scoreHighBasket() throws InterruptedException {
-        final Arm arm = moduleManager.getModule(Arm.class);
-        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-        final Intake intake = moduleManager.getModule(Intake.class);
-        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+    protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake, PIDToPoint movementPID) throws InterruptedException {
+//        final Arm arm = moduleManager.getModule(Arm.class);
+//        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+//        final Intake intake = moduleManager.getModule(Intake.class);
+//        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
+//        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
 
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
@@ -217,12 +203,11 @@ public class BasketAutonomous extends LinearOpMode {
         waitForTime(500);
     }
 
-    protected void intakeSample() throws InterruptedException {
-        final Arm arm = moduleManager.getModule(Arm.class);
-        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-        final Intake intake = moduleManager.getModule(Intake.class);
-        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+    protected void intakeSample(Intake intake, Arm arm, LinearSlide slide, FieldCentricDriveTrain driveTrain) throws InterruptedException {
+//        final Arm arm = moduleManager.getModule(Arm.class);
+//        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+//        final Intake intake = moduleManager.getModule(Intake.class);
+//        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
 
         intake.grab();
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
