@@ -240,15 +240,12 @@ public class BasketAutonomous extends LinearOpMode {
         waitForTime(1000); // wait a bit for the arm & slide to move in place
 
         // move forward so that the sample is caught
+        // We move for a time instead of using movePID to prevent the program from freezing when
+        // the robot hits a wall
         final Pose2D curPose = driveTrain.getRobotPose();
         final double curAngleTrig = curPose.getHeading(AngleUnit.RADIANS) + (Math.PI / 2);
-        movementPID.move(new Pose2D(
-                DistanceUnit.INCH,
-                curPose.getX(DistanceUnit.INCH) + Math.cos(curAngleTrig),
-                curPose.getY(DistanceUnit.INCH) + Math.sin(curAngleTrig),
-                PIDToPoint.ROTATE_UNIT,
-                curPose.getHeading(PIDToPoint.ROTATE_UNIT)
-        ));
+        driveTrain.setVelocity(Math.cos(curAngleTrig), Math.sin(curAngleTrig), 0);
+        waitForTime(500);
 
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
