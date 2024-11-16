@@ -107,18 +107,18 @@ public class BasketAutonomous extends LinearOpMode {
 
         /* Intake the 1st sample */
         movementPID.move(intake1);
-        intakeSample(movementPID, intake, arm, slide);
+        intakeSample();
         scoreHighBasket();
 
         /* Intake the 2nd sample */
         movementPID.move(intake2);
-        intakeSample(movementPID, intake, arm, slide);
+        intakeSample();
         scoreHighBasket();
 
         // TODO make movement not stall when robot hits wall
         /* Intake the 3rd sample */
         movementPID.move(intake3);
-        intakeSample(movementPID, intake, arm, slide);
+        intakeSample();
         scoreHighBasket();
 
         waitForTime(1000); // remove when auto is finished
@@ -148,6 +148,7 @@ public class BasketAutonomous extends LinearOpMode {
 
     }
 
+    @Deprecated
     private void intakeSample(PIDToPoint movementPID, Intake intake, Arm arm, LinearSlide slide) throws InterruptedException {
         intake.grab();
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
@@ -159,20 +160,6 @@ public class BasketAutonomous extends LinearOpMode {
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-
-        // move a bit back from the basket so that the arm can safely move down
-        movementPID.move(new Pose2D(
-                DistanceUnit.INCH,
-                preload.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
-                preload.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
-                AngleUnit.DEGREES,
-                preload.getHeading(AngleUnit.DEGREES)
-        ));
-
-        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        waitForTime(500);
     }
 
     protected final void waitForTime (long timeToWait) throws InterruptedException {
@@ -205,7 +192,22 @@ public class BasketAutonomous extends LinearOpMode {
         intake.eject();
         waitForTime(500); //milliseconds
         intake.settle();
+
+        // move a bit back from the basket so that the arm can safely move down
+        movementPID.move(new Pose2D(
+                DistanceUnit.INCH,
+                preload.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                preload.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                AngleUnit.DEGREES,
+                preload.getHeading(AngleUnit.DEGREES)
+        ));
+
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        waitForTime(500);
     }
+
     protected void intakeSample() throws InterruptedException {
         final Arm arm = moduleManager.getModule(Arm.class);
         final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
@@ -217,10 +219,19 @@ public class BasketAutonomous extends LinearOpMode {
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForTime(1000);
+        waitForTime(1000); // wait a bit for the arm & slide to move in place
+
+        // move forward so that the sample is caught
         final Pose2D curPose = driveTrain.getRobotPose();
-        final double curAngle = curPose.getHeading(AngleUnit.RADIANS);
-        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
+        final double curAngleTrig = curPose.getHeading(AngleUnit.RADIANS) + (Math.PI / 2);
+        movementPID.move(new Pose2D(
+                DistanceUnit.INCH,
+                curPose.getX(DistanceUnit.INCH) + Math.cos(curAngleTrig),
+                curPose.getY(DistanceUnit.INCH) + Math.sin(curAngleTrig),
+                PIDToPoint.ROTATE_UNIT,
+                curPose.getHeading(PIDToPoint.ROTATE_UNIT)
+        ));
+
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
