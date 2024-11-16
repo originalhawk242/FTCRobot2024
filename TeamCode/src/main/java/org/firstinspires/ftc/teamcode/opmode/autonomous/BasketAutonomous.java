@@ -59,6 +59,15 @@ public class BasketAutonomous extends LinearOpMode {
     public static double INTAKE3_Y = 12;
     public static double INTAKE3_HEADING = 45;
 
+    public static double HANG_SETUP_Y = 30;
+    public static double HANG_SETUP_X = 12;
+    public static double HANG_SETUP_HEADING = -45;
+
+    public static double HANG_FINAL_Y = 30;
+    public static double HANG_FINAL_X = 12;
+    public static double HANG_FINAL_HEADING = -45;
+
+
     /*
      * ! IMPORTANT !
      * These poses are instance fields so that they get updated with the above values whenever
@@ -75,6 +84,10 @@ public class BasketAutonomous extends LinearOpMode {
     public final Pose2D scoring = new Pose2D(PIDToPoint.TRANSLATE_UNIT, SCORING_X, SCORING_Y, PIDToPoint.ROTATE_UNIT, SCORING_HEADING);
 
     public final Pose2D parking = new Pose2D(PIDToPoint.TRANSLATE_UNIT, PARKING_X, PARKING_Y, PIDToPoint.ROTATE_UNIT, PARKING_HEADING);
+
+    public final Pose2D hangSetup = new Pose2D(PIDToPoint.TRANSLATE_UNIT, HANG_SETUP_X, HANG_SETUP_Y, PIDToPoint.ROTATE_UNIT, HANG_SETUP_HEADING);
+
+    public final Pose2D hangFinal = new Pose2D(PIDToPoint.TRANSLATE_UNIT, HANG_FINAL_X, HANG_FINAL_Y, PIDToPoint.ROTATE_UNIT, HANG_FINAL_HEADING);
 
     @Deprecated
     public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
@@ -135,35 +148,13 @@ public class BasketAutonomous extends LinearOpMode {
         intakeSample();
         scoreHighBasket();
 
-        /* park */
-        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        /* hang */
+        arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        movementPID.move(parking);
-
-        /* cleanup */
-        // we're done with autonomous -- reset the everything for teleop
-        driveTrain.setVelocity(0, 0, 0);
-
-        // we're using setrotation and updatemotorpower here not to
-        // actually move the arm to a point, but to give the arm constant upward
-        // motion so the intake has time to move to its start position
-        arm.activate();
-        if (arm.getCurrentRotationAbsolute() < 20) {
-            arm.setTargetRotationAbsolute(20);
-        }
-        intake.moveWristTo(Intake.WRIST_POSITION_START);
-        arm.updateMotorPower();
-        slide.setTargetHeight(0);
-        slide.updateMotorPower();
-        Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
+        movementPID.move(hangSetup);
+        movementPID.move(hangFinal);
         arm.deactivate();
-
-        // keep everything stable until auto ends
-        while (opModeIsActive()) {
-            slide.updateMotorPower();
-        }
-
     }
 
     @Deprecated
