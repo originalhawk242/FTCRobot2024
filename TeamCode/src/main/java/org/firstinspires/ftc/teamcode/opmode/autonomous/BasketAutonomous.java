@@ -142,7 +142,6 @@ public class BasketAutonomous extends LinearOpMode {
         intakeSample(intake, arm, slide, driveTrain);
         scoreHighBasket(arm, slide, intake, movementPID);
 
-        // TODO make movement not stall when robot hits wall
         /* Intake & score the 3rd sample */
         movementPID.move(intake3);
         intakeSample(intake, arm, slide, driveTrain);
