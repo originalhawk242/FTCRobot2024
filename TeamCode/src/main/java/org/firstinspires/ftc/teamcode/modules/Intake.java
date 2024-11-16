@@ -47,15 +47,15 @@ public class Intake extends Module {
         return baseWristOffset;
     }
 
-    private static double clamp(double val, double min, double max) {
-        return Math.min(Math.max(val, min), max);
+    private static double clampToServoBounds(double val) {
+        return Math.min(Math.max(val, 0.0), 1.0);
     }
 
     /**
      * Sets the offset applied to any values passed to {@link #moveWristTo(double)}
      */
     public void setBaseWristOffset(double baseWristOffset) {
-        this.baseWristOffset = clamp(baseWristOffset, 0.0, 1.0);
+        this.baseWristOffset = clampToServoBounds(baseWristOffset);
     }
 
     private double baseWristOffset = 0;
@@ -158,7 +158,7 @@ public class Intake extends Module {
         // TODO I would move this assertion to after offset is applied, but it would cause normal code to throw
         assert position <= 1.0 && position >= 0.0;
         wristServo.runIfAvailable(w -> {
-            currentWristPosition = clamp(position + baseWristOffset, 0.0, 1.0);
+            currentWristPosition = clampToServoBounds(position + baseWristOffset);
             w.setPosition(currentWristPosition);
         });
     }
