@@ -30,8 +30,8 @@ public class BasketAutonomous extends LinearOpMode {
 
     public static double POST_INTAKE_HEADING = 0;
 
-    public static double SCORING_X = -25;
-    public static double SCORING_Y = 13;
+    public static double SCORING_X = -26;
+    public static double SCORING_Y = 10;
     public static double SCORING_HEADING = 135;
 
     public static double PARKING_X = 12;
