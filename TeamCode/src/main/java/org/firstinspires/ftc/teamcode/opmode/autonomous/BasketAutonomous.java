@@ -64,12 +64,12 @@ public class BasketAutonomous extends LinearOpMode {
     public static double INTAKE3_Y = 12;
     public static double INTAKE3_HEADING = 45;
 
-    public static double HANG_SETUP_Y = 30;
-    public static double HANG_SETUP_X = 12;
+    public static double HANG_SETUP_Y = 36;
+    public static double HANG_SETUP_X = -12;
     public static double HANG_SETUP_HEADING = -45;
 
-    public static double HANG_FINAL_Y = 30;
-    public static double HANG_FINAL_X = 12;
+    public static double HANG_FINAL_Y = 36;
+    public static double HANG_FINAL_X = 0;
     public static double HANG_FINAL_HEADING = -45;
 
 
@@ -149,11 +149,12 @@ public class BasketAutonomous extends LinearOpMode {
         postIntake(arm, slide, intake, driveTrain, movementPID);
         scoreHighBasket(arm, slide, intake, movementPID);
 
-        /* Intake & score the 3rd sample */
-        movementPID.move(intake3);
-        intakeSample(intake, arm, slide, driveTrain);
-        postIntake(arm, slide, intake, driveTrain, movementPID);
-        scoreHighBasket(arm, slide, intake, movementPID);
+        // TODO uncomment if auto ever gets fast enough
+//        /* Intake & score the 3rd sample */
+//        movementPID.move(intake3);
+//        intakeSample(intake, arm, slide, driveTrain);
+//        postIntake(arm, slide, intake, driveTrain, movementPID);
+//        scoreHighBasket(arm, slide, intake, movementPID);
 
         /* hang */
         arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
