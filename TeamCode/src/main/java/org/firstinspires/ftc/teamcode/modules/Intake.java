@@ -123,7 +123,7 @@ public class Intake extends Module {
     }
 
     /**
-     * Sets the wrist to its default rotation
+     * Sets the wrist to its current rotation
      */
     public void holdWristRotation() {
         moveWristTo(currentWristPosition);
