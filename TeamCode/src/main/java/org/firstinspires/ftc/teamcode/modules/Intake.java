@@ -162,7 +162,9 @@ public class Intake extends Module {
     @Override
     public void log() {
         Telemetry telemetry = getTelemetry();
-        if(!intakeServo.isAvailable()) {return;}
+        if(!intakeServo.isAvailable()) {
+            return;
+        }
         CRServo intake = intakeServo.requireDevice();
 
         telemetry.addData("Current Intake Servo Power: ", intake.getPower());
