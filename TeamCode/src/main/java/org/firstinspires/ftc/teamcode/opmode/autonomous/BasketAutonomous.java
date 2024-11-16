@@ -106,63 +106,69 @@ public class BasketAutonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-        final Arm arm = moduleManager.getModule(Arm.class);
-        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-        final Intake intake = moduleManager.getModule(Intake.class);
-        TeleOpMain.resetSlidePosition = false;
+        try {
+            final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
+            final Arm arm = moduleManager.getModule(Arm.class);
+            final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+            final Intake intake = moduleManager.getModule(Intake.class);
+            TeleOpMain.resetSlidePosition = false;
 
-        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
-        movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
+            PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+            movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
 
-        waitForStart();
+            waitForStart();
+            TeleOpMain.resetSlidePosition = false;
 
-        /* reset arm position */
+            /* reset arm position */
 
-        // get arm out of way
-        slide.setTargetHeight(0);
-        slide.updateMotorPower();
-        arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
-        Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
-        arm.deactivate();
-
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
-
-        while (!arm.monitorPositionSwitch()) {
+            // get arm out of way
+            slide.setTargetHeight(0);
             slide.updateMotorPower();
-        }
-        arm.activate();
+            arm.setTargetRotationAbsolute(20);
+            arm.updateMotorPower();
+            Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
+            arm.deactivate();
 
-        /* score preload */
-        scoreHighBasket(arm, slide, intake, movementPID);
+            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
 
-        /* Intake & score the 1st sample */
-        movementPID.move(intake1);
-        intakeSample(intake, arm, slide, driveTrain);
-        postIntake(arm, slide, intake, driveTrain, movementPID);
-        scoreHighBasket(arm, slide, intake, movementPID);
+            while (!arm.monitorPositionSwitch()) {
+                slide.updateMotorPower();
+            }
+            arm.activate();
 
-        /* Intake & score the 2nd sample */
-        movementPID.move(intake2);
-        intakeSample(intake, arm, slide, driveTrain);
-        postIntake(arm, slide, intake, driveTrain, movementPID);
-        scoreHighBasket(arm, slide, intake, movementPID);
+            /* score preload */
+            scoreHighBasket(arm, slide, intake, movementPID);
 
-        // TODO uncomment if auto ever gets fast enough
+            /* Intake & score the 1st sample */
+            movementPID.move(intake1);
+            intakeSample(intake, arm, slide, driveTrain);
+            postIntake(arm, slide, intake, driveTrain, movementPID);
+            scoreHighBasket(arm, slide, intake, movementPID);
+
+            /* Intake & score the 2nd sample */
+            movementPID.move(intake2);
+            intakeSample(intake, arm, slide, driveTrain);
+            postIntake(arm, slide, intake, driveTrain, movementPID);
+            scoreHighBasket(arm, slide, intake, movementPID);
+
+            // TODO uncomment if auto ever gets fast enough
 //        /* Intake & score the 3rd sample */
 //        movementPID.move(intake3);
 //        intakeSample(intake, arm, slide, driveTrain);
 //        postIntake(arm, slide, intake, driveTrain, movementPID);
 //        scoreHighBasket(arm, slide, intake, movementPID);
 
-        /* hang */
-        arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
-        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        movementPID.move(hangSetup);
-        movementPID.move(hangFinal);
-        arm.deactivate();
+            /* hang */
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
+            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+            movementPID.move(hangSetup);
+            movementPID.move(hangFinal);
+            arm.deactivate();
+        }
+        finally {
+            TeleOpMain.resetSlidePosition = false;
+        }
     }
 
     protected final void waitForTime (long timeToWait) throws InterruptedException {
