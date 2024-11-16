@@ -29,8 +29,8 @@ public class BasketAutonomous extends LinearOpMode {
     public static double SCORING_Y = 13;
     public static double SCORING_HEADING = 135;
 
-    public static double PARKING_X = 0;
-    public static double PARKING_Y = 0;
+    public static double PARKING_X = 12;
+    public static double PARKING_Y = 3;
     public static double PARKING_HEADING = 0;
 
     @Deprecated
