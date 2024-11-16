@@ -81,7 +81,7 @@ public class Arm extends Module implements MotorPowerUpdater {
         /**
          * The proportional coefficient
          */
-        public static double P_COEF = 0.005;
+        public static double P_COEF = 0.003;
         /**
          * The integral coefficient
          */
@@ -106,7 +106,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -9;
+    public static double ARM_ROTATION_INTAKE = -15.5;
     public static double ARM_ROTATION_MOVING = 0;
     public static double ARM_ROTATION_SCORING = 65;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;

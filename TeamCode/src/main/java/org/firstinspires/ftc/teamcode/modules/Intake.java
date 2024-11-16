@@ -30,11 +30,11 @@ public class Intake extends Module {
     private static final double SERVO_SPEED_GRAB = 0.5;
     private static final double SERVO_SPEED_EJECT = 0.25;
 
-    public static double WRIST_POSITION_INTAKE = 0.45;
-    public static double WRIST_POSITION_MOVING = 0.50;
-    public static double WRIST_POSITION_SCORING = 0.45;
+    public static double WRIST_POSITION_INTAKE = 0.51;
+    public static double WRIST_POSITION_MOVING = 0.40;
+    public static double WRIST_POSITION_SCORING = 0.35;
     public static double WRIST_POSITION_DEACTIVATED = 0.80;
-    public static double WRIST_POSITION_START = 0.20;
+    public static double WRIST_POSITION_START = 0.2;
 
     private double prevWristPosition;
     private boolean wristActive;
