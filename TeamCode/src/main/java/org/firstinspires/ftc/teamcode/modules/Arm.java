@@ -81,7 +81,7 @@ public class Arm extends Module implements MotorPowerUpdater {
         /**
          * The proportional coefficient
          */
-        public static double P_COEF = 0.003;
+        public static double P_COEF = 0.005;
         /**
          * The integral coefficient
          */
