@@ -81,7 +81,7 @@ public class Arm extends Module implements MotorPowerUpdater {
         /**
          * The proportional coefficient
          */
-        public static double P_COEF = 0.005;
+        public static double P_COEF = 0.003;
         /**
          * The integral coefficient
          */
@@ -89,7 +89,7 @@ public class Arm extends Module implements MotorPowerUpdater {
         /**
          * The derivative coefficient
          */
-        public static double D_COEF = 0.00025;
+        public static double D_COEF = 0;
         /**
          * The feedforward coefficient <br>
          * @implNote Instead of using ftclib's PIDFController, we use their
