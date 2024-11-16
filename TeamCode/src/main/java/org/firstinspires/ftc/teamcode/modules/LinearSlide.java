@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
 import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
@@ -89,6 +90,17 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
         moveSlideTo(SLIDE_HEIGHT_MOVING);
     }
 
+    /**
+     * Resets the slide motor so that the position it is in right now
+     * will be treated as its 'zero position'
+     */
+    public void resetZeroHeightPosition() {
+        motor.runIfAvailable(m -> {
+            m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        });
+    }
+
     private void setTargetPosition(int targetPosition) {
         motor.runIfAvailable(m -> { m.setSetPoint(targetPosition); });
     }
@@ -118,6 +130,11 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
      */
     public void updateMotorPower() {
         motor.runIfAvailable(slide -> {
+            if (slide.isOverCurrent()) {
+                slide.setPower(0);
+                slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
             slide.setPIDF(SlideConfig.P_COEF, SlideConfig.I_COEF, SlideConfig.D_COEF, SlideConfig.F_COEF);
             slide.setTolerance(SlideConfig.TOLERANCE);
 
@@ -131,7 +148,9 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
         if (!motor.isAvailable()) { return; }
         PIDFDcMotor slide = motor.requireDevice();
 
-        telemetry.addData("Current slide position", slide.getCurrentPosition());
-        telemetry.addData("Target slide position", slide.getSetPoint());
+        telemetry.addData("[slide] Current slide position", slide.getCurrentPosition());
+        telemetry.addData("[slide] motor current", slide.getCurrent(CurrentUnit.MILLIAMPS));
+        telemetry.addData("[slide] motor current alert", slide.getCurrentAlert(CurrentUnit.MILLIAMPS));
+        telemetry.addData("[slide] Target slide position", slide.getSetPoint());
     }
 }

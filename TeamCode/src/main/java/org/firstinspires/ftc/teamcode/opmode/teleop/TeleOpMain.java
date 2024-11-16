@@ -22,7 +22,8 @@ public class TeleOpMain extends OpMode {
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 80;
     public static double SLOWER_SPEED_MULTIPLIER = 0.35;
-    public static double INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT = 0.05;
+    public static double INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT = 0.1;
+    public static double INIT_SLIDE_POSITION_OFFSET = -0.3;
 
     private boolean slowMovement = false;
 
@@ -64,11 +65,16 @@ public class TeleOpMain extends OpMode {
 //        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         if (arm.getCurrentRotationAbsolute() < 20) {
             arm.setTargetRotationAbsolute(20);
-            arm.updateMotorPower();
-            try {
-                Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
-            } catch (InterruptedException ignored) {}
         }
+        else {
+            arm.setTargetRotation(arm.getCurrentRotation() + 5);
+        }
+        slide.setTargetHeight(-INIT_SLIDE_POSITION_OFFSET);
+        arm.updateMotorPower();
+        slide.updateMotorPower();
+        try {
+            Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
+        } catch (InterruptedException ignored) {}
         deactivateArm();
 
         driveTrain.resetRotation();
