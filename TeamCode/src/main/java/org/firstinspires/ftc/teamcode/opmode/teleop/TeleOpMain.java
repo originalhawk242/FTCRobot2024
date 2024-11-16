@@ -25,7 +25,7 @@ public class TeleOpMain extends OpMode {
 
     private boolean slowMovement = false;
 
-    private boolean armIsInMoving = false;
+    private boolean armIsInMoving = true;
 
     private FieldCentricDriveTrain driveTrain;
 
