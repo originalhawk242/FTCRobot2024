@@ -35,11 +35,16 @@ public class BasketAutonomous extends LinearOpMode {
 
     @Deprecated
     public static double X2 = -26;
+    @Deprecated
     public static double Y2 = 10;
+    @Deprecated
     public static double H2 = 25;
 
+    @Deprecated
     public static double X3 = -26;
+    @Deprecated
     public static double Y3 = 16;
+    @Deprecated
     public static double H3 = 25;
 
     public static double INTAKE1_X = 6;
@@ -54,23 +59,27 @@ public class BasketAutonomous extends LinearOpMode {
     public static double INTAKE3_Y = 12;
     public static double INTAKE3_HEADING = 45;
 
-    public Pose2D intake1 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING);
+    /*
+     * ! IMPORTANT !
+     * These poses are instance fields so that they get updated with the above values whenever
+     * autonomous is rerun.  This way, the fields above can be updated in FTC Dashboard with the
+     * correct positions during tuning.
+     */
 
-    public Pose2D intake2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE2_X, INTAKE2_Y, PIDToPoint.ROTATE_UNIT, INTAKE2_HEADING);
+    public final Pose2D intake1 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING);
 
-    public Pose2D intake3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE3_X, INTAKE3_Y, PIDToPoint.ROTATE_UNIT, INTAKE3_HEADING);
+    public final Pose2D intake2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE2_X, INTAKE2_Y, PIDToPoint.ROTATE_UNIT, INTAKE2_HEADING);
 
-    //public static double X4 = ;
-    //public static double Y4 = ;
-    //public static double H4 = ;
+    public final Pose2D intake3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE3_X, INTAKE3_Y, PIDToPoint.ROTATE_UNIT, INTAKE3_HEADING);
 
-    // position for move 1
-    public final Pose2D scoring = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PIDToPoint.ROTATE_UNIT, H1);
+    public final Pose2D scoring = new Pose2D(PIDToPoint.TRANSLATE_UNIT, SCORING_X, SCORING_Y, PIDToPoint.ROTATE_UNIT, SCORING_HEADING);
 
-    // position for move 2
+    public final Pose2D parking = new Pose2D(PIDToPoint.TRANSLATE_UNIT, PARKING_X, PARKING_Y, PIDToPoint.ROTATE_UNIT, PARKING_HEADING);
+
+    @Deprecated
     public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
 
-    // positions for move 3
+    @Deprecated
     public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
 
     private static final ElapsedTime timer = new ElapsedTime();
@@ -110,18 +119,18 @@ public class BasketAutonomous extends LinearOpMode {
         /* score preload */
         scoreHighBasket(); //score preload
 
-        /* Intake the 1st sample */
+        /* Intake & score the 1st sample */
         movementPID.move(intake1);
         intakeSample();
         scoreHighBasket();
 
-        /* Intake the 2nd sample */
+        /* Intake & score the 2nd sample */
         movementPID.move(intake2);
         intakeSample();
         scoreHighBasket();
 
         // TODO make movement not stall when robot hits wall
-        /* Intake the 3rd sample */
+        /* Intake & score the 3rd sample */
         movementPID.move(intake3);
         intakeSample();
         scoreHighBasket();
