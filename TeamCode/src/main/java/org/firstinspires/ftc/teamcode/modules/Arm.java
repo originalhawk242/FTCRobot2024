@@ -111,7 +111,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     public static double ARM_ROTATION_SCORING = 65;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;
     public static double ARM_ROTATION_HANG_LVL2_SETUP = 90;
-    public static double ARM_ROTATION_HANG_LVL2_GRAB = 118;
+    public static double ARM_ROTATION_HANG_LVL2_GRAB = 115;
     public static double ARM_ROTATION_HANG_LVL2_PULL = -20;
 
     /**
