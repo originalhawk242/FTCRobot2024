@@ -23,8 +23,9 @@ public class TeleopSlideResetTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         final LinearSlide slide = new LinearSlide(this);
         waitForStart();
-        if (opModeIsActive()) {
+        while (opModeIsActive()) {
             TeleOpMain.resetSlidePosition = false;
         }
+
     }
 }
