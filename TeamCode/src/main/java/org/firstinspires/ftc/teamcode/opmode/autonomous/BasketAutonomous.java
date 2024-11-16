@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
 @Autonomous
 public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
-    public static double SAFE_MOVE_DISTANCE_X_AND_Y = 6;
+    public static double SAFE_MOVE_DISTANCE_X_AND_Y = 12;
 
     public static long INTAKE_FORWARD_DURATION_MS = 1000;
     public static double INTAKE_FORWARD_POWER = 0.35;
 
     public static double POST_INTAKE_HEADING = 0;
 
-    public static double SCORING_X = -26;
+    public static double SCORING_X = -12;
     public static double SCORING_Y = 10;
     public static double SCORING_HEADING = 135;
 
@@ -64,13 +64,13 @@ public class BasketAutonomous extends LinearOpMode {
     public static double INTAKE3_Y = 12;
     public static double INTAKE3_HEADING = 45;
 
-    public static double HANG_SETUP_Y = 36;
-    public static double HANG_SETUP_X = -12;
-    public static double HANG_SETUP_HEADING = -45;
+    public static double HANG_SETUP_Y = 48;
+    public static double HANG_SETUP_X = 12;
+    public static double HANG_SETUP_HEADING = -90;
 
-    public static double HANG_FINAL_Y = 36;
+    public static double HANG_FINAL_Y = 48;
     public static double HANG_FINAL_X = 0;
-    public static double HANG_FINAL_HEADING = -45;
+    public static double HANG_FINAL_HEADING = -90;
 
 
     /*
