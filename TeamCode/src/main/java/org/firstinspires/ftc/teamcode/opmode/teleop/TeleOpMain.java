@@ -25,6 +25,8 @@ public class TeleOpMain extends OpMode {
 
     private boolean slowMovement = false;
 
+    private boolean armIsInMoving = false;
+
     private FieldCentricDriveTrain driveTrain;
 
     private LinearSlide slide;
@@ -107,30 +109,35 @@ public class TeleOpMain extends OpMode {
             arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
             slowMovement = false;
+            armIsInMoving = true;
         }
-        else if (gamepad2.x) {
+        else if (gamepad2.x && armIsInMoving) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
             arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
             intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
             slowMovement = true;
+            armIsInMoving = false;
         }
-        else if (gamepad2.b) {
+        else if (gamepad2.b && armIsInMoving) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
             arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
             intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
             slowMovement = true;
+            armIsInMoving = false;
         }
         else if (gamepad2.dpad_up) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
             slowMovement = false;
+            armIsInMoving = false;
         }
         else if (gamepad2.dpad_left) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL2);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL2_SETUP);
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
             slowMovement = false;
+            armIsInMoving = false;
         }
         else {
             activateArm = false;
