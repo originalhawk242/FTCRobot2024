@@ -61,11 +61,13 @@ public class TeleOpMain extends OpMode {
 //        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
 //        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
 //        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
-        arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
-        try {
-            Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
-        } catch (InterruptedException ignored) {}
+        if (arm.getCurrentRotationAbsolute() < 20) {
+            arm.setTargetRotationAbsolute(20);
+            arm.updateMotorPower();
+            try {
+                Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
+            } catch (InterruptedException ignored) {}
+        }
         deactivateArm();
 
         driveTrain.resetRotation();
