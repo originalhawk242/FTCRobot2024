@@ -25,6 +25,11 @@ public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 6;
 
+    public static long INTAKE_FORWARD_DURATION_MS = 50;
+    public static double INTAKE_FORWARD_POWER = 0.75;
+
+    public static double POST_INTAKE_HEADING = 0;
+
     public static double SCORING_X = -25;
     public static double SCORING_Y = 13;
     public static double SCORING_HEADING = 135;
@@ -135,16 +140,19 @@ public class BasketAutonomous extends LinearOpMode {
         /* Intake & score the 1st sample */
         movementPID.move(intake1);
         intakeSample(intake, arm, slide, driveTrain);
+        postIntake(arm, slide, intake, driveTrain, movementPID);
         scoreHighBasket(arm, slide, intake, movementPID);
 
         /* Intake & score the 2nd sample */
         movementPID.move(intake2);
         intakeSample(intake, arm, slide, driveTrain);
+        postIntake(arm, slide, intake, driveTrain, movementPID);
         scoreHighBasket(arm, slide, intake, movementPID);
 
         /* Intake & score the 3rd sample */
         movementPID.move(intake3);
         intakeSample(intake, arm, slide, driveTrain);
+        postIntake(arm, slide, intake, driveTrain, movementPID);
         scoreHighBasket(arm, slide, intake, movementPID);
 
         /* hang */
@@ -168,6 +176,20 @@ public class BasketAutonomous extends LinearOpMode {
             slide.updateMotorPower();
             arm.updateMotorPower();
         }
+    }
+
+    protected void postIntake(Arm arm, LinearSlide slide, Intake intake, FieldCentricDriveTrain driveTrain, PIDToPoint movementPID) {
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        final Pose2D curPose = driveTrain.getRobotPose();
+        movementPID.move(new Pose2D(
+                PIDToPoint.TRANSLATE_UNIT,
+                curPose.getX(PIDToPoint.TRANSLATE_UNIT),
+                curPose.getY(PIDToPoint.TRANSLATE_UNIT),
+                AngleUnit.DEGREES,
+                POST_INTAKE_HEADING
+        ));
     }
 
     protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake, PIDToPoint movementPID) throws InterruptedException {
@@ -219,8 +241,8 @@ public class BasketAutonomous extends LinearOpMode {
         // the robot hits a wall
         final Pose2D curPose = driveTrain.getRobotPose();
         final double curAngleTrig = curPose.getHeading(AngleUnit.RADIANS) + (Math.PI / 2);
-        driveTrain.setVelocity(Math.cos(curAngleTrig), Math.sin(curAngleTrig), 0);
-        waitForTime(500);
+        driveTrain.setVelocity(INTAKE_FORWARD_POWER * Math.cos(curAngleTrig), INTAKE_FORWARD_POWER * Math.sin(curAngleTrig), 0);
+        waitForTime(INTAKE_FORWARD_DURATION_MS);
 
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
