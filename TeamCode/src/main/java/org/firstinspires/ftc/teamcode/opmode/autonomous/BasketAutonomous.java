@@ -25,10 +25,15 @@ public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 6;
 
-    public static double X1 = -25;
-    public static double Y1 = 13;
-    public static double H1 = 135;
+    public static double SCORING_X = -25;
+    public static double SCORING_Y = 13;
+    public static double SCORING_HEADING = 135;
 
+    public static double PARKING_X = 0;
+    public static double PARKING_Y = 0;
+    public static double PARKING_HEADING = 0;
+
+    @Deprecated
     public static double X2 = -26;
     public static double Y2 = 10;
     public static double H2 = 25;
@@ -121,7 +126,11 @@ public class BasketAutonomous extends LinearOpMode {
         intakeSample();
         scoreHighBasket();
 
-        waitForTime(1000); // remove when auto is finished
+        /* park */
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        movementPID.move(parking);
 
         /* cleanup */
         // we're done with autonomous -- reset the everything for teleop
