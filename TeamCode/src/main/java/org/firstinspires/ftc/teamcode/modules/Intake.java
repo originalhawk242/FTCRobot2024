@@ -40,6 +40,27 @@ public class Intake extends Module {
     private boolean wristActive;
 
     /**
+     * Gets the base wrist offset
+     * @return the offset applied to any values passed to {@link #moveWristTo(double)}
+     */
+    public double getBaseWristOffset() {
+        return baseWristOffset;
+    }
+
+    private static double clamp(double val, double min, double max) {
+        return Math.min(Math.max(val, min), max);
+    }
+
+    /**
+     * Sets the offset applied to any values passed to {@link #moveWristTo(double)}
+     */
+    public void setBaseWristOffset(double baseWristOffset) {
+        this.baseWristOffset = clamp(baseWristOffset, 0.0, 1.0);
+    }
+
+    private double baseWristOffset = 0;
+
+    /**
      * Initializes the module and registers it with the specified OpMode.  This is where references to any hardware
      * devices used by the module are loaded.
      *
@@ -134,10 +155,11 @@ public class Intake extends Module {
      * @param position the desired position of the servo, within the range [0,1]
      */
     public void moveWristTo(double position) {
+        // TODO I would move this assertion to after offset is applied, but it would cause normal code to throw
         assert position <= 1.0 && position >= 0.0;
         wristServo.runIfAvailable(w -> {
-            currentWristPosition = position;
-            w.setPosition(position);
+            currentWristPosition = clamp(position + baseWristOffset, 0.0, 1.0);
+            w.setPosition(currentWristPosition);
         });
     }
 
@@ -167,6 +189,7 @@ public class Intake extends Module {
         }
         CRServo intake = intakeServo.requireDevice();
 
-        telemetry.addData("Current Intake Servo Power: ", intake.getPower());
+        telemetry.addData("Current Wrist Servo Power", intake.getPower());
+        telemetry.addData("Current wrist offset", baseWristOffset);
     }
 }

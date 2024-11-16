@@ -22,6 +22,7 @@ public class TeleOpMain extends OpMode {
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 80;
     public static double SLOWER_SPEED_MULTIPLIER = 0.35;
+    public static double INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT = 0.05;
 
     private boolean slowMovement = false;
 
@@ -103,6 +104,12 @@ public class TeleOpMain extends OpMode {
             intake.eject();
         } else {
             intake.settle();
+        }
+
+        if (gamepad1.left_bumper) {
+            intake.setBaseWristOffset(intake.getBaseWristOffset() - INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT);
+        } else if (gamepad1.right_bumper) {
+            intake.setBaseWristOffset(intake.getBaseWristOffset() + INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT);
         }
 
         boolean activateArm = true;
