@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.*;
@@ -36,6 +37,9 @@ public class TeleOpMain extends OpMode {
     private Arm arm;
 
     private Intake intake;
+
+    private Gamepad prevGP1 = new Gamepad();
+    private Gamepad prevGP2 = new Gamepad();
 
     @Override
     public void init() {
@@ -112,9 +116,9 @@ public class TeleOpMain extends OpMode {
             intake.settle();
         }
 
-        if (gamepad1.left_bumper) {
+        if (gamepad2.start && !prevGP2.start) {
             intake.setBaseWristOffset(intake.getBaseWristOffset() - INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT);
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad2.back && !prevGP2.back) {
             intake.setBaseWristOffset(intake.getBaseWristOffset() + INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT);
         }
 
@@ -189,6 +193,8 @@ public class TeleOpMain extends OpMode {
         arm.log();
         intake.log();
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
+        gamepad1.copy(prevGP1);
+        gamepad2.copy(prevGP2);
     }
 
 
