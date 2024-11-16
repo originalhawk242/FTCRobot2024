@@ -25,8 +25,8 @@ public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 6;
 
-    public static long INTAKE_FORWARD_DURATION_MS = 50;
-    public static double INTAKE_FORWARD_POWER = 0.75;
+    public static long INTAKE_FORWARD_DURATION_MS = 1000;
+    public static double INTAKE_FORWARD_POWER = 0.35;
 
     public static double POST_INTAKE_HEADING = 0;
 
