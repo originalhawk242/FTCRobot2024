@@ -30,14 +30,35 @@ public class Intake extends Module {
     private static final double SERVO_SPEED_GRAB = 0.5;
     private static final double SERVO_SPEED_EJECT = 0.25;
 
-    public static double WRIST_POSITION_INTAKE = 0.45;
+    public static double WRIST_POSITION_INTAKE = 0.60;
     public static double WRIST_POSITION_MOVING = 0.50;
-    public static double WRIST_POSITION_SCORING = 0.45;
-    public static double WRIST_POSITION_DEACTIVATED = 0.80;
-    public static double WRIST_POSITION_START = 0.20;
+    public static double WRIST_POSITION_SCORING = 0.50;
+    public static double WRIST_POSITION_DEACTIVATED = 0.90;
+    public static double WRIST_POSITION_START = 0.2;
 
     private double prevWristPosition;
     private boolean wristActive;
+
+    /**
+     * Gets the base wrist offset
+     * @return the offset applied to any values passed to {@link #moveWristTo(double)}
+     */
+    public double getBaseWristOffset() {
+        return baseWristOffset;
+    }
+
+    private static double clampToServoBounds(double val) {
+        return Math.min(Math.max(val, 0.0), 1.0);
+    }
+
+    /**
+     * Sets the offset applied to any values passed to {@link #moveWristTo(double)}
+     */
+    public void setBaseWristOffset(double baseWristOffset) {
+        this.baseWristOffset = clampToServoBounds(baseWristOffset);
+    }
+
+    private double baseWristOffset = 0;
 
     /**
      * Initializes the module and registers it with the specified OpMode.  This is where references to any hardware
@@ -123,7 +144,7 @@ public class Intake extends Module {
     }
 
     /**
-     * Sets the wrist to its default rotation
+     * Sets the wrist to its current rotation
      */
     public void holdWristRotation() {
         moveWristTo(currentWristPosition);
@@ -134,10 +155,11 @@ public class Intake extends Module {
      * @param position the desired position of the servo, within the range [0,1]
      */
     public void moveWristTo(double position) {
+        // TODO I would move this assertion to after offset is applied, but it would cause normal code to throw
         assert position <= 1.0 && position >= 0.0;
         wristServo.runIfAvailable(w -> {
-            currentWristPosition = position;
-            w.setPosition(position);
+            currentWristPosition = clampToServoBounds(position + baseWristOffset);
+            w.setPosition(currentWristPosition);
         });
     }
 
@@ -162,9 +184,12 @@ public class Intake extends Module {
     @Override
     public void log() {
         Telemetry telemetry = getTelemetry();
-        if(!intakeServo.isAvailable()) {return;}
+        if(!intakeServo.isAvailable()) {
+            return;
+        }
         CRServo intake = intakeServo.requireDevice();
 
-        telemetry.addData("Current Intake Servo Power: ", intake.getPower());
+        telemetry.addData("Current Wrist Servo Power", intake.getPower());
+        telemetry.addData("Current wrist offset", baseWristOffset);
     }
 }

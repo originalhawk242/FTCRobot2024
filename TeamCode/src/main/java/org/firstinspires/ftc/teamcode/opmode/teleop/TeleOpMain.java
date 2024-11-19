@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.*;
@@ -22,8 +23,12 @@ public class TeleOpMain extends OpMode {
      */
     public static int INITIAL_JUMP_TIME_MILLIS = 80;
     public static double SLOWER_SPEED_MULTIPLIER = 0.35;
+    public static double INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT = 0.1;
+    public static double INIT_SLIDE_POSITION_OFFSET = -0.3;
 
     private boolean slowMovement = false;
+
+    private boolean armIsInMoving = true;
 
     private FieldCentricDriveTrain driveTrain;
 
@@ -32,6 +37,9 @@ public class TeleOpMain extends OpMode {
     private Arm arm;
 
     private Intake intake;
+
+    private Gamepad prevGP1 = new Gamepad();
+    private Gamepad prevGP2 = new Gamepad();
 
     @Override
     public void init() {
@@ -59,8 +67,15 @@ public class TeleOpMain extends OpMode {
 //        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
 //        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
 //        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
-        arm.setTargetRotationAbsolute(20);
+        if (arm.getCurrentRotationAbsolute() < 20) {
+            arm.setTargetRotationAbsolute(20);
+        }
+        else {
+            arm.setTargetRotation(arm.getCurrentRotation() + 5);
+        }
+        slide.setTargetHeight(-INIT_SLIDE_POSITION_OFFSET);
         arm.updateMotorPower();
+        slide.updateMotorPower();
         try {
             Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
         } catch (InterruptedException ignored) {}
@@ -101,36 +116,61 @@ public class TeleOpMain extends OpMode {
             intake.settle();
         }
 
+        if (gamepad2.start && !prevGP2.start) {
+            intake.setBaseWristOffset(intake.getBaseWristOffset() - INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT);
+        } else if (gamepad2.back && !prevGP2.back) {
+            intake.setBaseWristOffset(intake.getBaseWristOffset() + INTAKE_WRIST_OFFSET_INCREMENT_AMOUNT);
+        }
+
         boolean activateArm = true;
         if (gamepad2.a) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
             arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
             slowMovement = false;
+            armIsInMoving = true;
         }
-        else if (gamepad2.x) {
+        else if (gamepad2.x && armIsInMoving) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
             arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
             intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
             slowMovement = true;
+            armIsInMoving = false;
         }
-        else if (gamepad2.b) {
+        else if (gamepad2.b && armIsInMoving) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
             arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
             intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
             slowMovement = true;
+            armIsInMoving = false;
         }
         else if (gamepad2.dpad_up) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
-            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+            intake.moveWristTo(Intake.WRIST_POSITION_START);
             slowMovement = false;
+            armIsInMoving = false;
         }
-        else if (gamepad2.dpad_left) {
+        else if (gamepad1.dpad_up) {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL2);
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL2_SETUP);
-            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+            intake.moveWristTo(Intake.WRIST_POSITION_START);
             slowMovement = false;
+            armIsInMoving = false;
+        }
+        else if (gamepad1.dpad_right) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL2);
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL2_GRAB);
+            intake.moveWristTo(Intake.WRIST_POSITION_START);
+            slowMovement = false;
+            armIsInMoving = false;
+        }
+        else if (gamepad1.dpad_down) {
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL2);
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL2_PULL);
+            intake.moveWristTo(Intake.WRIST_POSITION_START);
+            slowMovement = false;
+            armIsInMoving = false;
         }
         else {
             activateArm = false;
@@ -153,6 +193,8 @@ public class TeleOpMain extends OpMode {
         arm.log();
         intake.log();
         telemetry.addData("Gamepad1 Right Trigger: ", gamepad1.right_trigger);
+        gamepad1.copy(prevGP1);
+        gamepad2.copy(prevGP2);
     }
 
 

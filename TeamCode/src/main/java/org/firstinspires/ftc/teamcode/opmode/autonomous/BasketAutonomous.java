@@ -23,18 +23,33 @@ import java.util.concurrent.TimeUnit;
 @Autonomous
 public class BasketAutonomous extends LinearOpMode {
     //config variables for positions
-    public static double SAFE_MOVE_DISTANCE_X_AND_Y = 6;
+    public static double SAFE_MOVE_DISTANCE_X_AND_Y = 12;
 
-    public static double X1 = -25;
-    public static double Y1 = 13;
-    public static double H1 = 135;
+    public static long INTAKE_FORWARD_DURATION_MS = 1000;
+    public static double INTAKE_FORWARD_POWER = 0.35;
 
+    public static double POST_INTAKE_HEADING = 0;
+
+    public static double SCORING_X = -12;
+    public static double SCORING_Y = 10;
+    public static double SCORING_HEADING = 135;
+
+    public static double PARKING_X = 12;
+    public static double PARKING_Y = 3;
+    public static double PARKING_HEADING = 0;
+
+    @Deprecated
     public static double X2 = -26;
+    @Deprecated
     public static double Y2 = 10;
+    @Deprecated
     public static double H2 = 25;
 
+    @Deprecated
     public static double X3 = -26;
+    @Deprecated
     public static double Y3 = 16;
+    @Deprecated
     public static double H3 = 25;
 
     public static double INTAKE1_X = 6;
@@ -49,23 +64,40 @@ public class BasketAutonomous extends LinearOpMode {
     public static double INTAKE3_Y = 12;
     public static double INTAKE3_HEADING = 45;
 
-    public Pose2D intake1 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING);
+    public static double HANG_SETUP_Y = 48;
+    public static double HANG_SETUP_X = 12;
+    public static double HANG_SETUP_HEADING = -90;
 
-    public Pose2D intake2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE2_X, INTAKE2_Y, PIDToPoint.ROTATE_UNIT, INTAKE2_HEADING);
+    public static double HANG_FINAL_Y = 48;
+    public static double HANG_FINAL_X = 0;
+    public static double HANG_FINAL_HEADING = -90;
 
-    public Pose2D intake3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE3_X, INTAKE3_Y, PIDToPoint.ROTATE_UNIT, INTAKE3_HEADING);
 
-    //public static double X4 = ;
-    //public static double Y4 = ;
-    //public static double H4 = ;
+    /*
+     * ! IMPORTANT !
+     * These poses are instance fields so that they get updated with the above values whenever
+     * autonomous is rerun.  This way, the fields above can be updated in FTC Dashboard with the
+     * correct positions during tuning.
+     */
 
-    // position for move 1
-    public final Pose2D preload = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X1, Y1, PIDToPoint.ROTATE_UNIT, H1);
+    public final Pose2D intake1 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING);
 
-    // position for move 2
+    public final Pose2D intake2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE2_X, INTAKE2_Y, PIDToPoint.ROTATE_UNIT, INTAKE2_HEADING);
+
+    public final Pose2D intake3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE3_X, INTAKE3_Y, PIDToPoint.ROTATE_UNIT, INTAKE3_HEADING);
+
+    public final Pose2D scoring = new Pose2D(PIDToPoint.TRANSLATE_UNIT, SCORING_X, SCORING_Y, PIDToPoint.ROTATE_UNIT, SCORING_HEADING);
+
+    public final Pose2D parking = new Pose2D(PIDToPoint.TRANSLATE_UNIT, PARKING_X, PARKING_Y, PIDToPoint.ROTATE_UNIT, PARKING_HEADING);
+
+    public final Pose2D hangSetup = new Pose2D(PIDToPoint.TRANSLATE_UNIT, HANG_SETUP_X, HANG_SETUP_Y, PIDToPoint.ROTATE_UNIT, HANG_SETUP_HEADING);
+
+    public final Pose2D hangFinal = new Pose2D(PIDToPoint.TRANSLATE_UNIT, HANG_FINAL_X, HANG_FINAL_Y, PIDToPoint.ROTATE_UNIT, HANG_FINAL_HEADING);
+
+    @Deprecated
     public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
 
-    // positions for move 3
+    @Deprecated
     public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
 
     private static final ElapsedTime timer = new ElapsedTime();
@@ -74,105 +106,69 @@ public class BasketAutonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-        final Arm arm = moduleManager.getModule(Arm.class);
-        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-        final Intake intake = moduleManager.getModule(Intake.class);
-        TeleOpMain.resetSlidePosition = false;
+        try {
+            final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
+            final Arm arm = moduleManager.getModule(Arm.class);
+            final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+            final Intake intake = moduleManager.getModule(Intake.class);
+            TeleOpMain.resetSlidePosition = false;
 
-        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
-        movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
+            PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+            movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
 
-        waitForStart();
+            waitForStart();
+            TeleOpMain.resetSlidePosition = false;
 
-        /* reset arm position */
+            /* reset arm position */
 
-        // get arm out of way
-        slide.setTargetHeight(0);
-        slide.updateMotorPower();
-        arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
-        Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
-        arm.deactivate();
-
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
-
-        while (!arm.monitorPositionSwitch()) {
+            // get arm out of way
+            slide.setTargetHeight(0);
             slide.updateMotorPower();
-        }
-        arm.activate();
-
-        /* score preload */
-        scoreHighBasket(); //score preload
-
-        /* Intake the 1st sample */
-        movementPID.move(intake1);
-        intakeSample(movementPID, intake, arm, slide);
-        scoreHighBasket();
-
-        /* Intake the 2nd sample */
-        movementPID.move(intake2);
-        intakeSample(movementPID, intake, arm, slide);
-        scoreHighBasket();
-
-        // TODO make movement not stall when robot hits wall
-        /* Intake the 3rd sample */
-        movementPID.move(intake3);
-        intakeSample(movementPID, intake, arm, slide);
-        scoreHighBasket();
-
-        waitForTime(1000); // remove when auto is finished
-
-        /* cleanup */
-        // we're done with autonomous -- reset the everything for teleop
-        driveTrain.setVelocity(0, 0, 0);
-
-        // we're using setrotation and updatemotorpower here not to
-        // actually move the arm to a point, but to give the arm constant upward
-        // motion so the intake has time to move to its start position
-        arm.activate();
-        if (arm.getCurrentRotationAbsolute() < 20) {
             arm.setTargetRotationAbsolute(20);
+            arm.updateMotorPower();
+            Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
+            arm.deactivate();
+
+            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+
+            while (!arm.monitorPositionSwitch()) {
+                slide.updateMotorPower();
+            }
+            arm.activate();
+
+            /* score preload */
+            scoreHighBasket(arm, slide, intake, movementPID);
+
+            /* Intake & score the 1st sample */
+            movementPID.move(intake1);
+            intakeSample(intake, arm, slide, driveTrain);
+            postIntake(arm, slide, intake, driveTrain, movementPID);
+            scoreHighBasket(arm, slide, intake, movementPID);
+
+            /* Intake & score the 2nd sample */
+            movementPID.move(intake2);
+            intakeSample(intake, arm, slide, driveTrain);
+            postIntake(arm, slide, intake, driveTrain, movementPID);
+            scoreHighBasket(arm, slide, intake, movementPID);
+
+            // TODO uncomment if auto ever gets fast enough
+//        /* Intake & score the 3rd sample */
+//        movementPID.move(intake3);
+//        intakeSample(intake, arm, slide, driveTrain);
+//        postIntake(arm, slide, intake, driveTrain, movementPID);
+//        scoreHighBasket(arm, slide, intake, movementPID);
+
+            /* hang */
+            arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
+            slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
+            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+            movementPID.move(hangSetup);
+            movementPID.move(hangFinal);
+            arm.deactivate();
         }
-        intake.moveWristTo(Intake.WRIST_POSITION_START);
-        arm.updateMotorPower();
-        slide.setTargetHeight(0);
-        slide.updateMotorPower();
-        Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
-        arm.deactivate();
-
-        // keep everything stable until auto ends
-        while (opModeIsActive()) {
-            slide.updateMotorPower();
+        finally {
+            TeleOpMain.resetSlidePosition = false;
         }
-
-    }
-
-    private void intakeSample(PIDToPoint movementPID, Intake intake, Arm arm, LinearSlide slide) throws InterruptedException {
-        intake.grab();
-        arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
-        intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForTime(1000);
-        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
-        intake.settle();
-        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-
-        // move a bit back from the basket so that the arm can safely move down
-        movementPID.move(new Pose2D(
-                DistanceUnit.INCH,
-                preload.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
-                preload.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
-                AngleUnit.DEGREES,
-                preload.getHeading(AngleUnit.DEGREES)
-        ));
-
-        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        waitForTime(500);
     }
 
     protected final void waitForTime (long timeToWait) throws InterruptedException {
@@ -189,38 +185,72 @@ public class BasketAutonomous extends LinearOpMode {
         }
     }
 
-    protected void scoreHighBasket() throws InterruptedException {
-        final Arm arm = moduleManager.getModule(Arm.class);
-        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-        final Intake intake = moduleManager.getModule(Intake.class);
-        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+    protected void postIntake(Arm arm, LinearSlide slide, Intake intake, FieldCentricDriveTrain driveTrain, PIDToPoint movementPID) {
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        final Pose2D curPose = driveTrain.getRobotPose();
+        movementPID.move(new Pose2D(
+                PIDToPoint.TRANSLATE_UNIT,
+                curPose.getX(PIDToPoint.TRANSLATE_UNIT),
+                curPose.getY(PIDToPoint.TRANSLATE_UNIT),
+                AngleUnit.DEGREES,
+                POST_INTAKE_HEADING
+        ));
+    }
+
+    protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake, PIDToPoint movementPID) throws InterruptedException {
+//        final Arm arm = moduleManager.getModule(Arm.class);
+//        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+//        final Intake intake = moduleManager.getModule(Intake.class);
+//        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
+//        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
 
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
 
-        movementPID.move(preload);
+        movementPID.move(scoring);
 
         intake.eject();
         waitForTime(500); //milliseconds
         intake.settle();
+
+        // move a bit back from the basket so that the arm can safely move down
+        movementPID.move(new Pose2D(
+                DistanceUnit.INCH,
+                scoring.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                scoring.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
+                AngleUnit.DEGREES,
+                scoring.getHeading(AngleUnit.DEGREES)
+        ));
+
+        arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+        waitForTime(500);
     }
-    protected void intakeSample() throws InterruptedException {
-        final Arm arm = moduleManager.getModule(Arm.class);
-        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-        final Intake intake = moduleManager.getModule(Intake.class);
-        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+
+    protected void intakeSample(Intake intake, Arm arm, LinearSlide slide, FieldCentricDriveTrain driveTrain) throws InterruptedException {
+//        final Arm arm = moduleManager.getModule(Arm.class);
+//        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+//        final Intake intake = moduleManager.getModule(Intake.class);
+//        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
 
         intake.grab();
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForTime(1000);
+        waitForTime(1000); // wait a bit for the arm & slide to move in place
+
+        // move forward so that the sample is caught
+        // We move for a time instead of using movePID to prevent the program from freezing when
+        // the robot hits a wall
         final Pose2D curPose = driveTrain.getRobotPose();
-        final double curAngle = curPose.getHeading(AngleUnit.RADIANS);
-        movementPID.move(new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X - 1, INTAKE1_Y + 1, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING));
+        final double curAngleTrig = curPose.getHeading(AngleUnit.RADIANS) + (Math.PI / 2);
+        driveTrain.setVelocity(INTAKE_FORWARD_POWER * Math.cos(curAngleTrig), INTAKE_FORWARD_POWER * Math.sin(curAngleTrig), 0);
+        waitForTime(INTAKE_FORWARD_DURATION_MS);
+
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);

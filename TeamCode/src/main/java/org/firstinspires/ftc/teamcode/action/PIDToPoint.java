@@ -39,7 +39,7 @@ public class PIDToPoint {
     public static double ROTATE_I = 0;
     public static double ROTATE_D = 0.0;
 
-    public static double TRANSLATE_TOLERANCE = 0.3;
+    public static double TRANSLATE_TOLERANCE = 0.5;
     public static double ROTATE_TOLERANCE = 2;
 
     /**
