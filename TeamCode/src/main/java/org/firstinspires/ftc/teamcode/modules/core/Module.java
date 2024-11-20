@@ -42,7 +42,7 @@ public abstract class Module {
     /**
      * Used for logging from modules
      */
-    protected Telemetry getTelemetry() {
+    protected final Telemetry getTelemetry() {
         return parent.telemetry;
     }
 
