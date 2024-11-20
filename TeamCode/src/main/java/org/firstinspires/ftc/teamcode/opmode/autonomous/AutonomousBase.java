@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode.autonomous;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,6 +21,11 @@ import java.util.function.BooleanSupplier;
  * A base class containing functionality common to all autonomous opmodes
  */
 public abstract class AutonomousBase extends LinearOpMode {
+    @Config
+    public static class AutonomousConstants {
+        public static long DRIVE_TRAIN_PID_DEFAULT_TIMEOUT_MS = 10000;
+    }
+
     /**
      * The {@link ModuleManager} for this opmode.
      * All modules should be accessed through this to avoid creating multiple instances
@@ -44,24 +50,28 @@ public abstract class AutonomousBase extends LinearOpMode {
     /**
      * Blocks the current thread from progressing until the specified time has elapsed.
      * While waiting, this method will update all loaded {@linkplain MotorPowerUpdater MotorPowerUpdaters}
-     * @param timeToWait The amount of time this method will wait for, in the specified unit
-     * @param timeUnit The unit of time timeToWait is using
+     * @param timeoutMs The amount of time this method will wait for, in milliseconds
      * @throws InterruptedException This opmode has been stopped
      */
-    protected final void waitForTime(long timeToWait, TimeUnit timeUnit) throws InterruptedException {
+    protected final void waitForTime(long timeoutMs) throws InterruptedException {
         final ElapsedTime run = new ElapsedTime();
         run.reset();
-        waitUntil(() -> run.time(timeUnit) >= timeToWait);
+        waitUntil(() -> run.time(TimeUnit.MILLISECONDS) >= timeoutMs);
     }
 
     /**
      * Blocks the current thread from progressing until the provided mechanisms no longer need to update.
      * While waiting, updates all loaded {@linkplain MotorPowerUpdater MotorPowerUpdaters}.
-     * @param mechanisms the mechanisms to update along with all other loaded mechanisms
+     * @param timeoutMs The maximum time that can be spent waiting for the mechanisms, in milliseconds
+     * @param mechanisms the mechanisms to update
      * @throws InterruptedException This opmode has been stopped
      */
-    protected final void waitForMotorUpdaters(MotorPowerUpdater ...mechanisms) throws InterruptedException {
-        waitUntil(() -> Arrays.stream(mechanisms).reduce( // true == stop waiting, false == keep waiting
+    protected final void waitForMotorUpdaters(long timeoutMs, MotorPowerUpdater ...mechanisms) throws InterruptedException {
+        final ElapsedTime run = new ElapsedTime();
+        run.reset();
+        // wait until mechanisms are done updating or timeout is reached, whichever comes first
+        waitUntil(() -> run.time(TimeUnit.MILLISECONDS) >= timeoutMs ||
+                Arrays.stream(mechanisms).reduce( // true == stop waiting, false == keep waiting
                 true, // a && true == a
                 (stop, mechanism) -> {
                     if (mechanism.isUpdateNecessary()) {
@@ -105,12 +115,24 @@ public abstract class AutonomousBase extends LinearOpMode {
     /**
      * Waits until the robot has moved to the specified position.
      * While waiting, updates all {@linkplain MotorPowerUpdater MotorPowerUpdaters}
+     * @param timeoutMs The maximum time that should be spent waiting for the robot to finish moving,
+     *                  in milliseconds
+     * @param destination The position for the robot to move to
+     * @throws InterruptedException This opmode has been stopped
+     */
+    protected final void moveRobotTo(long timeoutMs, Pose2D destination) throws InterruptedException {
+        final AutonomousDriveTrain driveTrain = moduleManager.getModule(AutonomousDriveTrain.class);
+        driveTrain.setTargetPose(destination);
+        waitForMotorUpdaters(timeoutMs, driveTrain);
+    }
+
+    /**
+     * Waits until the robot has moved to the specified position.
+     * While waiting, updates all {@linkplain MotorPowerUpdater MotorPowerUpdaters}
      * @param destination The position for the robot to move to
      * @throws InterruptedException This opmode has been stopped
      */
     protected final void moveRobotTo(Pose2D destination) throws InterruptedException {
-        final AutonomousDriveTrain driveTrain = moduleManager.getModule(AutonomousDriveTrain.class);
-        driveTrain.setTargetPose(destination);
-        waitForMotorUpdaters(driveTrain);
+        moveRobotTo(AutonomousConstants.DRIVE_TRAIN_PID_DEFAULT_TIMEOUT_MS, destination);
     }
 }

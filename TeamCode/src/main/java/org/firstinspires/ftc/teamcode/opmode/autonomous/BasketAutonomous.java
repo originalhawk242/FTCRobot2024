@@ -13,13 +13,12 @@ import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 
-import java.util.concurrent.TimeUnit;
-
 @Config
 @Autonomous
 public class BasketAutonomous extends AutonomousBase {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 12;
+    public static long DRIVE_TRAIN_PID_TIMEOUT_MS = 10000;
 
     public static long INTAKE_FORWARD_DURATION_MS = 1000;
     public static double INTAKE_FORWARD_POWER = 0.35;
@@ -114,8 +113,7 @@ public class BasketAutonomous extends AutonomousBase {
             scoreHighBasket(arm, slide, intake);
 
             /* Intake & score the 1st sample */
-            driveTrain.setTargetPose(intake1);
-            waitForMotorUpdaters(driveTrain);
+            moveRobotTo(intake1);
             intakeSample(intake, arm, slide, driveTrain);
             postIntake(arm, slide, intake, driveTrain);
             scoreHighBasket(arm, slide, intake);
@@ -168,7 +166,7 @@ public class BasketAutonomous extends AutonomousBase {
         moveRobotTo(scoring);
 
         intake.eject();
-        waitForTime(500, TimeUnit.MILLISECONDS);
+        waitForTime(500);
         intake.settle();
 
         // move a bit back from the basket so that the arm can safely move down
@@ -183,7 +181,7 @@ public class BasketAutonomous extends AutonomousBase {
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-        waitForTime(500, TimeUnit.MILLISECONDS);
+        waitForMotorUpdaters(500, arm, slide);
     }
 
     protected void intakeSample(Intake intake, Arm arm, LinearSlide slide, FieldCentricDriveTrain driveTrain) throws InterruptedException {
@@ -196,7 +194,7 @@ public class BasketAutonomous extends AutonomousBase {
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForTime(1000, TimeUnit.MILLISECONDS); // wait a bit for the arm & slide to move in place
+        waitForMotorUpdaters(1000, arm, slide); // wait a bit for the arm & slide to move in place
 
         // move forward so that the sample is caught
         // We move for a time instead of using movePID to prevent the program from freezing when
@@ -204,7 +202,7 @@ public class BasketAutonomous extends AutonomousBase {
         final Pose2D curPose = driveTrain.getRobotPose();
         final double curAngleTrig = curPose.getHeading(AngleUnit.RADIANS) + (Math.PI / 2);
         driveTrain.setVelocity(INTAKE_FORWARD_POWER * Math.cos(curAngleTrig), INTAKE_FORWARD_POWER * Math.sin(curAngleTrig), 0);
-        waitForTime(INTAKE_FORWARD_DURATION_MS, TimeUnit.MILLISECONDS);
+        waitForTime(INTAKE_FORWARD_DURATION_MS);
 
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
