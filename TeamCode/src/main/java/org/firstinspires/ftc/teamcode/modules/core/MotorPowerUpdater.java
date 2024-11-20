@@ -36,6 +36,6 @@ public interface MotorPowerUpdater {
                     mechanism.updateMotorPowers();
                 }
             }
-        } while(continueLoop);
+        } while (continueLoop);
     }
 }
