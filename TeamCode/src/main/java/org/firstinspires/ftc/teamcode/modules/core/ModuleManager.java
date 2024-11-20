@@ -83,6 +83,7 @@ public final class ModuleManager {
                             .addCase(Arm.class, c -> new Arm(opMode))
                             .addCase(Intake.class, c -> new Intake(opMode))
                             .addCase(LinearSlide.class, c -> new LinearSlide(opMode))
+                            .addCase(PIDToPoint.class, c -> new PIDToPoint(opMode))
                             .execute(moduleClass)
             );
         }

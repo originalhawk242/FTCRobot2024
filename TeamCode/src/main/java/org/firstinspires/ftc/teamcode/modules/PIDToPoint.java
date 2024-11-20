@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.modules;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 
 @Config
 public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpdater {
-    private final LinearOpMode program;
     private MotorPowerUpdater[] updatableMechanisms = new MotorPowerUpdater[0];
 
     private Pose2D targetPose;
@@ -43,12 +42,10 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
     /**
      * Creates a PIDToPoint object using the provided opmode
      * Can be used for the entirety of an OpMode by changing the targetPosition
-     * @param registrar the LinearOpMode the object is being used in (needed for isStopCalled() and telemetry)
+     * @param registrar the OpMode initializing this module
      */
-    public PIDToPoint(LinearOpMode registrar) {
+    public PIDToPoint(OpMode registrar) {
         super(registrar);
-
-        program = registrar;
 
         // initialize PID controllers
         xController = new PIDController(TRANSLATE_P, TRANSLATE_I,TRANSLATE_D);
@@ -103,8 +100,9 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
 
     /**
      * moves the robot to the target position
+     * @throws InterruptedException The opmode has stopped
      */
-    public void move() {
+    public void move() throws InterruptedException {
         // used the end of the move to report the duration of the move
         timer.reset();
 
@@ -115,12 +113,13 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
 
         // loop for driveTrain position PID, etc.
         while(!xController.atSetPoint() || !yController.atSetPoint() || !hController.atSetPoint()) {
-            updateMotorPowers();
-
-            // if the OpMode wants to stop, stop
-            if(program.isStopRequested()) {
-                return;
+            // TODO this is a jank patch, eventually this loop should be refactored into separate
+            // TODO methods in this class and the auto classes
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
             }
+
+            updateMotorPowers();
 
             // update all telemetry
             getTelemetry().update();
@@ -137,8 +136,9 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
     /**
      * sets the target position and moves the robot to the target position
      * @param target the target robot position to be reached at the end of the move()
+     * @throws InterruptedException The opmode has stopped
      */
-    public void move(Pose2D target){
+    public void move(Pose2D target) throws InterruptedException {
         setTargetPose(target);
         move();
     }
