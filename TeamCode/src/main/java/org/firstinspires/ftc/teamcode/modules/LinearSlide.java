@@ -128,7 +128,7 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
     /**
      * Updates the motor power using the provided PIDF coefficients
      */
-    public void updateMotorPower() {
+    public void updateMotorPowers() {
         motor.runIfAvailable(slide -> {
             if (slide.isOverCurrent()) {
                 slide.setPower(0);

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.action.PIDToPoint;
+import org.firstinspires.ftc.teamcode.modules.PIDToPoint;
 import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
@@ -113,7 +113,7 @@ public class BasketAutonomous extends LinearOpMode {
             final Intake intake = moduleManager.getModule(Intake.class);
             TeleOpMain.resetSlidePosition = false;
 
-            PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+            PIDToPoint movementPID = new PIDToPoint(this);
             movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
 
             waitForStart();
@@ -123,16 +123,16 @@ public class BasketAutonomous extends LinearOpMode {
 
             // get arm out of way
             slide.setTargetHeight(0);
-            slide.updateMotorPower();
+            slide.updateMotorPowers();
             arm.setTargetRotationAbsolute(20);
-            arm.updateMotorPower();
+            arm.updateMotorPowers();
             Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
             arm.deactivate();
 
             intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
 
             while (!arm.monitorPositionSwitch()) {
-                slide.updateMotorPower();
+                slide.updateMotorPowers();
             }
             arm.activate();
 
@@ -180,8 +180,8 @@ public class BasketAutonomous extends LinearOpMode {
             if (isStopRequested()){
                 throw new InterruptedException();
             }
-            slide.updateMotorPower();
-            arm.updateMotorPower();
+            slide.updateMotorPowers();
+            arm.updateMotorPowers();
         }
     }
 

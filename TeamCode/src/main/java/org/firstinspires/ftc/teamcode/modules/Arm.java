@@ -257,7 +257,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     /**
      * Sets the motor powers to the current result of the PIDF algorithm
      */
-    public void updateMotorPower() {
+    public void updateMotorPowers() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, 0);
@@ -299,7 +299,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
         do {
-            updateMotorPower();
+            updateMotorPowers();
             monitorPositionSwitch();
         } while (!controller.atSetPoint());
     }

@@ -46,9 +46,9 @@ public class WaitAndParkAuto extends LinearOpMode {
         waitForStart();
         // get arm out of way
         slide.setTargetHeight(0);
-        slide.updateMotorPower();
+        slide.updateMotorPowers();
         arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
+        arm.updateMotorPowers();
         Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
 
@@ -62,7 +62,7 @@ public class WaitAndParkAuto extends LinearOpMode {
             if (isStopRequested()) {
                 return;
             }
-            slide.updateMotorPower();
+            slide.updateMotorPowers();
         }
 
         driveTrain.setVelocity(0.5, 0, 0);
@@ -71,20 +71,20 @@ public class WaitAndParkAuto extends LinearOpMode {
             if (isStopRequested()) {
                 return;
             }
-            slide.updateMotorPower();
+            slide.updateMotorPowers();
         }
 
         driveTrain.setVelocity(0, 0, 0);
 
         arm.activate();
         arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
+        arm.updateMotorPowers();
         Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
 
         intake.moveWristTo(Intake.WRIST_POSITION_START);
         while (opModeIsActive()) {
-            slide.updateMotorPower();
+            slide.updateMotorPowers();
         }
     }
 }
