@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 @Config
 @Autonomous
 public class ImmediateParkAuto extends LinearOpMode {
-    private static final double DRIVE_ENCODER_RESOLUTION = ((((1+(46/17))) * (1+(46/11))) * 28);
 
     public static double MOVE_TO_PARK_DURATION_SECONDS = 2;
 
