@@ -67,5 +67,7 @@ public abstract class AutonomousBase extends LinearOpMode {
                 },
                 (a, b) -> a && b // returns true only if both a and b are true -> only stops when all mechanisms are done
         ));
+
+        assert Arrays.stream(mechanisms).noneMatch(MotorPowerUpdater::isUpdateNecessary);
     }
 }
