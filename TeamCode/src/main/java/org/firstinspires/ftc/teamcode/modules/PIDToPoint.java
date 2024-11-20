@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
+import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 
 @Config
 public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpdater {
@@ -60,6 +60,7 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
         hController.setTolerance(ROTATE_TOLERANCE);
     }
 
+    @Override
     public void updateMotorPowers() {
         if (xController.atSetPoint() && yController.atSetPoint() && hController.atSetPoint()) {
             setVelocity(0, 0, 0);
@@ -80,6 +81,24 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
         for(MotorPowerUpdater mechanism : updatableMechanisms){
             mechanism.updateMotorPowers();
         }
+    }
+
+    /**
+     * Checks if the motors need to be updated
+     *
+     * @return true if {@link #updateMotorPowers()} needs to be called, false otherwise
+     */
+    @Override
+    public boolean isUpdateNecessary() {
+        // use 'and' instead of 'or' since we are only at our target if x, y, and heading have been reached
+        if (xController.atSetPoint() && yController.atSetPoint() && hController.atSetPoint()) {
+            // we are at our target
+            // since this method will return false, updateMotorPowers() won't be run, so we have to
+            // stop the robot ourselves
+            setVelocity(0, 0, 0);
+            return false; // no update necessary
+        }
+        return true; // we haven't reached our target, so the PID loop should be called again
     }
 
     /**

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.modules.PIDToPoint;
-import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
+import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;

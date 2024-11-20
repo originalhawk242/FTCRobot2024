@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
-import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
+import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
 /**
@@ -100,7 +100,7 @@ public class Arm extends Module implements MotorPowerUpdater {
          * How many motor ticks the controller needs to be within the target to be considered
          * to have arrived
          */
-        public static double TOLERANCE = 2;
+        public static double TOLERANCE = 150; // the current arm PID usually gets around 100 ticks away from the target position
     }
 
     /*
@@ -258,6 +258,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     /**
      * Sets the motor powers to the current result of the PIDF algorithm
      */
+    @Override
     public void updateMotorPowers() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
@@ -271,6 +272,35 @@ public class Arm extends Module implements MotorPowerUpdater {
             rightMotor.setPower(power);
             getTelemetry().addData("Arm power", power);
         });
+    }
+
+    /**
+     * Checks if the motors need to be updated
+     * @return true if {@link #updateMotorPowers()} needs to be called, false otherwise
+     */
+    @Override
+    public boolean isUpdateNecessary() {
+        final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+        // check manually if we are within tolerance since the controller only gets updated with
+        // the motor's current position when calculate() is called, which should only happen in
+        // updateMotorPowers()
+        if (Math.abs(leftMotor.getCurrentPosition() - controller.getSetPoint()) < ArmConfig.TOLERANCE) {
+            // we are at our target position
+            // since we will return false, the caller won't call updateMotorPowers(), so
+            // we need to stop the motors ourselves
+            final double feedForwardPower = calculateFeedForward(); // so the motors can still support themselves
+            leftMotor.setPower(feedForwardPower);
+            try {
+                // if the right motor is connected, stop it as well
+                final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+                rightMotor.setPower(feedForwardPower);
+            }
+            catch (NullPointerException ignored) {
+                // if the right motor is disconnected, we don't have to do anything
+            }
+            return false; // no update necessary
+        }
+        return true; // we are not at our target position -- an update is necessary
     }
 
     /**
