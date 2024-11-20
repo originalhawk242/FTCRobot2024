@@ -138,9 +138,9 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
 
     /**
      * sets mechanisms that need to be updated during the move()
-     * @param updateables an UpdateableMotorPower[] of mechanisms that need to have their control loops run during move()
+     * @param mechanisms an array of mechanisms that need to have their control loops run during move()
      */
-    public void setUpdatableMechanisms(MotorPowerUpdater[] updateables){
-        updatableMechanisms = updateables;
+    public void setUpdatableMechanisms(MotorPowerUpdater[] mechanisms){
+        updatableMechanisms = mechanisms;
     }
 }
