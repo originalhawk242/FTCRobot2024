@@ -101,10 +101,9 @@ public abstract class AutonomousBase extends LinearOpMode {
         slide.updateMotorPowers();
         arm.setTargetRotationAbsolute(20);
         arm.updateMotorPowers();
+        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
         Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
-
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
 
         while (!arm.monitorPositionSwitch()) {
             slide.updateMotorPowers();
