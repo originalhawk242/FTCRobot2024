@@ -185,11 +185,6 @@ public class BasketAutonomous extends AutonomousBase {
     }
 
     protected void intakeSample(Intake intake, Arm arm, LinearSlide slide, FieldCentricDriveTrain driveTrain) throws InterruptedException {
-//        final Arm arm = moduleManager.getModule(Arm.class);
-//        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-//        final Intake intake = moduleManager.getModule(Intake.class);
-//        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-
         intake.grab();
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
