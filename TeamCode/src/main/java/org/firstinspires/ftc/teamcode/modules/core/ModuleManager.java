@@ -92,6 +92,21 @@ public final class ModuleManager {
     }
 
     /**
+     * Updates all loaded {@linkplain MotorPowerUpdater MotorPowerUpdaters}
+     * @see MotorPowerUpdater#updateMotorPowers()
+     */
+    public void updateMotorPowerLoops() {
+        for (Module module : loadedModules) {
+            if (module instanceof MotorPowerUpdater) {
+                MotorPowerUpdater mechanism = (MotorPowerUpdater) module;
+                if (mechanism.isUpdateNecessary()) {
+                    updateMotorPowerLoops();
+                }
+            }
+        }
+    }
+
+    /**
      * Starts all {@link org.firstinspires.ftc.teamcode.modules.concurrent.ModuleThread}s belonging to any loaded
      *  {@link ConcurrentModule}s
      * @see ConcurrentModule#startThreads()
