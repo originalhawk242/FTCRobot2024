@@ -108,22 +108,7 @@ public class BasketAutonomous extends AutonomousBase {
             waitForStart();
             TeleOpMain.resetSlidePosition = false;
 
-            /* reset arm position */
-
-            // get arm out of way
-            slide.setTargetHeight(0);
-            slide.updateMotorPowers();
-            arm.setTargetRotationAbsolute(20);
-            arm.updateMotorPowers();
-            Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
-            arm.deactivate();
-
-            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
-
-            while (!arm.monitorPositionSwitch()) {
-                slide.updateMotorPowers();
-            }
-            arm.activate();
+            resetArmPosition();
 
             /* score preload */
             scoreHighBasket(arm, slide, intake);

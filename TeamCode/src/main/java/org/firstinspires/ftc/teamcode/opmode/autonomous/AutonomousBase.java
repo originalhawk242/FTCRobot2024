@@ -4,9 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.AutonomousDriveTrain;
+import org.firstinspires.ftc.teamcode.modules.Intake;
+import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
+import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +75,31 @@ public abstract class AutonomousBase extends LinearOpMode {
         ));
 
         assert Arrays.stream(mechanisms).noneMatch(MotorPowerUpdater::isUpdateNecessary);
+    }
+
+    /**
+     * Resets the arm's position using the arm's position switch
+     * @throws InterruptedException This opmode has stopped
+     */
+    protected final void resetArmPosition() throws InterruptedException {
+        final Arm arm = moduleManager.getModule(Arm.class);
+        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
+        final Intake intake = moduleManager.getModule(Intake.class);
+
+        // get arm out of way
+        slide.setTargetHeight(0);
+        slide.updateMotorPowers();
+        arm.setTargetRotationAbsolute(20);
+        arm.updateMotorPowers();
+        Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
+        arm.deactivate();
+
+        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+
+        while (!arm.monitorPositionSwitch()) {
+            slide.updateMotorPowers();
+        }
+        arm.activate();
     }
 
     /**
