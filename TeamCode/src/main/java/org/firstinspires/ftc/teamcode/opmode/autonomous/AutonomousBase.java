@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.opmode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.modules.Arm;
-import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 
