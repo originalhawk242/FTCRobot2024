@@ -38,8 +38,8 @@ public class TeleOpMain extends OpMode {
 
     private Intake intake;
 
-    private Gamepad prevGP1 = new Gamepad();
-    private Gamepad prevGP2 = new Gamepad();
+    private final Gamepad prevGP1 = new Gamepad();
+    private final Gamepad prevGP2 = new Gamepad();
 
     @Override
     public void init() {
