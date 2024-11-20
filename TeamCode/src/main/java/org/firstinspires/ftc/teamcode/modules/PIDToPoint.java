@@ -113,8 +113,9 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
 
         // loop for driveTrain position PID, etc.
         while(!xController.atSetPoint() || !yController.atSetPoint() || !hController.atSetPoint()) {
-            // TODO this is a jank patch, eventually this loop should be refactored into separate
-            // TODO methods in this class and the auto classes
+            /* TODO this is a jank patch, eventually this loop should be refactored into separate
+             *  methods in this class and the auto classes
+             */
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
