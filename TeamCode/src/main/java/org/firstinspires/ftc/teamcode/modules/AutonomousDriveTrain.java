@@ -101,7 +101,9 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
     /**
      * moves the robot to the target position
      * @throws InterruptedException The opmode has stopped
+     * @deprecated This method has been superseded by functionality in {@link org.firstinspires.ftc.teamcode.opmode.autonomous.AutonomousBase AutonomousBase}
      */
+    @Deprecated
     public void move() throws InterruptedException {
         // used the end of the move to report the duration of the move
         timer.reset();
@@ -138,7 +140,9 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
      * sets the target position and moves the robot to the target position
      * @param target the target robot position to be reached at the end of the move()
      * @throws InterruptedException The opmode has stopped
+     * @deprecated This method has been superseded by functionality in {@link org.firstinspires.ftc.teamcode.opmode.autonomous.AutonomousBase AutonomousBase}
      */
+    @Deprecated
     public void move(Pose2D target) throws InterruptedException {
         setTargetPose(target);
         move();

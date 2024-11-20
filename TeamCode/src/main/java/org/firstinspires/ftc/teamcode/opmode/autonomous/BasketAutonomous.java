@@ -7,7 +7,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.modules.AutonomousDriveTrain;
-import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
@@ -100,14 +99,11 @@ public class BasketAutonomous extends AutonomousBase {
     @Override
     public void runOpMode() throws InterruptedException {
         try {
-            final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
+            final AutonomousDriveTrain driveTrain = moduleManager.getModule(AutonomousDriveTrain.class);
             final Arm arm = moduleManager.getModule(Arm.class);
             final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
             final Intake intake = moduleManager.getModule(Intake.class);
             TeleOpMain.resetSlidePosition = false;
-
-            AutonomousDriveTrain movementPID = new AutonomousDriveTrain(this);
-            movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
 
             waitForStart();
             TeleOpMain.resetSlidePosition = false;
@@ -130,19 +126,20 @@ public class BasketAutonomous extends AutonomousBase {
             arm.activate();
 
             /* score preload */
-            scoreHighBasket(arm, slide, intake, movementPID);
+            scoreHighBasket(arm, slide, intake);
 
             /* Intake & score the 1st sample */
-            movementPID.move(intake1);
+            driveTrain.setTargetPose(intake1);
+            waitForMotorUpdaters(driveTrain);
             intakeSample(intake, arm, slide, driveTrain);
-            postIntake(arm, slide, intake, driveTrain, movementPID);
-            scoreHighBasket(arm, slide, intake, movementPID);
+            postIntake(arm, slide, intake, driveTrain);
+            scoreHighBasket(arm, slide, intake);
 
             /* Intake & score the 2nd sample */
-            movementPID.move(intake2);
+            moveRobotTo(intake2);
             intakeSample(intake, arm, slide, driveTrain);
-            postIntake(arm, slide, intake, driveTrain, movementPID);
-            scoreHighBasket(arm, slide, intake, movementPID);
+            postIntake(arm, slide, intake, driveTrain);
+            scoreHighBasket(arm, slide, intake);
 
             // TODO uncomment if auto ever gets fast enough
 //        /* Intake & score the 3rd sample */
@@ -155,8 +152,8 @@ public class BasketAutonomous extends AutonomousBase {
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
-            movementPID.move(hangSetup);
-            movementPID.move(hangFinal);
+            moveRobotTo(hangSetup);
+            moveRobotTo(hangFinal);
             arm.deactivate();
         }
         finally {
@@ -164,12 +161,12 @@ public class BasketAutonomous extends AutonomousBase {
         }
     }
 
-    protected void postIntake(Arm arm, LinearSlide slide, Intake intake, FieldCentricDriveTrain driveTrain, AutonomousDriveTrain movementPID) throws InterruptedException {
+    protected void postIntake(Arm arm, LinearSlide slide, Intake intake, AutonomousDriveTrain driveTrain) throws InterruptedException {
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
         final Pose2D curPose = driveTrain.getRobotPose();
-        movementPID.move(new Pose2D(
+        moveRobotTo(new Pose2D(
                 AutonomousDriveTrain.TRANSLATE_UNIT,
                 curPose.getX(AutonomousDriveTrain.TRANSLATE_UNIT),
                 curPose.getY(AutonomousDriveTrain.TRANSLATE_UNIT),
@@ -178,20 +175,19 @@ public class BasketAutonomous extends AutonomousBase {
         ));
     }
 
-    protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake, AutonomousDriveTrain movementPID) throws InterruptedException {
-
+    protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake) throws InterruptedException {
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
 
-        movementPID.move(scoring);
+        moveRobotTo(scoring);
 
         intake.eject();
         waitForTime(500, TimeUnit.MILLISECONDS);
         intake.settle();
 
         // move a bit back from the basket so that the arm can safely move down
-        movementPID.move(new Pose2D(
+        moveRobotTo(new Pose2D(
                 DistanceUnit.INCH,
                 scoring.getX(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,
                 scoring.getY(DistanceUnit.INCH) + SAFE_MOVE_DISTANCE_X_AND_Y,

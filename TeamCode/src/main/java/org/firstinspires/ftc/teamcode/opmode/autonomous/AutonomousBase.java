@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.modules.AutonomousDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 
@@ -69,5 +71,17 @@ public abstract class AutonomousBase extends LinearOpMode {
         ));
 
         assert Arrays.stream(mechanisms).noneMatch(MotorPowerUpdater::isUpdateNecessary);
+    }
+
+    /**
+     * Waits until the robot has moved to the specified position.
+     * While waiting, updates all {@linkplain MotorPowerUpdater MotorPowerUpdaters}
+     * @param destination The position for the robot to move to
+     * @throws InterruptedException This opmode has been stopped
+     */
+    protected final void moveRobotTo(Pose2D destination) throws InterruptedException {
+        final AutonomousDriveTrain driveTrain = moduleManager.getModule(AutonomousDriveTrain.class);
+        driveTrain.setTargetPose(destination);
+        waitForMotorUpdaters(driveTrain);
     }
 }
