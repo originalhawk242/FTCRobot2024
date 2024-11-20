@@ -100,8 +100,6 @@ public class BasketAutonomous extends LinearOpMode {
     @Deprecated
     public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
 
-    private static final ElapsedTime timer = new ElapsedTime();
-
     final ModuleManager moduleManager = new ModuleManager(this);
 
     @Override
