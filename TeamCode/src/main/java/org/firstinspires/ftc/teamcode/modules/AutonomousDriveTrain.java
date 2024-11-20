@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 
 @Config
-public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpdater {
+public class AutonomousDriveTrain extends FieldCentricDriveTrain implements MotorPowerUpdater {
     private MotorPowerUpdater[] updatableMechanisms = new MotorPowerUpdater[0];
 
     private Pose2D targetPose;
@@ -40,11 +40,11 @@ public class PIDToPoint extends FieldCentricDriveTrain implements MotorPowerUpda
     public static double ROTATE_TOLERANCE = 2;
 
     /**
-     * Creates a PIDToPoint object using the provided opmode
+     * Creates a AutonomousDriveTrain object using the provided opmode
      * Can be used for the entirety of an OpMode by changing the targetPosition
      * @param registrar the OpMode initializing this module
      */
-    public PIDToPoint(OpMode registrar) {
+    public AutonomousDriveTrain(OpMode registrar) {
         super(registrar);
 
         // initialize PID controllers

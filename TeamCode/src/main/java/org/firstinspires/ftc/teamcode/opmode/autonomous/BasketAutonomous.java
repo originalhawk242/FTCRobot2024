@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.modules.PIDToPoint;
+import org.firstinspires.ftc.teamcode.modules.AutonomousDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
@@ -77,25 +77,25 @@ public class BasketAutonomous extends AutonomousBase {
      * correct positions during tuning.
      */
 
-    public final Pose2D intake1 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, PIDToPoint.ROTATE_UNIT, INTAKE1_HEADING);
+    public final Pose2D intake1 = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, INTAKE1_X, INTAKE1_Y, AutonomousDriveTrain.ROTATE_UNIT, INTAKE1_HEADING);
 
-    public final Pose2D intake2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE2_X, INTAKE2_Y, PIDToPoint.ROTATE_UNIT, INTAKE2_HEADING);
+    public final Pose2D intake2 = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, INTAKE2_X, INTAKE2_Y, AutonomousDriveTrain.ROTATE_UNIT, INTAKE2_HEADING);
 
-    public final Pose2D intake3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, INTAKE3_X, INTAKE3_Y, PIDToPoint.ROTATE_UNIT, INTAKE3_HEADING);
+    public final Pose2D intake3 = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, INTAKE3_X, INTAKE3_Y, AutonomousDriveTrain.ROTATE_UNIT, INTAKE3_HEADING);
 
-    public final Pose2D scoring = new Pose2D(PIDToPoint.TRANSLATE_UNIT, SCORING_X, SCORING_Y, PIDToPoint.ROTATE_UNIT, SCORING_HEADING);
+    public final Pose2D scoring = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, SCORING_X, SCORING_Y, AutonomousDriveTrain.ROTATE_UNIT, SCORING_HEADING);
 
-    public final Pose2D parking = new Pose2D(PIDToPoint.TRANSLATE_UNIT, PARKING_X, PARKING_Y, PIDToPoint.ROTATE_UNIT, PARKING_HEADING);
+    public final Pose2D parking = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, PARKING_X, PARKING_Y, AutonomousDriveTrain.ROTATE_UNIT, PARKING_HEADING);
 
-    public final Pose2D hangSetup = new Pose2D(PIDToPoint.TRANSLATE_UNIT, HANG_SETUP_X, HANG_SETUP_Y, PIDToPoint.ROTATE_UNIT, HANG_SETUP_HEADING);
+    public final Pose2D hangSetup = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, HANG_SETUP_X, HANG_SETUP_Y, AutonomousDriveTrain.ROTATE_UNIT, HANG_SETUP_HEADING);
 
-    public final Pose2D hangFinal = new Pose2D(PIDToPoint.TRANSLATE_UNIT, HANG_FINAL_X, HANG_FINAL_Y, PIDToPoint.ROTATE_UNIT, HANG_FINAL_HEADING);
-
-    @Deprecated
-    public final Pose2D move2 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X2, Y2, PIDToPoint.ROTATE_UNIT, H2);
+    public final Pose2D hangFinal = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, HANG_FINAL_X, HANG_FINAL_Y, AutonomousDriveTrain.ROTATE_UNIT, HANG_FINAL_HEADING);
 
     @Deprecated
-    public final Pose2D move3 = new Pose2D(PIDToPoint.TRANSLATE_UNIT, X3, Y3, PIDToPoint.ROTATE_UNIT, H3);
+    public final Pose2D move2 = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, X2, Y2, AutonomousDriveTrain.ROTATE_UNIT, H2);
+
+    @Deprecated
+    public final Pose2D move3 = new Pose2D(AutonomousDriveTrain.TRANSLATE_UNIT, X3, Y3, AutonomousDriveTrain.ROTATE_UNIT, H3);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -106,7 +106,7 @@ public class BasketAutonomous extends AutonomousBase {
             final Intake intake = moduleManager.getModule(Intake.class);
             TeleOpMain.resetSlidePosition = false;
 
-            PIDToPoint movementPID = new PIDToPoint(this);
+            AutonomousDriveTrain movementPID = new AutonomousDriveTrain(this);
             movementPID.setUpdatableMechanisms(new MotorPowerUpdater[]{arm, slide});
 
             waitForStart();
@@ -164,26 +164,21 @@ public class BasketAutonomous extends AutonomousBase {
         }
     }
 
-    protected void postIntake(Arm arm, LinearSlide slide, Intake intake, FieldCentricDriveTrain driveTrain, PIDToPoint movementPID) throws InterruptedException {
+    protected void postIntake(Arm arm, LinearSlide slide, Intake intake, FieldCentricDriveTrain driveTrain, AutonomousDriveTrain movementPID) throws InterruptedException {
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
         intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
         final Pose2D curPose = driveTrain.getRobotPose();
         movementPID.move(new Pose2D(
-                PIDToPoint.TRANSLATE_UNIT,
-                curPose.getX(PIDToPoint.TRANSLATE_UNIT),
-                curPose.getY(PIDToPoint.TRANSLATE_UNIT),
+                AutonomousDriveTrain.TRANSLATE_UNIT,
+                curPose.getX(AutonomousDriveTrain.TRANSLATE_UNIT),
+                curPose.getY(AutonomousDriveTrain.TRANSLATE_UNIT),
                 AngleUnit.DEGREES,
                 POST_INTAKE_HEADING
         ));
     }
 
-    protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake, PIDToPoint movementPID) throws InterruptedException {
-//        final Arm arm = moduleManager.getModule(Arm.class);
-//        final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
-//        final Intake intake = moduleManager.getModule(Intake.class);
-//        final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
-//        PIDToPoint movementPID = new PIDToPoint(driveTrain, this);
+    protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake, AutonomousDriveTrain movementPID) throws InterruptedException {
 
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
