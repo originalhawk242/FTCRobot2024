@@ -138,6 +138,8 @@ public class BasketAutonomous extends AutonomousBase {
             moveRobotTo(hangSetup);
             moveRobotTo(hangFinal);
             arm.deactivate();
+
+            waitForEnd();
         }
         finally {
             TeleOpMain.resetSlidePosition = false;

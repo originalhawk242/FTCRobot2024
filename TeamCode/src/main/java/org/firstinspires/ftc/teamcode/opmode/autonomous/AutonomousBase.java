@@ -111,6 +111,16 @@ public abstract class AutonomousBase extends LinearOpMode {
         arm.activate();
     }
 
+    protected final void waitForEnd() throws InterruptedException {
+        try {
+            waitUntil(this::isStopRequested);
+        }
+        finally {
+            TeleOpMain.resetSlidePosition = false;
+            moduleManager.unloadAll();
+        }
+    }
+
     /**
      * Waits until the robot has moved to the specified position.
      * While waiting, updates all {@linkplain MotorPowerUpdater MotorPowerUpdaters}
