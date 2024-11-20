@@ -116,6 +116,20 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
         setTargetPosition((int)(height * SLIDE_MAX_EXTENSION_TICKS));
     }
 
+    /**
+     * Moves the slide to the specified height, not returning until that height has been reached
+     * @param height the target height
+     * @deprecated This method is unsafe, as it
+     * a) has the potential to get stuck in an infinite loop if the slide never reaches its destination,
+     * which could lead to a frozen opmode that cannot be gracefully stopped, and
+     * b) does not update any other PID loops that could be running, which could potentially damage
+     * the robot.
+     * Currently, there is no way to resolve these problems without moving the method outside of
+     * this class.
+     * Do not use this method; instead, write your own loop that takes both of these factors into
+     * consideration.
+     */
+    @Deprecated
     public void moveSlideTo(double height) {
         setTargetHeight(height);
         motor.runIfAvailable(PIDFDcMotor::waitUntilPointReached);

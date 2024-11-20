@@ -209,6 +209,7 @@ public class Arm extends Module implements MotorPowerUpdater {
      */
     @Override
     public void ensureSafety() {
+        // TODO find a safer alternative to rotateArmTo
         this.rotateArmTo(ARM_ROTATION_MOVING);
     }
 
@@ -295,6 +296,19 @@ public class Arm extends Module implements MotorPowerUpdater {
         return true;
     }
 
+    /**
+     * Rotates the arm to the specified rotation, not returning until the arm has finished rotating
+     * @param rotation the target rotation
+     * @deprecated This method is unsafe, as it
+     * a) has the potential to get stuck in an infinite loop if the arm never reaches its destination,
+     * which could lead to a frozen opmode that cannot be gracefully stopped, and
+     * b) does not update any other PID loops that could be running, which could potentially damage
+     * the robot.
+     * Currently, there is no way to resolve these problems without moving the method outside of
+     * this class.
+     * Do not use this method; instead, write your own loop that takes both of these factors into
+     * consideration.
+     */
     @Deprecated
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
