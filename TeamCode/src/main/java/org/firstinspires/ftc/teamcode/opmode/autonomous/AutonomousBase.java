@@ -33,6 +33,16 @@ public abstract class AutonomousBase extends LinearOpMode {
     protected final ModuleManager moduleManager = new ModuleManager(this);
 
     /**
+     * Pauses until the play button has been pressed (or until the current thread
+     * gets interrupted, which typically indicates that the OpMode has been stopped).
+     */
+    @Override
+    public void waitForStart() {
+        TeleOpMain.resetSlidePosition = false; // We have already reset the slide position in our init
+        super.waitForStart();
+    }
+
+    /**
      * Blocks the current thread from progressing until a condition is met.
      * While waiting, updates all loaded {@linkplain MotorPowerUpdater MotorPowerUpdaters}.
      * @param conditionToStop When this returns true, the method will return
