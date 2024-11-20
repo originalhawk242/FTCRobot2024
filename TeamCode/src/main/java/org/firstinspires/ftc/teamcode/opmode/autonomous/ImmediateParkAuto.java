@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 @Config
 @Autonomous
-public class ImmediateParkAuto extends LinearOpMode {
+public class ImmediateParkAuto extends AutonomousBase {
 
     public static double MOVE_TO_PARK_DURATION_SECONDS = 2;
 
@@ -34,7 +34,6 @@ public class ImmediateParkAuto extends LinearOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        final ModuleManager moduleManager = new ModuleManager(this);
         final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
         final Arm arm = moduleManager.getModule(Arm.class);
         final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
@@ -42,15 +41,8 @@ public class ImmediateParkAuto extends LinearOpMode {
         TeleOpMain.resetSlidePosition = false;
 
         waitForStart();
-        // get arm out of way
-        slide.setTargetHeight(0);
-        slide.updateMotorPowers();
-        arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPowers();
-        Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
-        arm.deactivate();
 
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        resetArmPosition();
 
         driveTrain.setVelocity(0.5, 0, 0);
         ElapsedTime timer = new ElapsedTime();
@@ -67,12 +59,10 @@ public class ImmediateParkAuto extends LinearOpMode {
         arm.activate();
         arm.setTargetRotationAbsolute(20);
         arm.updateMotorPowers();
+        intake.moveWristTo(Intake.WRIST_POSITION_START);
         Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
 
-        intake.moveWristTo(Intake.WRIST_POSITION_START);
-        while (opModeIsActive()) {
-            slide.updateMotorPowers();
-        }
+        waitForEnd();
     }
 }
