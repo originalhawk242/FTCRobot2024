@@ -115,9 +115,8 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
 
         // loop for driveTrain position PID, etc.
         while(!xController.atSetPoint() || !yController.atSetPoint() || !hController.atSetPoint()) {
-            /* TODO this is a jank patch, eventually this loop should be refactored into separate
-             *  methods in this class and the auto classes
-             */
+            // When an opmode is stopped, its thread is interrupted, which means that we can check
+            // for a thread interrupt to make sure we don't get smited by OpModeManager
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
