@@ -106,7 +106,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -17.5;
+    public static double ARM_ROTATION_INTAKE = -18.5;
     public static double ARM_ROTATION_MOVING = 0;
     public static double ARM_ROTATION_SCORING = 65;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;
