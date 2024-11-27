@@ -58,6 +58,9 @@ public class FieldCentricDriveTrain extends DriveTrain {
     public void setVelocity(double strafe, double forward, double rotation) {
         if (!odometry.isConnected()) {
             getTelemetry().addLine("! OTOS DISCONNECTED !");
+            getTelemetry().setAutoClear(false);
+            getTelemetry().update();
+            getTelemetry().setAutoClear(true);
             super.setVelocity(strafe, forward, rotation);
             return;
         }
