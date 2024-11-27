@@ -21,7 +21,12 @@ public class BasketAutonomous extends AutonomousBase {
     public static long INTAKE_FORWARD_DURATION_MS = 1000;
     public static double INTAKE_FORWARD_POWER = 0.35;
 
-    public static double POST_INTAKE_HEADING = 0;
+    public static long OUTTAKE_DURATION_MS = 500;
+
+    public static double POST_INTAKE_HEADING = 90;
+
+
+    public static int INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
 
     public static double SCORING_X = -12;
     public static double SCORING_Y = 10;
@@ -166,7 +171,7 @@ public class BasketAutonomous extends AutonomousBase {
         moveRobotTo(scoring);
 
         intake.eject();
-        waitForTime(500);
+        waitForTime(OUTTAKE_DURATION_MS);
         intake.settle();
 
         // move a bit back from the basket so that the arm can safely move down
@@ -189,7 +194,7 @@ public class BasketAutonomous extends AutonomousBase {
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForMotorUpdaters(1000, arm, slide); // wait a bit for the arm & slide to move in place
+        waitForMotorUpdaters(INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS, arm, slide); // wait a bit for the arm & slide to move in place
 
         // move forward so that the sample is caught
         // We move for a time instead of using movePID to prevent the program from freezing when
