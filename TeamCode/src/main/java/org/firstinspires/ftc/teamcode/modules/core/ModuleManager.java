@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules.core;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.checkerframework.checker.index.qual.LTEqLengthOf;
 import org.firstinspires.ftc.teamcode.modules.*;
 import org.firstinspires.ftc.teamcode.modules.concurrent.ConcurrentModule;
 import org.firstinspires.ftc.teamcode.util.SwitchStatement;
@@ -101,7 +103,7 @@ public final class ModuleManager {
             if (module instanceof MotorPowerUpdater) {
                 MotorPowerUpdater mechanism = (MotorPowerUpdater) module;
                 if (mechanism.isUpdateNecessary()) {
-                    updateMotorPowerLoops();
+                    mechanism.updateMotorPowers();
                 }
             }
         }
