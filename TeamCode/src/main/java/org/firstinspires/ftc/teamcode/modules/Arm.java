@@ -81,15 +81,15 @@ public class Arm extends Module implements MotorPowerUpdater {
         /**
          * The proportional coefficient
          */
-        public static double P_COEF = 0.005;
+        public static double P_COEF = 0.006;
         /**
          * The integral coefficient
          */
-        public static double I_COEF = 0;
+        public static double I_COEF = 0.0002;
         /**
          * The derivative coefficient
          */
-        public static double D_COEF = 0;
+        public static double D_COEF = 0.0003;
         /**
          * The feedforward coefficient <br>
          * @implNote Instead of using ftclib's PIDFController, we use their
@@ -359,5 +359,6 @@ public class Arm extends Module implements MotorPowerUpdater {
         telemetry.addData("[Arm] Current left motor position", leftMotor.getCurrentPosition());
         telemetry.addData("[Arm] Current right motor position", rightMotor.getCurrentPosition());
         telemetry.addData("[Arm] Target motor position", controller.getSetPoint());
+        telemetry.addData("[Arm] Current arm rotation", getCurrentRotation());
     }
 }
