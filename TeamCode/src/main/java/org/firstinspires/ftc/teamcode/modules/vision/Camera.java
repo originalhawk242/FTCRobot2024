@@ -4,7 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc
+        .robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -77,7 +78,16 @@ public class Camera extends Module {
     }
 
     @Override
+    public void cleanupModule() {
+        webcam.stopStreaming();
+    }
+
+    @Override
     public void log() {
         //nothing to log yet
+    }
+
+    public String getPipeline1Output(){
+        return p1.getOutput();
     }
 }
