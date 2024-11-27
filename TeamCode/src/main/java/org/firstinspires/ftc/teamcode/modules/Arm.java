@@ -252,7 +252,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     }
 
     private double calculateFeedForward() {
-        return ArmConfig.F_COEF * Math.cos(getCurrentRotation());
+        return ArmConfig.F_COEF * Math.cos(Math.toRadians(getCurrentRotation()));
     }
 
     /**
