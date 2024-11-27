@@ -72,7 +72,7 @@ public class TeleOpMain extends OpMode {
         else {
             arm.setTargetRotation(arm.getCurrentRotation() + 5);
         }
-        slide.setTargetHeight(-INIT_SLIDE_POSITION_OFFSET);
+        slide.setTargetHeight(INIT_SLIDE_POSITION_OFFSET);
         arm.updateMotorPowers();
         slide.updateMotorPowers();
         try {
