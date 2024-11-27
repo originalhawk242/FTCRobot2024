@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDeviceGroup;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
-import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
+import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
 /**
@@ -100,7 +100,7 @@ public class Arm extends Module implements MotorPowerUpdater {
          * How many motor ticks the controller needs to be within the target to be considered
          * to have arrived
          */
-        public static double TOLERANCE = 2;
+        public static double TOLERANCE = 150; // the current arm PID usually gets around 100 ticks away from the target position
     }
 
     /*
@@ -209,6 +209,7 @@ public class Arm extends Module implements MotorPowerUpdater {
      */
     @Override
     public void ensureSafety() {
+        // TODO find a safer alternative to rotateArmTo
         this.rotateArmTo(ARM_ROTATION_MOVING);
     }
 
@@ -257,7 +258,8 @@ public class Arm extends Module implements MotorPowerUpdater {
     /**
      * Sets the motor powers to the current result of the PIDF algorithm
      */
-    public void updateMotorPower() {
+    @Override
+    public void updateMotorPowers() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
             controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, 0);
@@ -270,6 +272,35 @@ public class Arm extends Module implements MotorPowerUpdater {
             rightMotor.setPower(power);
             getTelemetry().addData("Arm power", power);
         });
+    }
+
+    /**
+     * Checks if the motors need to be updated
+     * @return true if {@link #updateMotorPowers()} needs to be called, false otherwise
+     */
+    @Override
+    public boolean isUpdateNecessary() {
+        final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+        // check manually if we are within tolerance since the controller only gets updated with
+        // the motor's current position when calculate() is called, which should only happen in
+        // updateMotorPowers()
+        if (Math.abs(leftMotor.getCurrentPosition() - controller.getSetPoint()) < ArmConfig.TOLERANCE) {
+            // we are at our target position
+            // since we will return false, the caller won't call updateMotorPowers(), so
+            // we need to stop the motors ourselves
+            final double feedForwardPower = calculateFeedForward(); // so the motors can still support themselves
+            leftMotor.setPower(feedForwardPower);
+            try {
+                // if the right motor is connected, stop it as well
+                final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+                rightMotor.setPower(feedForwardPower);
+            }
+            catch (NullPointerException ignored) {
+                // if the right motor is disconnected, we don't have to do anything
+            }
+            return false; // no update necessary
+        }
+        return true; // we are not at our target position -- an update is necessary
     }
 
     /**
@@ -295,11 +326,24 @@ public class Arm extends Module implements MotorPowerUpdater {
         return true;
     }
 
+    /**
+     * Rotates the arm to the specified rotation, not returning until the arm has finished rotating
+     * @param rotation the target rotation
+     * @deprecated This method is unsafe, as it
+     * a) has the potential to get stuck in an infinite loop if the arm never reaches its destination,
+     * which could lead to a frozen opmode that cannot be gracefully stopped, and
+     * b) does not update any other PID loops that could be running, which could potentially damage
+     * the robot.
+     * Currently, there is no way to resolve these problems without moving the method outside of
+     * this class.
+     * Do not use this method; instead, write your own loop that takes both of these factors into
+     * consideration.
+     */
     @Deprecated
     public void rotateArmTo(double rotation) {
         setTargetRotation(rotation);
         do {
-            updateMotorPower();
+            updateMotorPowers();
             monitorPositionSwitch();
         } while (!controller.atSetPoint());
     }

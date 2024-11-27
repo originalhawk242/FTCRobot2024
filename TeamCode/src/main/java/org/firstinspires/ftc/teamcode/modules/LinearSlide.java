@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.hardware.ConditionalHardwareDevice;
 import org.firstinspires.ftc.teamcode.hardware.PIDFDcMotor;
-import org.firstinspires.ftc.teamcode.hardware.MotorPowerUpdater;
+import org.firstinspires.ftc.teamcode.modules.core.MotorPowerUpdater;
 import org.firstinspires.ftc.teamcode.modules.core.Module;
 
 /**
@@ -41,7 +41,7 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
         public static double I_COEF = 0;
         public static double D_COEF = 0;
         public static double F_COEF = 0;
-        public static double TOLERANCE = 2;
+        public static double TOLERANCE = 2; // TODO tune tolerance
     }
 
     public static double SLIDE_HEIGHT_INTAKE = 0.7000;
@@ -116,6 +116,20 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
         setTargetPosition((int)(height * SLIDE_MAX_EXTENSION_TICKS));
     }
 
+    /**
+     * Moves the slide to the specified height, not returning until that height has been reached
+     * @param height the target height
+     * @deprecated This method is unsafe, as it
+     * a) has the potential to get stuck in an infinite loop if the slide never reaches its destination,
+     * which could lead to a frozen opmode that cannot be gracefully stopped, and
+     * b) does not update any other PID loops that could be running, which could potentially damage
+     * the robot.
+     * Currently, there is no way to resolve these problems without moving the method outside of
+     * this class.
+     * Do not use this method; instead, write your own loop that takes both of these factors into
+     * consideration.
+     */
+    @Deprecated
     public void moveSlideTo(double height) {
         setTargetHeight(height);
         motor.runIfAvailable(PIDFDcMotor::waitUntilPointReached);
@@ -128,7 +142,8 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
     /**
      * Updates the motor power using the provided PIDF coefficients
      */
-    public void updateMotorPower() {
+    @Override
+    public void updateMotorPowers() {
         motor.runIfAvailable(slide -> {
             if (slide.isOverCurrent()) {
                 slide.setPower(0);
@@ -140,6 +155,25 @@ public class LinearSlide extends Module implements MotorPowerUpdater {
 
             slide.applyMotorPIDF();
         });
+    }
+
+    /**
+     * Checks if the motors need to be updated
+     *
+     * @return true if {@link #updateMotorPowers()} needs to be called, false otherwise
+     */
+    @Override
+    public boolean isUpdateNecessary() {
+        PIDFDcMotor slide = motor.requireDevice();
+        slide.setTolerance(SlideConfig.TOLERANCE);
+        if (slide.atSetPoint()) {
+            // we are at our target position
+            // since this method will return false, updateMotorPowers() won't be called, so we have
+            // to stop the motors ourselves
+            slide.setPower(0);
+            return false; // no update necessary
+        }
+        return true; // we need to call the PID loop
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.modules.core;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.checkerframework.checker.index.qual.LTEqLengthOf;
 import org.firstinspires.ftc.teamcode.modules.*;
 import org.firstinspires.ftc.teamcode.modules.concurrent.ConcurrentModule;
 import org.firstinspires.ftc.teamcode.util.SwitchStatement;
@@ -83,11 +85,27 @@ public final class ModuleManager {
                             .addCase(Arm.class, c -> new Arm(opMode))
                             .addCase(Intake.class, c -> new Intake(opMode))
                             .addCase(LinearSlide.class, c -> new LinearSlide(opMode))
+                            .addCase(AutonomousDriveTrain.class, c -> new AutonomousDriveTrain(opMode))
                             .execute(moduleClass)
             );
         }
         catch (ClassCastException e) {
             return null; // just in case
+        }
+    }
+
+    /**
+     * Updates all loaded {@linkplain MotorPowerUpdater MotorPowerUpdaters}
+     * @see MotorPowerUpdater#updateMotorPowers()
+     */
+    public void updateMotorPowerLoops() {
+        for (Module module : loadedModules) {
+            if (module instanceof MotorPowerUpdater) {
+                MotorPowerUpdater mechanism = (MotorPowerUpdater) module;
+                if (mechanism.isUpdateNecessary()) {
+                    mechanism.updateMotorPowers();
+                }
+            }
         }
     }
 

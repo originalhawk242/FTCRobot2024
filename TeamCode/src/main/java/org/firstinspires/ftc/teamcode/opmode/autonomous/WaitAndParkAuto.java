@@ -3,22 +3,19 @@ package org.firstinspires.ftc.teamcode.opmode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.LinearSlide;
-import org.firstinspires.ftc.teamcode.modules.core.ModuleManager;
 import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 
 import java.util.concurrent.TimeUnit;
 
 @Config
 @Autonomous
-public class WaitAndParkAuto extends LinearOpMode {
-    private static final double DRIVE_ENCODER_RESOLUTION = ((((1+(46/17))) * (1+(46/11))) * 28);
+public class WaitAndParkAuto extends AutonomousBase {
 
     public static double WAIT_BEFORE_PARK_SECONDS = 2;
     public static double MOVE_TO_PARK_DURATION_SECONDS = 4;
@@ -36,7 +33,6 @@ public class WaitAndParkAuto extends LinearOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        final ModuleManager moduleManager = new ModuleManager(this);
         final FieldCentricDriveTrain driveTrain = moduleManager.getModule(FieldCentricDriveTrain.class);
         final Arm arm = moduleManager.getModule(Arm.class);
         final LinearSlide slide = moduleManager.getModule(LinearSlide.class);
@@ -44,17 +40,10 @@ public class WaitAndParkAuto extends LinearOpMode {
         TeleOpMain.resetSlidePosition = false;
 
         waitForStart();
-        // get arm out of way
-        slide.setTargetHeight(0);
-        slide.updateMotorPower();
-        arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
-        Thread.sleep(TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
-        arm.deactivate();
 
-        intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
+        resetArmPosition();
 
-        ElapsedTime timer = new ElapsedTime();
+        final ElapsedTime timer = new ElapsedTime();
 
 
         timer.reset();
@@ -62,7 +51,7 @@ public class WaitAndParkAuto extends LinearOpMode {
             if (isStopRequested()) {
                 return;
             }
-            slide.updateMotorPower();
+            slide.updateMotorPowers();
         }
 
         driveTrain.setVelocity(0.5, 0, 0);
@@ -71,20 +60,18 @@ public class WaitAndParkAuto extends LinearOpMode {
             if (isStopRequested()) {
                 return;
             }
-            slide.updateMotorPower();
+            slide.updateMotorPowers();
         }
 
         driveTrain.setVelocity(0, 0, 0);
 
         arm.activate();
         arm.setTargetRotationAbsolute(20);
-        arm.updateMotorPower();
+        arm.updateMotorPowers();
+        intake.moveWristTo(Intake.WRIST_POSITION_START);
         Thread.sleep(3L * TeleOpMain.INITIAL_JUMP_TIME_MILLIS);
         arm.deactivate();
 
-        intake.moveWristTo(Intake.WRIST_POSITION_START);
-        while (opModeIsActive()) {
-            slide.updateMotorPower();
-        }
+        waitForEnd();
     }
 }

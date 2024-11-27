@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.*;
 
 @Config
@@ -38,8 +37,8 @@ public class TeleOpMain extends OpMode {
 
     private Intake intake;
 
-    private Gamepad prevGP1 = new Gamepad();
-    private Gamepad prevGP2 = new Gamepad();
+    private final Gamepad prevGP1 = new Gamepad();
+    private final Gamepad prevGP2 = new Gamepad();
 
     @Override
     public void init() {
@@ -74,8 +73,8 @@ public class TeleOpMain extends OpMode {
             arm.setTargetRotation(arm.getCurrentRotation() + 5);
         }
         slide.setTargetHeight(-INIT_SLIDE_POSITION_OFFSET);
-        arm.updateMotorPower();
-        slide.updateMotorPower();
+        arm.updateMotorPowers();
+        slide.updateMotorPowers();
         try {
             Thread.sleep(INITIAL_JUMP_TIME_MILLIS);
         } catch (InterruptedException ignored) {}
@@ -176,8 +175,8 @@ public class TeleOpMain extends OpMode {
             activateArm = false;
         }
 
-        slide.updateMotorPower();
-        arm.updateMotorPower();
+        slide.updateMotorPowers();
+        arm.updateMotorPowers();
         if (gamepad2.y) {
             deactivateArm();
         }
