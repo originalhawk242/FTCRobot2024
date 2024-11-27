@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.autonomous;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.modules.Arm;
@@ -49,12 +50,14 @@ public abstract class AutonomousBase extends LinearOpMode {
      * @throws InterruptedException This opmode has been stopped
      */
     private void waitUntil(BooleanSupplier conditionToStop) throws InterruptedException {
+        RobotLog.ii("AutonomousBase", "Begin wait");
         while (!conditionToStop.getAsBoolean()) {
             if (isStopRequested()) {
                 throw new InterruptedException();
             }
             moduleManager.updateMotorPowerLoops();
         }
+        RobotLog.ii("AutonomousBase", "End wait");
     }
 
     /**
@@ -93,8 +96,6 @@ public abstract class AutonomousBase extends LinearOpMode {
                 },
                 (a, b) -> a && b // returns true only if both a and b are true -> only stops when all mechanisms are done
         ));
-
-        assert Arrays.stream(mechanisms).noneMatch(MotorPowerUpdater::isUpdateNecessary);
     }
 
     /**
