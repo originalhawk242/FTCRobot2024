@@ -39,6 +39,8 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
     public static double TRANSLATE_TOLERANCE = 0.5;
     public static double ROTATE_TOLERANCE = 2;
 
+    private boolean disabled = false;
+
     /**
      * Creates a AutonomousDriveTrain object using the provided opmode
      * Can be used for the entirety of an OpMode by changing the targetPosition
@@ -57,10 +59,44 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
         hController.setTolerance(ROTATE_TOLERANCE);
     }
 
+    /**
+     * Disables the movement PID, allowing for manual control of the drive train
+     */
+    public void disableDrivePID() {
+        disabled = true;
+    }
+
+    /**
+     * Enables the movement PID, preventing manual control of the robot
+     */
+    public void enableDrivePID() {
+        disabled = false;
+    }
+
+    /**
+     * @param strafe   The right velocity
+     * @param forward  The forward velocity
+     * @param rotation The rotational velocity
+     */
+    @Override
+    public void setVelocity(double strafe, double forward, double rotation) {
+        if (strafe == 0 && forward == 0 && rotation == 0) {
+            enableDrivePID();
+        }
+        else {
+            disableDrivePID();
+        }
+        super.setVelocity(strafe, forward, rotation);
+    }
+
     @Override
     public void updateMotorPowers() {
+        if (disabled) {
+            return; // If the movement PID is disabled, don't run the movement PID
+        }
+
         if (xController.atSetPoint() && yController.atSetPoint() && hController.atSetPoint()) {
-            setVelocity(0, 0, 0);
+            super.setVelocity(0, 0, 0);
             return;
         }
 
@@ -72,7 +108,7 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
         final double hPower = hController.calculate(currentRobotPose.getHeading(ROTATE_UNIT));
 
         // set driveTrain velocity based on PID controller output
-        setVelocity(xPower, yPower, hPower);
+        super.setVelocity(xPower, yPower, hPower);
 
         // update all updatableMechanisms
         for(MotorPowerUpdater mechanism : updatableMechanisms){
@@ -87,12 +123,17 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
      */
     @Override
     public boolean isUpdateNecessary() {
+        if (disabled) {
+            // if the drive train is being controlled manually, don't update the PID
+            return false;
+        }
+
         // use 'and' instead of 'or' since we are only at our target if x, y, and heading have been reached
         if (xController.atSetPoint() && yController.atSetPoint() && hController.atSetPoint()) {
             // we are at our target
             // since this method will return false, updateMotorPowers() won't be run, so we have to
             // stop the robot ourselves
-            setVelocity(0, 0, 0);
+            super.setVelocity(0, 0, 0);
             return false; // no update necessary
         }
         return true; // we haven't reached our target, so the PID loop should be called again
@@ -128,7 +169,7 @@ public class AutonomousDriveTrain extends FieldCentricDriveTrain implements Moto
         }
 
         // set the driveTrain velocity to 0 so that the robot doesn't move after the method ends
-        setVelocity(0,0,0);
+        super.setVelocity(0,0,0);
 
         // adds the time taken to move() to telemetry
         getTelemetry().addData("move() runtime: ", timer.time());

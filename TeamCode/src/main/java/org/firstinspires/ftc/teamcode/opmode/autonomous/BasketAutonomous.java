@@ -8,7 +8,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.modules.AutonomousDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Arm;
-import org.firstinspires.ftc.teamcode.modules.FieldCentricDriveTrain;
 import org.firstinspires.ftc.teamcode.modules.Intake;
 import org.firstinspires.ftc.teamcode.modules.LinearSlide;
 import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
@@ -185,7 +184,7 @@ public class BasketAutonomous extends AutonomousBase {
         waitForMotorUpdaters(500, arm, slide);
     }
 
-    protected void intakeSample(Intake intake, Arm arm, LinearSlide slide, FieldCentricDriveTrain driveTrain) throws InterruptedException {
+    protected void intakeSample(Intake intake, Arm arm, LinearSlide slide, AutonomousDriveTrain driveTrain) throws InterruptedException {
         intake.grab();
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
@@ -195,10 +194,12 @@ public class BasketAutonomous extends AutonomousBase {
         // move forward so that the sample is caught
         // We move for a time instead of using movePID to prevent the program from freezing when
         // the robot hits a wall
+        driveTrain.disableDrivePID(); // so we can do manual control
         final Pose2D curPose = driveTrain.getRobotPose();
         final double curAngleTrig = curPose.getHeading(AngleUnit.RADIANS) + (Math.PI / 2);
         driveTrain.setVelocity(INTAKE_FORWARD_POWER * Math.cos(curAngleTrig), INTAKE_FORWARD_POWER * Math.sin(curAngleTrig), 0);
         waitForTime(INTAKE_FORWARD_DURATION_MS);
+        driveTrain.enableDrivePID();
 
         intake.settle();
         arm.setTargetRotation(Arm.ARM_ROTATION_MOVING);
