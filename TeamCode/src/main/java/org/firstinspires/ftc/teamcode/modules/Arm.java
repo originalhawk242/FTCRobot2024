@@ -95,12 +95,12 @@ public class Arm extends Module implements MotorPowerUpdater {
          * @implNote Instead of using ftclib's PIDFController, we use their
          * PIDController and add a custom feedforward
          */
-        public static double F_COEF = 0;
+        public static double F_COEF = 0.15;
         /**
          * How many motor ticks the controller needs to be within the target to be considered
          * to have arrived
          */
-        public static double TOLERANCE = 150; // the current arm PID usually gets around 100 ticks away from the target position
+        public static double TOLERANCE = 20; // the current arm PID usually gets around 10 ticks away from the target position
     }
 
     /*
