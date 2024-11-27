@@ -355,9 +355,9 @@ public class Arm extends Module implements MotorPowerUpdater {
         final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
         final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
 
-        telemetry.addData("Is Arm Active", isActive());
-        telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
-        telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
-        telemetry.addData("Target motor position", controller.getSetPoint());
+        telemetry.addData("[Arm] Is Arm Active", isActive());
+        telemetry.addData("[Arm] Current left motor position", leftMotor.getCurrentPosition());
+        telemetry.addData("[Arm] Current right motor position", rightMotor.getCurrentPosition());
+        telemetry.addData("[Arm] Target motor position", controller.getSetPoint());
     }
 }
