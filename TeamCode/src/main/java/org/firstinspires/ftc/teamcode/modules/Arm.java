@@ -262,7 +262,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     public void updateMotorPowers() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
-            controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, 0);
+            controller.setPID(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
             controller.setTolerance(ArmConfig.TOLERANCE);
             DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
             DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
