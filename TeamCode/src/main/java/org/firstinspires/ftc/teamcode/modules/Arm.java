@@ -264,10 +264,15 @@ public class Arm extends Module implements MotorPowerUpdater {
         motors.executeIfAllAreAvailable(() -> {
             controller.setPID(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
             controller.setTolerance(ArmConfig.TOLERANCE);
-            DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
-            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+            final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+            final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
             // use one encoder for safety and apply the same power to both motors
-            final double power = controller.calculate(leftMotor.getCurrentPosition()) + calculateFeedForward();
+            double power = controller.calculate(leftMotor.getCurrentPosition());
+            final double feedForward = calculateFeedForward();
+            // only apply feedforward if we arrived (so it does its job) it is in the direction the arm needs to move
+            if (controller.atSetPoint() || Math.signum(controller.getPositionError()) == Math.signum(feedForward)) {
+                power += feedForward;
+            }
             leftMotor.setPower(power);
             rightMotor.setPower(power);
             getTelemetry().addData("Arm power", power);
