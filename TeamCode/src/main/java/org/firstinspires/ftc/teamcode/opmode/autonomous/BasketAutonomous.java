@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.opmode.teleop.TeleOpMain;
 public class BasketAutonomous extends AutonomousBase {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 12;
-    public static long DRIVE_TRAIN_PID_TIMEOUT_MS = 10000;
 
     public static long INTAKE_FORWARD_DURATION_MS = 1000;
     public static double INTAKE_FORWARD_POWER = 0.35;
