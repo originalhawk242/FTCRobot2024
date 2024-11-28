@@ -18,7 +18,7 @@ public class BasketAutonomous extends AutonomousBase {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 12;
 
-    public static long INTAKE_FORWARD_DURATION_MS = 1000;
+    public static long INTAKE_FORWARD_DURATION_MS = 500;
     public static double INTAKE_FORWARD_POWER = 0.35;
 
     public static long OUTTAKE_DURATION_MS = 500;
