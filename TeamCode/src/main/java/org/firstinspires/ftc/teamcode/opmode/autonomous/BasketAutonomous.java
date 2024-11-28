@@ -29,9 +29,9 @@ public class BasketAutonomous extends AutonomousBase {
     public static long SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
     public static int INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
 
-    public static double SCORING_X = -12;
-    public static double SCORING_Y = 10;
-    public static double SCORING_HEADING = 135;
+    public static double SCORING_X = -19.5;
+    public static double SCORING_Y = 9.25;
+    public static double SCORING_HEADING = 133;
 
     public static double PARKING_X = 12;
     public static double PARKING_Y = 3;
