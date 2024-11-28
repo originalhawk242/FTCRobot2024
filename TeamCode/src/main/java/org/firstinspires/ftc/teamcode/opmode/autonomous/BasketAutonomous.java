@@ -25,7 +25,7 @@ public class BasketAutonomous extends AutonomousBase {
 
     public static double POST_INTAKE_HEADING = 90;
 
-
+    public static long PRESCORE_SLIDE_MOVEMENT_MS = 250;
     public static long SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
     public static long INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
     public static long HANG_MOVE_TO_FINAL_TIMEOUT_MS = 1000;
@@ -120,21 +120,18 @@ public class BasketAutonomous extends AutonomousBase {
             /* Intake & score the 1st sample */
             moveRobotTo(intake1);
             intakeSample(intake, arm, slide, driveTrain);
-            postIntake(arm, slide, intake, driveTrain);
             scoreHighBasket(arm, slide, intake);
 
             /* Intake & score the 2nd sample */
             moveRobotTo(intake2);
             intakeSample(intake, arm, slide, driveTrain);
-            postIntake(arm, slide, intake, driveTrain);
             scoreHighBasket(arm, slide, intake);
 
-            // TODO uncomment if auto ever gets fast enough
-//        /* Intake & score the 3rd sample */
-//        movementPID.move(intake3);
-//        intakeSample(intake, arm, slide, driveTrain);
-//        postIntake(arm, slide, intake, driveTrain, movementPID);
-//        scoreHighBasket(arm, slide, intake, movementPID);
+            /* Intake & score the 3rd sample */
+            moveRobotTo(intake3);
+            intakeSample(intake, arm, slide, driveTrain);
+//            postIntake(arm, slide, intake, driveTrain, movementPID);
+            scoreHighBasket(arm, slide, intake);
 
             /* hang */
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
@@ -166,10 +163,12 @@ public class BasketAutonomous extends AutonomousBase {
     }
 
     protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake) throws InterruptedException {
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
+        waitForMotorUpdaters(PRESCORE_SLIDE_MOVEMENT_MS, slide);
+
         arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
-        intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
-
         waitForMotorUpdaters(SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS, arm, slide);
         moveRobotTo(scoring);
 
