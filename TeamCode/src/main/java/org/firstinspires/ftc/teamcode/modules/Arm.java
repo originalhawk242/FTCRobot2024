@@ -133,7 +133,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     private static void configureMotor(DcMotor m) {
         m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
