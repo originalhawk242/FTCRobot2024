@@ -130,7 +130,6 @@ public class BasketAutonomous extends AutonomousBase {
             /* Intake & score the 3rd sample */
             moveRobotTo(intake3);
             intakeSample(intake, arm, slide, driveTrain);
-//            postIntake(arm, slide, intake, driveTrain, movementPID);
             scoreHighBasket(arm, slide, intake);
 
             /* hang */
