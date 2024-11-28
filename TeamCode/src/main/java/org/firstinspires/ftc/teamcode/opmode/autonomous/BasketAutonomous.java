@@ -26,6 +26,7 @@ public class BasketAutonomous extends AutonomousBase {
     public static double POST_INTAKE_HEADING = 90;
 
 
+    public static long SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
     public static int INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
 
     public static double SCORING_X = -12;
@@ -168,6 +169,7 @@ public class BasketAutonomous extends AutonomousBase {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
 
+        waitForMotorUpdaters(SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS, arm, slide);
         moveRobotTo(scoring);
 
         intake.eject();
