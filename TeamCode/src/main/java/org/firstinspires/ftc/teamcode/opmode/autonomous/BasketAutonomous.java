@@ -27,7 +27,8 @@ public class BasketAutonomous extends AutonomousBase {
 
 
     public static long SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
-    public static int INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
+    public static long INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
+    public static long HANG_MOVE_TO_FINAL_TIMEOUT_MS = 1000;
 
     public static double SCORING_X = -19.5;
     public static double SCORING_Y = 9.25;
@@ -63,12 +64,12 @@ public class BasketAutonomous extends AutonomousBase {
     public static double INTAKE3_Y = 24;
     public static double INTAKE3_HEADING = 60;
 
-    public static double HANG_SETUP_X = 12;
-    public static double HANG_SETUP_Y = 48;
+    public static double HANG_SETUP_X = -12;
+    public static double HANG_SETUP_Y = 51;
     public static double HANG_SETUP_HEADING = -90;
 
     public static double HANG_FINAL_X = 0;
-    public static double HANG_FINAL_Y = 48;
+    public static double HANG_FINAL_Y = 51;
     public static double HANG_FINAL_HEADING = -90;
 
 
@@ -140,7 +141,7 @@ public class BasketAutonomous extends AutonomousBase {
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
             moveRobotTo(hangSetup);
-            moveRobotTo(hangFinal);
+            moveRobotTo(HANG_MOVE_TO_FINAL_TIMEOUT_MS, hangFinal);
             arm.deactivate();
 
             waitForEnd();
