@@ -60,9 +60,9 @@ public class BasketAutonomous extends AutonomousBase {
     public static double INTAKE2_Y = 24;
     public static double INTAKE2_HEADING = 59;
 
-    public static double INTAKE3_X = -18;
-    public static double INTAKE3_Y = 24;
-    public static double INTAKE3_HEADING = 60;
+    public static double INTAKE3_X = -7;
+    public static double INTAKE3_Y = 36;
+    public static double INTAKE3_HEADING = 90;
 
     public static double HANG_SETUP_X = -12;
     public static double HANG_SETUP_Y = 51;
