@@ -127,10 +127,10 @@ public class BasketAutonomous extends AutonomousBase {
             intakeSample(intake, arm, slide, driveTrain);
             scoreHighBasket(arm, slide, intake);
 
-            /* Intake & score the 3rd sample */
-            moveRobotTo(intake3);
-            intakeSample(intake, arm, slide, driveTrain);
-            scoreHighBasket(arm, slide, intake);
+//            /* Intake & score the 3rd sample */
+//            moveRobotTo(intake3);
+//            intakeSample(intake, arm, slide, driveTrain);
+//            scoreHighBasket(arm, slide, intake);
 
             /* hang */
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
