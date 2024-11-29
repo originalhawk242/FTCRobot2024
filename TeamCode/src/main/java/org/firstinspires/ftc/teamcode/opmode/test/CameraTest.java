@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.modules.vision.Camera;
 
-public class VisionTest {
+public class CameraTest {
     @TeleOp
     public class VisionTeleop extends LinearOpMode {
         Camera camera = new Camera(this);
