@@ -28,16 +28,12 @@ public class SamplePipeline extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
-        // Convert from BGR to HSV
+        //convert from RGB to HSV
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
         Core.inRange(hsvMat, lower, upper, binaryMat);
 
-
-        // Scan both rectangle regions, keeping track of how many
-        // pixels meet the threshold value, indicated by the color white
-        // in the binary image
         double w1 = 0, w2 = 0;
-        // process the pixel value for each rectangle  (255 = W, 0 = B)
+        //process rectangles (255=W,0=B)
         for (int i = (int) topLeft1.x; i <= bottomRight1.x; i++) {
             for (int j = (int) topLeft1.y; j <= bottomRight1.y; j++) {
                 if (binaryMat.get(i, j)[0] == 255) {
@@ -54,7 +50,7 @@ public class SamplePipeline extends OpenCvPipeline {
             }
         }
 
-        // Determine object location
+        //get location
         if (w1 > w2) {
             location = "1";
         } else if (w1 < w2) {
@@ -63,7 +59,6 @@ public class SamplePipeline extends OpenCvPipeline {
 
         return binaryMat;
     }
-
     public String getLocation() {
         return location;
     }

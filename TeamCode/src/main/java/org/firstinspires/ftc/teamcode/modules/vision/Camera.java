@@ -65,7 +65,6 @@ public class Camera extends Module {
         webcam.setPipeline(p1);
     }
 
-
     @Override
     public void ensureSafety() {
         //camera, no output to ensure the safety of

@@ -17,10 +17,6 @@ public class CameraTest {
             waitForStart();
 
             while (opModeIsActive()) {
-                // OpMode receives the information transmitted from the pipeline class
-                // to the camera module class.
-                telemetry.addLine(camera.getPipeline1Output());
-                telemetry.update();
             }
         }
     }
