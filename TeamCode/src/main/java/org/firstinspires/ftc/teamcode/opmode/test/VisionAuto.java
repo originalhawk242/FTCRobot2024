@@ -1,13 +1,16 @@
-package org.firstinspires.ftc.teamcode.opmode.autonomous;
+package org.firstinspires.ftc.teamcode.opmode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.vision.Camera;
+import org.firstinspires.ftc.teamcode.modules.vision.SamplePipeline;
+
 
 @Autonomous
-public class VisionTest extends LinearOpMode {
+public class VisionAuto extends LinearOpMode {
     Camera camera = new Camera(this);
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -15,9 +18,10 @@ public class VisionTest extends LinearOpMode {
         telemetry.addLine("Status: Initialized");
         waitForStart();
 
+
+        SamplePipeline.getLocation();
         while (opModeIsActive()) {
-            telemetry.addLine(camera.getPipeline1Output());
-            telemetry.update();
         }
     }
 }
+

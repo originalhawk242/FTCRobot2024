@@ -8,7 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class SamplePipeline extends OpenCvPipeline {
-    private String location = "nothing"; //output
+    private static String location = "nothing"; //output
     public Scalar lower = new Scalar(0, 0, 0); //thresholds for HSV values
     public Scalar upper = new Scalar(255, 255, 255);
 
@@ -59,7 +59,7 @@ public class SamplePipeline extends OpenCvPipeline {
 
         return binaryMat;
     }
-    public String getLocation() {
+    public static String getLocation() {
         return location;
     }
 }
