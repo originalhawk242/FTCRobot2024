@@ -6,6 +6,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class YellowSample extends OpenCvPipeline {
 
+    private String location = "nothing";
     private final Mat hsvMat = new Mat();
 
     public Scalar lowerHSV = new Scalar(16.0, 82.0, 50.0, 0.0);
@@ -43,5 +44,9 @@ public class YellowSample extends OpenCvPipeline {
         }
 
         return inputRects;
+    }
+
+    public String getLocation() {
+        return location;
     }
 }
