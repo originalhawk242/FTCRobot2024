@@ -51,7 +51,7 @@ public class YellowSample extends OpenCvPipeline {
             Imgproc.rectangle(inputRects, rect, lineColor, lineThickness);
         }
 
-        status = "Sample Pipeline Is Running!";
+        status = "Yellow Sample Pipeline Is Running :)";
         return inputRects;
     }
 
