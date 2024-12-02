@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.vision.Camera;
 import org.firstinspires.ftc.teamcode.modules.vision.SamplePipeline;
+import org.firstinspires.ftc.teamcode.modules.vision.YellowSample;
 
 
 @Autonomous
@@ -18,8 +19,16 @@ public class VisionAuto extends LinearOpMode {
         telemetry.addLine("Status: Initialized");
         waitForStart();
 
+        YellowSample.processFrame();
 
-        SamplePipeline.getLocation();
+        String sampleLocation = YellowSample.getLocation();
+        if (sampleLocation.equals("1")) {
+            telemetry.addLine("sample: left");
+        } else if (sampleLocation.equals("2")) {
+            telemetry.addLine("sample: right");
+        } else {
+            telemetry.addLine("no sample detected")
+        }
         while (opModeIsActive()) {
         }
     }
