@@ -6,30 +6,33 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class YellowSample extends OpenCvPipeline {
 
-    private static String location = "nothing";
-    private static final Mat hsvMat = new Mat();
+    private static String status = "nothing";
+    private static int location = 0;
+    private final Mat hsvMat = new Mat();
 
-    public static Scalar lowerYellowHSV = new Scalar(16.0, 82.0, 50.0, 0.0);
-    public static Scalar upperYellowHSV = new Scalar(38.0, 255.0, 255.0, 0.0);
+    public Scalar lowerYellowHSV = new Scalar(16.0, 82.0, 50.0, 0.0);
+    public Scalar upperYellowHSV = new Scalar(38.0, 255.0, 255.0, 0.0);
     private static final Mat hsvBinaryMat = new Mat();
 
-    private static final ArrayList<MatOfPoint> contours = new ArrayList<>();
-    private static final Mat hierarchy = new Mat();
+    private final ArrayList<MatOfPoint> contours = new ArrayList<>();
+    private final Mat hierarchy = new Mat();
 
-    private static final ArrayList<Rect> contoursRects = new ArrayList<>();
+    private final ArrayList<Rect> contoursRects = new ArrayList<>();
 
-    public static Scalar lineColor = new Scalar(0.0, 0.0, 0.0, 0.0);
-    public static int lineThickness = 3;
+    public Scalar lineColor = new Scalar(0.0, 0.0, 0.0, 0.0);
+    public int lineThickness = 3;
 
-    private static final Mat inputRects = new Mat();
+    private final Mat inputRects = new Mat();
 
     private static final Point topLeft1 = new Point(0, 0);
     private static final Point bottomRight1 = new Point(319, 479);
     private static final Point topLeft2 = new Point(320, 0);
     private static final Point bottomRight2 = new Point(639, 479);
 
+
+
     @Override
-    public static Mat processFrame(Mat input) {
+    public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
 
         Core.inRange(hsvMat, lowerYellowHSV, upperYellowHSV, hsvBinaryMat);
@@ -48,10 +51,11 @@ public class YellowSample extends OpenCvPipeline {
             Imgproc.rectangle(inputRects, rect, lineColor, lineThickness);
         }
 
+        status = "Sample Pipeline Is Running!";
         return inputRects;
     }
 
-    public static String getLocation() {
+    public static int getLocation() {
 
         double w1 = 0, w2 = 0;
         //process rectangles (255=W,0=B)
@@ -73,11 +77,15 @@ public class YellowSample extends OpenCvPipeline {
 
         //get location
         if (w1 > w2) {
-            location = "1";
+            location = 1;
         } else if (w1 < w2) {
-            location = "2";
+            location = 2;
         }
 
         return location;
+    }
+
+    public static String getStatus() {
+        return status;
     }
 }

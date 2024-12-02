@@ -19,17 +19,19 @@ public class VisionAuto extends LinearOpMode {
         telemetry.addLine("Status: Initialized");
         waitForStart();
 
-        YellowSample.processFrame();
 
-        String sampleLocation = YellowSample.getLocation();
-        if (sampleLocation.equals("1")) {
-            telemetry.addLine("sample: left");
-        } else if (sampleLocation.equals("2")) {
-            telemetry.addLine("sample: right");
-        } else {
-            telemetry.addLine("no sample detected")
-        }
         while (opModeIsActive()) {
+            int sampleLocation = YellowSample.getLocation();
+            if (sampleLocation == 1) {
+                telemetry.addLine("sample: left");
+            } else if (sampleLocation == 2) {
+                telemetry.addLine("sample: right");
+            } else {
+                telemetry.addLine("no sample detected");
+            }
+
+            telemetry.addLine(camera.getYellowStatus());
+            telemetry.update();
         }
     }
 }

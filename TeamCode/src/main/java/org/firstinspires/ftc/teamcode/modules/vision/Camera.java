@@ -85,5 +85,9 @@ public class Camera extends Module {
         //nothing to log yet
     }
 
+    public String getYellowStatus(){
+        return YellowSample.getStatus();
+    }
+
 
 }
