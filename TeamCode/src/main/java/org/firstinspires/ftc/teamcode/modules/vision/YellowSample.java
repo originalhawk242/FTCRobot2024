@@ -88,4 +88,13 @@ public class YellowSample extends OpenCvPipeline {
     public static String getStatus() {
         return status;
     }
+
+    public static double getDistance() {
+        double distance;
+        int c720FocalLength = 1430; //logitech c720 camera
+        int imageSize = 307200; //640x480 image
+        int sampleSize;
+        
+        
+    }    
 }
