@@ -163,10 +163,10 @@ public class BasketAutonomous extends AutonomousBase {
 
     protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake) throws InterruptedException {
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
-        intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
+        intake.moveWristTo(Intake.WRIST_POSITION_FRONT_SCORING);
         waitForMotorUpdaters(PRESCORE_SLIDE_MOVEMENT_MS, slide);
 
-        arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
+        arm.setTargetRotation(Arm.ARM_ROTATION_FRONT_SCORING);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
         waitForMotorUpdaters(SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS, arm, slide);
         moveRobotTo(scoring);
