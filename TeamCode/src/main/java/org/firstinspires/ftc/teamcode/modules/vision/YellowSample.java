@@ -23,10 +23,10 @@ public class YellowSample extends OpenCvPipeline {
 
     private final Mat inputRects = new Mat();
 
-    private final Point topLeft1 = new Point(10, 0);
-    private final Point bottomRight1 = new Point(40, 20);
-    private final Point topLeft2 = new Point(10, 0);
-    private final Point bottomRight2 = new Point(40, 20);
+    private final Point topLeft1 = new Point(0, 0);
+    private final Point bottomRight1 = new Point(319, 479);
+    private final Point topLeft2 = new Point(320, 0);
+    private final Point bottomRight2 = new Point(639, 479);
 
     @Override
     public Mat processFrame(Mat input) {
