@@ -81,34 +81,35 @@ public class Arm extends Module implements MotorPowerUpdater {
         /**
          * The proportional coefficient
          */
-        public static double P_COEF = 0.005;
+        public static double P_COEF = 0.006;
         /**
          * The integral coefficient
          */
-        public static double I_COEF = 0;
+        public static double I_COEF = 0.0002;
         /**
          * The derivative coefficient
          */
-        public static double D_COEF = 0;
+        public static double D_COEF = 0.0003;
         /**
          * The feedforward coefficient <br>
          * @implNote Instead of using ftclib's PIDFController, we use their
          * PIDController and add a custom feedforward
          */
-        public static double F_COEF = 0;
+        public static double F_COEF = 0.15;
         /**
          * How many motor ticks the controller needs to be within the target to be considered
          * to have arrived
          */
-        public static double TOLERANCE = 150; // the current arm PID usually gets around 100 ticks away from the target position
+        public static double TOLERANCE = 20; // the current arm PID usually gets around 10 ticks away from the target position
     }
 
     /*
      * Preset arm rotations for certain events during play
      */
-    public static double ARM_ROTATION_INTAKE = -17.5;
+    public static double ARM_ROTATION_INTAKE = -18.5;
     public static double ARM_ROTATION_MOVING = 0;
-    public static double ARM_ROTATION_SCORING = 65;
+    public static double ARM_ROTATION_FRONT_SCORING = 65;
+    public static double ARM_ROTATION_BACK_SCORING = 90;
     public static double ARM_ROTATION_HANG_LVL1_SETUP = 40;
     public static double ARM_ROTATION_HANG_LVL2_SETUP = 90;
     public static double ARM_ROTATION_HANG_LVL2_GRAB = 115;
@@ -252,7 +253,7 @@ public class Arm extends Module implements MotorPowerUpdater {
     }
 
     private double calculateFeedForward() {
-        return ArmConfig.F_COEF * Math.cos(getCurrentRotation());
+        return ArmConfig.F_COEF * Math.cos(Math.toRadians(getCurrentRotation()));
     }
 
     /**
@@ -262,12 +263,17 @@ public class Arm extends Module implements MotorPowerUpdater {
     public void updateMotorPowers() {
         if (!active) { return; }
         motors.executeIfAllAreAvailable(() -> {
-            controller.setPIDF(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF, 0);
+            controller.setPID(ArmConfig.P_COEF, ArmConfig.I_COEF, ArmConfig.D_COEF);
             controller.setTolerance(ArmConfig.TOLERANCE);
-            DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
-            DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
+            final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
+            final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
             // use one encoder for safety and apply the same power to both motors
-            final double power = controller.calculate(leftMotor.getCurrentPosition()) + calculateFeedForward();
+            double power = controller.calculate(leftMotor.getCurrentPosition());
+            final double feedForward = calculateFeedForward();
+            // only apply feedforward if we arrived (so it does its job) it is in the direction the arm needs to move
+            if (controller.atSetPoint() || Math.signum(controller.getPositionError()) == Math.signum(feedForward)) {
+                power += feedForward;
+            }
             leftMotor.setPower(power);
             rightMotor.setPower(power);
             getTelemetry().addData("Arm power", power);
@@ -355,9 +361,10 @@ public class Arm extends Module implements MotorPowerUpdater {
         final DcMotor leftMotor = motors.requireLoadedDevice(DcMotor.class, LEFT_ARM_MOTOR_NAME);
         final DcMotor rightMotor = motors.requireLoadedDevice(DcMotor.class, RIGHT_ARM_MOTOR_NAME);
 
-        telemetry.addData("Is Arm Active", isActive());
-        telemetry.addData("Current left motor position", leftMotor.getCurrentPosition());
-        telemetry.addData("Current right motor position", rightMotor.getCurrentPosition());
-        telemetry.addData("Target motor position", controller.getSetPoint());
+        telemetry.addData("[Arm] Is Arm Active", isActive());
+        telemetry.addData("[Arm] Current left motor position", leftMotor.getCurrentPosition());
+        telemetry.addData("[Arm] Current right motor position", rightMotor.getCurrentPosition());
+        telemetry.addData("[Arm] Target motor position", controller.getSetPoint());
+        telemetry.addData("[Arm] Current arm rotation", getCurrentRotation());
     }
 }

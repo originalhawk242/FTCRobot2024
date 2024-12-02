@@ -18,14 +18,21 @@ public class BasketAutonomous extends AutonomousBase {
     //config variables for positions
     public static double SAFE_MOVE_DISTANCE_X_AND_Y = 12;
 
-    public static long INTAKE_FORWARD_DURATION_MS = 1000;
+    public static long INTAKE_FORWARD_DURATION_MS = 500;
     public static double INTAKE_FORWARD_POWER = 0.35;
 
-    public static double POST_INTAKE_HEADING = 0;
+    public static long OUTTAKE_DURATION_MS = 500;
 
-    public static double SCORING_X = -12;
-    public static double SCORING_Y = 10;
-    public static double SCORING_HEADING = 135;
+    public static double POST_INTAKE_HEADING = 90;
+
+    public static long PRESCORE_SLIDE_MOVEMENT_MS = 250;
+    public static long SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
+    public static long INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS = 1000;
+    public static long HANG_MOVE_TO_FINAL_TIMEOUT_MS = 1000;
+
+    public static double SCORING_X = -19.5;
+    public static double SCORING_Y = 9.25;
+    public static double SCORING_HEADING = 133;
 
     public static double PARKING_X = 12;
     public static double PARKING_Y = 3;
@@ -46,23 +53,23 @@ public class BasketAutonomous extends AutonomousBase {
     public static double H3 = 25;
 
     public static double INTAKE1_X = 6;
-    public static double INTAKE1_Y = 12;
-    public static double INTAKE1_HEADING = 45;
+    public static double INTAKE1_Y = 24;
+    public static double INTAKE1_HEADING = 60;
 
-    public static double INTAKE2_X = 0;
-    public static double INTAKE2_Y = 12;
-    public static double INTAKE2_HEADING = 45;
+    public static double INTAKE2_X = -6;
+    public static double INTAKE2_Y = 24;
+    public static double INTAKE2_HEADING = 59;
 
-    public static double INTAKE3_X = -6;
-    public static double INTAKE3_Y = 12;
-    public static double INTAKE3_HEADING = 45;
+    public static double INTAKE3_X = -7;
+    public static double INTAKE3_Y = 36;
+    public static double INTAKE3_HEADING = 90;
 
-    public static double HANG_SETUP_Y = 48;
-    public static double HANG_SETUP_X = 12;
+    public static double HANG_SETUP_X = -12;
+    public static double HANG_SETUP_Y = 51;
     public static double HANG_SETUP_HEADING = -90;
 
-    public static double HANG_FINAL_Y = 48;
     public static double HANG_FINAL_X = 0;
+    public static double HANG_FINAL_Y = 51;
     public static double HANG_FINAL_HEADING = -90;
 
 
@@ -113,28 +120,24 @@ public class BasketAutonomous extends AutonomousBase {
             /* Intake & score the 1st sample */
             moveRobotTo(intake1);
             intakeSample(intake, arm, slide, driveTrain);
-            postIntake(arm, slide, intake, driveTrain);
             scoreHighBasket(arm, slide, intake);
 
             /* Intake & score the 2nd sample */
             moveRobotTo(intake2);
             intakeSample(intake, arm, slide, driveTrain);
-            postIntake(arm, slide, intake, driveTrain);
             scoreHighBasket(arm, slide, intake);
 
-            // TODO uncomment if auto ever gets fast enough
-//        /* Intake & score the 3rd sample */
-//        movementPID.move(intake3);
-//        intakeSample(intake, arm, slide, driveTrain);
-//        postIntake(arm, slide, intake, driveTrain, movementPID);
-//        scoreHighBasket(arm, slide, intake, movementPID);
+//            /* Intake & score the 3rd sample */
+//            moveRobotTo(intake3);
+//            intakeSample(intake, arm, slide, driveTrain);
+//            scoreHighBasket(arm, slide, intake);
 
             /* hang */
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
             intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
             moveRobotTo(hangSetup);
-            moveRobotTo(hangFinal);
+            moveRobotTo(HANG_MOVE_TO_FINAL_TIMEOUT_MS, hangFinal);
             arm.deactivate();
 
             waitForEnd();
@@ -159,14 +162,17 @@ public class BasketAutonomous extends AutonomousBase {
     }
 
     protected void scoreHighBasket(Arm arm, LinearSlide slide, Intake intake) throws InterruptedException {
-        arm.setTargetRotation(Arm.ARM_ROTATION_SCORING);
-        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
-        intake.moveWristTo(Intake.WRIST_POSITION_SCORING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_MOVING);
+        intake.moveWristTo(Intake.WRIST_POSITION_FRONT_SCORING);
+        waitForMotorUpdaters(PRESCORE_SLIDE_MOVEMENT_MS, slide);
 
+        arm.setTargetRotation(Arm.ARM_ROTATION_FRONT_SCORING);
+        slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_SCORING);
+        waitForMotorUpdaters(SCORING_ARM_SLIDE_MOVEMENT_TIMEOUT_MS, arm, slide);
         moveRobotTo(scoring);
 
         intake.eject();
-        waitForTime(500);
+        waitForTime(OUTTAKE_DURATION_MS);
         intake.settle();
 
         // move a bit back from the basket so that the arm can safely move down
@@ -189,7 +195,7 @@ public class BasketAutonomous extends AutonomousBase {
         arm.setTargetRotation(Arm.ARM_ROTATION_INTAKE);
         slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_INTAKE);
         intake.moveWristTo(Intake.WRIST_POSITION_INTAKE);
-        waitForMotorUpdaters(1000, arm, slide); // wait a bit for the arm & slide to move in place
+        waitForMotorUpdaters(INTAKE_ARM_SLIDE_MOVEMENT_TIMEOUT_MS, arm, slide); // wait a bit for the arm & slide to move in place
 
         // move forward so that the sample is caught
         // We move for a time instead of using movePID to prevent the program from freezing when

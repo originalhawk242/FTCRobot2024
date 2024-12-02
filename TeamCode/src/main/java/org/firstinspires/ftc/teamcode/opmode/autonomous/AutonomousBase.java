@@ -24,7 +24,7 @@ import java.util.function.BooleanSupplier;
 public abstract class AutonomousBase extends LinearOpMode {
     @Config
     public static class AutonomousConstants {
-        public static long DRIVE_TRAIN_PID_DEFAULT_TIMEOUT_MS = 10 * 1000; // 10 s * 1000 ms/s
+        public static long DRIVE_TRAIN_PID_DEFAULT_TIMEOUT_MS = 5 * 1000; // 5 s * 1000 ms/s
     }
 
     /**
