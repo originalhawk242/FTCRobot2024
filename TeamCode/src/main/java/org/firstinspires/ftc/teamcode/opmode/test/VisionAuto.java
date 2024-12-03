@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.modules.vision.Camera;
-import org.firstinspires.ftc.teamcode.modules.vision.SamplePipeline;
 import org.firstinspires.ftc.teamcode.modules.vision.YellowSample;
 
 
@@ -34,6 +33,7 @@ public class VisionAuto extends LinearOpMode {
                 telemetry.addLine("no sample detected");
             }
 
+            telemetry.addLine("Distance to sample: " + YellowSample.getDistance());
             telemetry.addLine(camera.getYellowStatus());
             telemetry.update();
         }
