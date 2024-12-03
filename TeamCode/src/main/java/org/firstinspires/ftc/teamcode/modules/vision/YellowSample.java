@@ -17,7 +17,7 @@ public class YellowSample extends OpenCvPipeline {
     private final ArrayList<MatOfPoint> contours = new ArrayList<>();
     private final Mat hierarchy = new Mat();
 
-    private final ArrayList<Rect> contoursRects = new ArrayList<>();
+    private static final ArrayList<Rect> contoursRects = new ArrayList<>();
 
     public Scalar lineColor = new Scalar(0.0, 0.0, 0.0, 0.0);
     public int lineThickness = 3;
@@ -90,11 +90,20 @@ public class YellowSample extends OpenCvPipeline {
     }
 
     public static double getDistance() {
+        double maxWidth = 0;
+
+        for (int i = 0; i < (contoursRects.toArray().length); i++) {
+            Rect thisRect = contoursRects.get(i);
+            if (thisRect.width > maxWidth) {
+                maxWidth = thisRect.width;
+            }
+        }
+
         double distance;
         double distanceWidth;
         double distanceHeight;
         double c720FocalLength = 1430; //logitech c720 camera
-        double sampleWidthPixels;
+        double sampleWidthPixels = maxWidth;
         double sampleHeightPixels;
         double sampleWidthCm = 3.8;
         double sampleHeightCm = 8.9;
@@ -103,5 +112,5 @@ public class YellowSample extends OpenCvPipeline {
         distanceHeight = (sampleHeightCm * c720FocalLength) / sampleHeightPixels;
         distance = (distanceWidth + distanceHeight) / 2;
         return distance;
-    }    
+    }
 }
