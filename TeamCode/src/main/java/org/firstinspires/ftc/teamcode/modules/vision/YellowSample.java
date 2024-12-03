@@ -96,8 +96,8 @@ public class YellowSample extends OpenCvPipeline {
         double c720FocalLength = 1430; //logitech c720 camera
         double sampleWidthPixels;
         double sampleHeightPixels;
-        double sampleWidthCm;
-        double sampleHeightCm;
+        double sampleWidthCm = 3.8;
+        double sampleHeightCm = 8.9;
 
         distanceWidth = (sampleWidthCm * c720FocalLength) / sampleWidthPixels;
         distanceHeight = (sampleHeightCm * c720FocalLength) / sampleHeightPixels;
