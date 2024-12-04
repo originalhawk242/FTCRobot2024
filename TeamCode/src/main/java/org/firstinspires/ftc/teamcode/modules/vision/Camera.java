@@ -34,7 +34,7 @@ public class Camera extends Module {
 
         webcam =
                 OpenCvCameraFactory.getInstance()
-                        .createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+                        .createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         webcam.setPipeline(p1);
 
@@ -88,6 +88,4 @@ public class Camera extends Module {
     public String getYellowStatus(){
         return YellowSample.getStatus();
     }
-
-
 }

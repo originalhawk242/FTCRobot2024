@@ -12,10 +12,10 @@ import org.firstinspires.ftc.teamcode.modules.vision.YellowSample;
 
 @Autonomous
 public class VisionAuto extends LinearOpMode {
-    Camera camera = new Camera(this);
 
     @Override
     public void runOpMode() throws InterruptedException {
+        final Camera camera = new Camera(this);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         camera.switchToFirstPipeline();
@@ -23,16 +23,6 @@ public class VisionAuto extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            int sampleLocation = YellowSample.getLocation();
-
-            if (sampleLocation == 1) {
-                telemetry.addLine("sample: left");
-            } else if (sampleLocation == 2) {
-                telemetry.addLine("sample: right");
-            } else {
-                telemetry.addLine("no sample detected");
-            }
-
             telemetry.addLine("Distance to sample: " + YellowSample.getDistance());
             telemetry.addLine(camera.getYellowStatus());
             telemetry.update();

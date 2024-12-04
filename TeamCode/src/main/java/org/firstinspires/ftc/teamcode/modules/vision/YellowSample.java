@@ -7,7 +7,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class YellowSample extends OpenCvPipeline {
 
     private static String status = "nothing";
-    private static int location = 0;
     private static Rect thisRect = null;
     private final Mat hsvMat = new Mat();
 
@@ -18,19 +17,12 @@ public class YellowSample extends OpenCvPipeline {
     private final ArrayList<MatOfPoint> contours = new ArrayList<>();
     private final Mat hierarchy = new Mat();
 
-    private static final ArrayList<Rect> contoursRects = new ArrayList<>();
+    private static ArrayList<Rect> contoursRects = new ArrayList<>();
 
     public Scalar lineColor = new Scalar(0.0, 0.0, 0.0, 0.0);
     public int lineThickness = 3;
 
     private final Mat inputRects = new Mat();
-
-    private static final Point topLeft1 = new Point(0, 0);
-    private static final Point bottomRight1 = new Point(319, 479);
-    private static final Point topLeft2 = new Point(320, 0);
-    private static final Point bottomRight2 = new Point(639, 479);
-
-
 
     @Override
     public Mat processFrame(Mat input) {
@@ -54,36 +46,6 @@ public class YellowSample extends OpenCvPipeline {
 
         status = "Yellow Sample Pipeline Is Running :)";
         return inputRects;
-    }
-
-    public static int getLocation() {
-
-        double w1 = 0, w2 = 0;
-        //process rectangles (255=W,0=B)
-        for (int i = (int) topLeft1.x; i <= bottomRight1.x; i++) {
-            for (int j = (int) topLeft1.y; j <= bottomRight1.y; j++) {
-                if (hsvBinaryMat.get(i, j)[0] == 255) {
-                    w1++;
-                }
-            }
-        }
-
-        for (int i = (int) topLeft2.x; i <= bottomRight2.x; i++) {
-            for (int j = (int) topLeft2.y; j <= bottomRight2.y; j++) {
-                if (hsvBinaryMat.get(i, j)[0] == 255) {
-                    w2++;
-                }
-            }
-        }
-
-        //get location
-        if (w1 > w2) {
-            location = 1;
-        } else if (w1 < w2) {
-            location = 2;
-        }
-
-        return location;
     }
 
     public static String getStatus() {
