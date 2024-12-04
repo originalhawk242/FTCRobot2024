@@ -52,12 +52,12 @@ public class BasketAutonomous extends AutonomousBase {
     @Deprecated
     public static double H3 = 25;
 
-    public static double INTAKE1_X = 6;
-    public static double INTAKE1_Y = 24;
+    public static double INTAKE1_X = 3.5;
+    public static double INTAKE1_Y = 23.5;
     public static double INTAKE1_HEADING = 60;
 
-    public static double INTAKE2_X = -6;
-    public static double INTAKE2_Y = 24;
+    public static double INTAKE2_X = -6.5;
+    public static double INTAKE2_Y = 22.5;
     public static double INTAKE2_HEADING = 59;
 
     public static double INTAKE3_X = -7;
@@ -65,11 +65,11 @@ public class BasketAutonomous extends AutonomousBase {
     public static double INTAKE3_HEADING = 90;
 
     public static double HANG_SETUP_X = -12;
-    public static double HANG_SETUP_Y = 51;
+    public static double HANG_SETUP_Y = 49;
     public static double HANG_SETUP_HEADING = -90;
 
     public static double HANG_FINAL_X = 0;
-    public static double HANG_FINAL_Y = 51;
+    public static double HANG_FINAL_Y = 49;
     public static double HANG_FINAL_HEADING = -90;
 
 
@@ -135,7 +135,7 @@ public class BasketAutonomous extends AutonomousBase {
             /* hang */
             arm.setTargetRotation(Arm.ARM_ROTATION_HANG_LVL1_SETUP);
             slide.setTargetHeight(LinearSlide.SLIDE_HEIGHT_HANG_LVL1);
-            intake.moveWristTo(Intake.WRIST_POSITION_MOVING);
+            intake.moveWristTo(Intake.WRIST_POSITION_DEACTIVATED);
             moveRobotTo(hangSetup);
             moveRobotTo(HANG_MOVE_TO_FINAL_TIMEOUT_MS, hangFinal);
             arm.deactivate();
